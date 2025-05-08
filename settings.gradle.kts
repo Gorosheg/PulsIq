@@ -21,3 +21,10 @@ dependencyResolutionManagement {
 
 rootProject.name = "PulsIq"
 include(":app")
+include(":core:ui")
+include(":core:bluetooth")
+include(":core:common")
+include(":data:storage")
+include(":feature:monitoring")
+include(":feature:settings")
+include(":feature:statistics")
