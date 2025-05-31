@@ -1,10 +1,11 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.ksp)
 }
 
 android {
-    namespace = "com.example.storage"
+    namespace = "gorosheg.pulsiq.storage"
     compileSdk = 34
 
     defaultConfig {
@@ -26,11 +27,8 @@ android {
 }
 
 dependencies {
-
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
+    implementation(libs.room.ktx)
+    implementation(libs.room.runtime)
+    implementation(project(":core:common"))
+    ksp(libs.room.compiler)
 }

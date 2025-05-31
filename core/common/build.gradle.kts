@@ -27,10 +27,27 @@ android {
 
 dependencies {
 
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
+    api(libs.androidx.core.ktx)
+    api(libs.androidx.appcompat)
+    api(libs.material)
+    api(libs.androidx.lifecycle.runtime.ktx)
+    api(libs.androidx.activity.compose)
+    api(platform(libs.androidx.compose.bom))
+    api(libs.androidx.ui)
+    api(libs.androidx.ui.graphics)
+    api(libs.androidx.ui.tooling.preview)
+    api(libs.androidx.material3)
+
+    api(libs.androidx.lifecycle.viewmodel.compose)
+    api(libs.koin.android)
+    api(libs.koin.androidx.compose)
+    api(libs.koin.core)
+
+    api(libs.voyagerKoin)
+    api(libs.voyagerNavigator)
+    api(libs.voyagerTabNavigator)
+    api(libs.voyagerTransitions)
+
+    debugApi(libs.androidx.ui.tooling)
+    debugApi(libs.androidx.ui.test.manifest)
 }
