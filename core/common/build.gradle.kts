@@ -60,6 +60,7 @@ dependencies {
     api(libs.voyagerNavigator)
     api(libs.voyagerTabNavigator)
     api(libs.voyagerTransitions)
+    api(libs.accompanist.permissions)
 
     debugApi(libs.androidx.ui.tooling)
     debugApi(libs.androidx.ui.test.manifest)

@@ -1,4 +1,5 @@
 [versions]
+accompanistPermissions = "0.34.0"
 agp = "8.5.2"
 kotlin = "1.9.24"
 kspPlugin = "1.9.24-1.0.20"
@@ -8,6 +9,7 @@ activityCompose = "1.10.1"
 composeBom = "2024.06.00"
 composeMaterial = "1.6.8"
 appcompat = "1.7.0"
+lifecycleViewmodelKtx = "2.9.0"
 material = "1.12.0"
 jetbrainsKotlinJvm = "1.9.24"
 viewmodelCompose = "2.8.3"
@@ -16,6 +18,7 @@ voyager = "1.0.0"
 room = "2.6.1"
 
 [libraries]
+accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
