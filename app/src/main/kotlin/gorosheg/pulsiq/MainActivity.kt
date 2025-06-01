@@ -4,45 +4,62 @@ package gorosheg.pulsiq
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.BottomNavigationItem
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import gorosheg.pulsiq.ui.theme.PulsIqTheme
+import cafe.adriel.voyager.navigator.tab.CurrentTab
+import cafe.adriel.voyager.navigator.tab.LocalTabNavigator
+import cafe.adriel.voyager.navigator.tab.Tab
+import cafe.adriel.voyager.navigator.tab.TabNavigator
+import gorosheg.pulsiq.navigation.tabs.MonitoringTab
+import gorosheg.pulsiq.navigation.tabs.SettingsTab
+import gorosheg.pulsiq.navigation.tabs.StatisticsTab
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
-            PulsIqTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
+            Content()
         }
     }
-}
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+    @Composable
+    fun Content() {
+        TabNavigator(MonitoringTab) {
+            Scaffold(
+                content = { padding ->
+                    Row(modifier = Modifier.padding(padding)) {
+                        CurrentTab()
+                    }
+                },
+                bottomBar = {
+                    BottomAppBar {
+                        TabNavigationItem(MonitoringTab)
+                        TabNavigationItem(StatisticsTab)
+                        TabNavigationItem(SettingsTab)
+                    }
+                }
+            )
+        }
+    }
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    PulsIqTheme {
-        Greeting("Android")
+    @Composable
+    private fun RowScope.TabNavigationItem(tab: Tab) {
+        val tabNavigator = LocalTabNavigator.current
+
+        BottomNavigationItem(
+            selected = tabNavigator.current.key == tab.key,
+            onClick = { tabNavigator.current = tab },
+            icon = { Icon(painter = tab.options.icon!!, contentDescription = tab.options.title) },
+            label = { Text(text = tab.options.title) }
+        )
     }
 }
