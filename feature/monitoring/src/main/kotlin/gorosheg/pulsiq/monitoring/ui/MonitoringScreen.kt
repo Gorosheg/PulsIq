@@ -7,6 +7,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import cafe.adriel.voyager.core.screen.Screen
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
@@ -20,10 +21,11 @@ internal class MonitoringScreen : Screen {
     override fun Content() {
         val viewModel = getViewModel<MonitoringViewModel>()
         val bpm by viewModel.heartRate.collectAsState()
+        val context = LocalContext.current.applicationContext
 
         val permissions = remember {
             mutableListOf(
-                Manifest.permission.ACCESS_FINE_LOCATION
+                Manifest.permission.ACCESS_FINE_LOCATION,
             ).apply {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                     add(Manifest.permission.BLUETOOTH_SCAN)
@@ -31,6 +33,10 @@ internal class MonitoringScreen : Screen {
                 } else {
                     add(Manifest.permission.BLUETOOTH)
                     add(Manifest.permission.BLUETOOTH_ADMIN)
+                }
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    add(Manifest.permission.POST_NOTIFICATIONS)
                 }
             }
         }
@@ -44,7 +50,7 @@ internal class MonitoringScreen : Screen {
         MonitoringScreenContent(
             multiplePermissionState = multiplePermissionState,
             bpm = bpm,
-            startTracking = viewModel::startMonitoring
+            startTracking = { viewModel.startMonitoring(context) }
         )
     }
 }
