@@ -38,6 +38,7 @@ internal class MonitoringScreen : Screen {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     add(Manifest.permission.POST_NOTIFICATIONS)
                 }
+                add(Manifest.permission.VIBRATE)
             }
         }
 

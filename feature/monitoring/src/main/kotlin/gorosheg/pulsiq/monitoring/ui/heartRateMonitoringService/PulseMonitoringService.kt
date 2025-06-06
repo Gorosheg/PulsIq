@@ -1,34 +1,51 @@
 package gorosheg.pulsiq.monitoring.ui.heartRateMonitoringService
 
-import android.app.*
+import android.Manifest
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.IBinder
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import gorosheg.pulsiq.bluetooth.BleHeartRateDevice
 import gorosheg.pulsiq.bluetooth.HeartRateDevice
 import gorosheg.pulsiq.monitoring.R
-import kotlinx.coroutines.*
+import gorosheg.pulsiq.monitoring.presentation.PulseAlertController
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
-class HeartRateMonitoringService : Service() {
+class PulseMonitoringService : Service() {
 
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
-    private lateinit var heartRateDevice: HeartRateDevice
     private lateinit var notificationManager: NotificationManager
-    private lateinit var notificationBuilder: NotificationCompat.Builder
+    private lateinit var heartRateDevice: HeartRateDevice
+    private lateinit var pulseAlertController: PulseAlertController
     private lateinit var remoteViews: RemoteViews
+    private lateinit var notificationBuilder: NotificationCompat.Builder
+    private var vibratorPermission: Boolean = false
 
     override fun onCreate() {
         super.onCreate()
         notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         heartRateDevice = BleHeartRateDevice(applicationContext)
-        createNotificationChannel()
-
+        pulseAlertController = PulseAlertController(applicationContext)
         remoteViews = RemoteViews(packageName, R.layout.notification_pulse)
+        vibratorPermission =
+            ContextCompat.checkSelfPermission(this, Manifest.permission.VIBRATE) == PackageManager.PERMISSION_GRANTED
+
+        createNotificationChannel()
 
         val dismissIntent = Intent(this, NotificationDismissedReceiver::class.java)
         val deletePendingIntent = PendingIntent.getBroadcast(
@@ -64,6 +81,10 @@ class HeartRateMonitoringService : Service() {
             heartRateDevice.heartRateFlow.collectLatest { bpm ->
                 remoteViews.setTextViewText(R.id.pulseText, "$bpm bpm")
                 notificationManager.notify(NOTIF_ID, notificationBuilder.build())
+
+                if (vibratorPermission) {
+                    pulseAlertController.onPulseChanged(bpm)
+                }
             }
         }
 
@@ -96,7 +117,7 @@ class HeartRateMonitoringService : Service() {
         const val NOTIF_ID = 1
 
         fun start(context: Context) {
-            val intent = Intent(context, HeartRateMonitoringService::class.java)
+            val intent = Intent(context, PulseMonitoringService::class.java)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 context.startForegroundService(intent)
             } else {
@@ -105,7 +126,7 @@ class HeartRateMonitoringService : Service() {
         }
 
         fun stop(context: Context) {
-            context.stopService(Intent(context, HeartRateMonitoringService::class.java))
+            context.stopService(Intent(context, PulseMonitoringService::class.java))
         }
     }
 }

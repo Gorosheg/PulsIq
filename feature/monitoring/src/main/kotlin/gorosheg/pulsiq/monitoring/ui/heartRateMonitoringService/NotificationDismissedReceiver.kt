@@ -6,6 +6,6 @@ import android.content.Intent
 
 class NotificationDismissedReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        HeartRateMonitoringService.stop(context)
+        PulseMonitoringService.stop(context)
     }
 }

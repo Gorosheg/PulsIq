@@ -3,7 +3,7 @@ package gorosheg.pulsiq.monitoring.presentation
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import gorosheg.pulsiq.bluetooth.HeartRateDevice
-import gorosheg.pulsiq.monitoring.ui.heartRateMonitoringService.HeartRateMonitoringService
+import gorosheg.pulsiq.monitoring.ui.heartRateMonitoringService.PulseMonitoringService
 
 class MonitoringViewModel(private val heartRateDevice: HeartRateDevice ) : ViewModel() {
 
@@ -11,7 +11,7 @@ class MonitoringViewModel(private val heartRateDevice: HeartRateDevice ) : ViewM
 
     fun startMonitoring(context: Context) {
         heartRateDevice.startScan()
-        HeartRateMonitoringService.start(context = context)
+        PulseMonitoringService.start(context = context)
     }
 
     override fun onCleared() {
