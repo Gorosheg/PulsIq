@@ -20,8 +20,7 @@ internal class MonitoringScreen : Screen {
     @Composable
     override fun Content() {
         val viewModel = getViewModel<MonitoringViewModel>()
-        val bpm by viewModel.heartRate.collectAsState()
-        val context = LocalContext.current.applicationContext
+        val state by viewModel.uiState.collectAsState()
 
         val permissions = remember {
             mutableListOf(
@@ -50,8 +49,9 @@ internal class MonitoringScreen : Screen {
 
         MonitoringScreenContent(
             multiplePermissionState = multiplePermissionState,
-            bpm = bpm,
-            startTracking = { viewModel.startMonitoring(context) }
+            state = state,
+            startTracking = { viewModel.startMonitoring() },
+            stopTracking = { viewModel.stopMonitoring() }
         )
     }
 }

@@ -13,10 +13,10 @@ class PulseAlertController(private val context: Context) {
     private var inHighAlertState = false
 
     fun onPulseChanged(bpm: Int) {
-        if (!inHighAlertState && bpm >= 180) {
+        if (!inHighAlertState && bpm >= 100) {
             inHighAlertState = true
             triggerAlert(AlertType.HIGH)
-        } else if (inHighAlertState && bpm <= 145) {
+        } else if (inHighAlertState && bpm <= 80) {
             inHighAlertState = false
             triggerAlert(AlertType.NORMAL)
         }
