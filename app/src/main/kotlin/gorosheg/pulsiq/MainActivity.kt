@@ -14,6 +14,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import cafe.adriel.voyager.navigator.tab.CurrentTab
 import cafe.adriel.voyager.navigator.tab.LocalTabNavigator
 import cafe.adriel.voyager.navigator.tab.Tab
@@ -21,13 +22,18 @@ import cafe.adriel.voyager.navigator.tab.TabNavigator
 import gorosheg.pulsiq.navigation.tabs.MonitoringTab
 import gorosheg.pulsiq.navigation.tabs.SettingsTab
 import gorosheg.pulsiq.navigation.tabs.StatisticsTab
+import gorosheg.pulsiq.ui.Blue
+import gorosheg.pulsiq.ui.MyAppTheme
+import gorosheg.pulsiq.ui.White
 
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            Content()
+            MyAppTheme {
+                Content()
+            }
         }
     }
 
@@ -54,12 +60,27 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun RowScope.TabNavigationItem(tab: Tab) {
         val tabNavigator = LocalTabNavigator.current
+        val selected = tabNavigator.current.key == tab.key
+        val contentColor = if (selected) Blue else White
 
         BottomNavigationItem(
-            selected = tabNavigator.current.key == tab.key,
+            selected = selected,
             onClick = { tabNavigator.current = tab },
-            icon = { Icon(painter = tab.options.icon!!, contentDescription = tab.options.title) },
-            label = { Text(text = tab.options.title) }
+            icon = {
+                Icon(
+                    painter = tab.options.icon!!,
+                    contentDescription = tab.options.title,
+                    tint = contentColor
+                )
+            },
+            label = {
+                Text(
+                    text = tab.options.title,
+                    color = contentColor
+                )
+            },
+            selectedContentColor = Color.Unspecified,
+            unselectedContentColor = Color.Unspecified
         )
     }
 }

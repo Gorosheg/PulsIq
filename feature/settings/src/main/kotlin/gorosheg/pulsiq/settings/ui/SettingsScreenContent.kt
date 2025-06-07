@@ -5,9 +5,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import gorosheg.pulsiq.ui.Black
 
 @Composable
 internal fun SettingsScreenContent(
@@ -17,7 +17,7 @@ internal fun SettingsScreenContent(
             .fillMaxWidth()
             .padding(16.dp),
         text = "Настройки",
-        color = Black,
+        color = Color.White,
         fontSize = 20.sp,
     )
 }

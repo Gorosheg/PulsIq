@@ -1,10 +1,8 @@
 package gorosheg.pulsiq.monitoring.ui
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
@@ -13,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -28,7 +27,10 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,6 +42,11 @@ import androidx.compose.ui.unit.sp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.MultiplePermissionsState
 import gorosheg.pulsiq.monitoring.ui.model.MonitoringUiState
+import gorosheg.pulsiq.ui.Blue
+import gorosheg.pulsiq.ui.Crimson
+import gorosheg.pulsiq.ui.Orange
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -49,70 +56,120 @@ internal fun MonitoringScreenContent(
     startTracking: () -> Unit,
     stopTracking: () -> Unit
 ) {
-    val pulseColor = if (state.pulse >= 100) Color(0xFFFF5E5E) else Color(0xFF3DDC84)
-    val heartScale by rememberInfiniteTransition(label = "Heart Beat").animateFloat(
-        initialValue = 1f,
-        targetValue = 1.3f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(600, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "Heart Scale"
+    val targetColor = when {
+        state.pulse < 87 -> Blue
+        state.pulse < 93 -> Orange
+        else -> Crimson
+    }
+
+    val animatedColor by animateColorAsState(
+        targetValue = targetColor,
+        animationSpec = tween(durationMillis = 500),
+        label = "PulseColor"
     )
+
+    val scale = remember { Animatable(1f) }
+    val pulse = rememberUpdatedState(newValue = state.pulse)
+
+    LaunchedEffect(pulse.value) {
+        scale.stop()
+
+        val speed = when (pulse.value) {
+            in 0..87 -> 2000
+            in 88..94 -> 1000
+            else -> 500
+        }
+
+        launch {
+            while (isActive) {
+                scale.animateTo(1.3f, tween(speed, easing = FastOutSlowInEasing))
+                scale.animateTo(1f, tween(speed, easing = FastOutSlowInEasing))
+            }
+        }
+    }
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = Color(0xFFF6F6FA)
     ) {
         if (multiplePermissionState.allPermissionsGranted) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(24.dp),
-                verticalArrangement = Arrangement.Center,
+                    .padding(horizontal = 32.dp)
+                    .padding(top = 48.dp, bottom = 32.dp),
+                verticalArrangement = Arrangement.SpaceBetween,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Icon(
-                        Icons.Filled.Favorite,
-                        contentDescription = null,
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                ) {
+                    Column(
                         modifier = Modifier
-                            .size(96.dp)
-                            .graphicsLayer {
-                                scaleX = heartScale
-                                scaleY = heartScale
-                            },
-                        tint = pulseColor
-                    )
-                    Text(
-                        text = "${state.pulse}",
-                        fontSize = 36.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Black
-                    )
-                }
-
-                Spacer(Modifier.height(32.dp))
-
-                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                    if (!state.isTracking) {
-                        Button(
-                            onClick = startTracking,
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3DDC84))
+                            .align(Alignment.Center)
+                            .padding(horizontal = 32.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier
+                                .padding(bottom = 32.dp),
                         ) {
-                            Icon(Icons.Default.PlayArrow, contentDescription = null)
-                            Spacer(Modifier.width(8.dp))
-                            Text("Старт", fontWeight = FontWeight.Medium)
+                            Icon(
+                                Icons.Filled.Favorite,
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(280.dp)
+                                    .graphicsLayer {
+                                        scaleX = scale.value
+                                        scaleY = scale.value
+                                    },
+                                tint = animatedColor
+                            )
+
+                            Text(
+                                text = state.pulse.toString(),
+                                fontSize = 72.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.Black,
+                                modifier = Modifier.padding(bottom = 4.dp)
+                            )
                         }
-                    } else {
-                        OutlinedButton(
-                            onClick = stopTracking,
-                            border = BorderStroke(2.dp, Color(0xFFDD2C00)),
-                            colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFFDD2C00))
-                        ) {
-                            Icon(Icons.Default.Close, contentDescription = null)
-                            Spacer(Modifier.width(8.dp))
-                            Text("Остановить", fontWeight = FontWeight.Medium)
+                    }
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 32.dp)
+                            .align(Alignment.BottomCenter),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        if (!state.isTracking) {
+                            Button(
+                                onClick = startTracking,
+                                modifier = Modifier
+                                    .height(64.dp)
+                                    .width(220.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = Blue)
+                            ) {
+                                Icon(Icons.Default.PlayArrow, contentDescription = null)
+                                Spacer(Modifier.width(12.dp))
+                                Text("Старт", fontSize = 20.sp, fontWeight = FontWeight.Medium)
+                            }
+                        } else {
+                            OutlinedButton(
+                                onClick = stopTracking,
+                                modifier = Modifier
+                                    .height(64.dp)
+                                    .width(220.dp),
+                                border = BorderStroke(3.dp, Crimson),
+                                colors = ButtonDefaults.outlinedButtonColors(contentColor = Crimson)
+                            ) {
+                                Icon(Icons.Default.Close, contentDescription = null)
+                                Spacer(Modifier.width(12.dp))
+                                Text("Остановить", fontSize = 20.sp, fontWeight = FontWeight.Medium)
+                            }
                         }
                     }
                 }
@@ -124,7 +181,7 @@ internal fun MonitoringScreenContent(
             ) {
                 Text(
                     text = "Разрешения Bluetooth и геолокации не предоставлены",
-                    fontSize = 18.sp,
+                    fontSize = 20.sp,
                     color = Color.Gray,
                     textAlign = TextAlign.Center
                 )
