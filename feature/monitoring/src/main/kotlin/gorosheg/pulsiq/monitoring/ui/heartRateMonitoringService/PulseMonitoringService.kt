@@ -14,7 +14,6 @@ import android.os.IBinder
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
-import gorosheg.pulsiq.bluetooth.BleHeartRateDevice
 import gorosheg.pulsiq.bluetooth.HeartRateDevice
 import gorosheg.pulsiq.monitoring.R
 import gorosheg.pulsiq.monitoring.presentation.PulseAlertController
@@ -24,22 +23,23 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.get
 
 class PulseMonitoringService : Service() {
 
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     private lateinit var notificationManager: NotificationManager
-    private lateinit var heartRateDevice: HeartRateDevice
+    private val heartRateDevice by lazy { get<HeartRateDevice>() }
     private lateinit var pulseAlertController: PulseAlertController
     private lateinit var remoteViews: RemoteViews
     private lateinit var notificationBuilder: NotificationCompat.Builder
     private var vibratorPermission: Boolean = false
+    private val appEnabledProvider: AppEnabledProvider by lazy { get() }
 
     override fun onCreate() {
         super.onCreate()
         notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        heartRateDevice = BleHeartRateDevice(applicationContext)
         pulseAlertController = PulseAlertController(applicationContext)
         remoteViews = RemoteViews(packageName, R.layout.notification_pulse)
         vibratorPermission =
@@ -75,8 +75,6 @@ class PulseMonitoringService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         startForeground(NOTIF_ID, notificationBuilder.build())
-        heartRateDevice.startScan()
-
         serviceScope.launch {
             heartRateDevice.heartRateFlow.collectLatest { bpm ->
                 remoteViews.setTextViewText(R.id.pulseText, "$bpm bpm")
@@ -92,8 +90,11 @@ class PulseMonitoringService : Service() {
     }
 
     override fun onDestroy() {
-        heartRateDevice.disconnect()
+        if (!appEnabledProvider.isAppEnabled) {
+            heartRateDevice.disconnect()
+        }
         serviceScope.cancel()
+
         super.onDestroy()
     }
 

@@ -9,13 +9,13 @@ activityCompose = "1.10.1"
 composeBom = "2024.06.00"
 composeMaterial = "1.6.8"
 appcompat = "1.7.0"
-lifecycleViewmodelKtx = "2.9.0"
 material = "1.12.0"
 jetbrainsKotlinJvm = "1.9.24"
 viewmodelCompose = "2.8.3"
 koin = "3.5.0"
 voyager = "1.0.0"
 room = "2.6.1"
+lifecycleProcess = "2.8.1"
 
 [libraries]
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
@@ -43,6 +43,7 @@ voyagerTransitions = { module = "cafe.adriel.voyager:voyager-transitions", versi
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+androidx-lifecycle-process = { group = "androidx.lifecycle", name = "lifecycle-process", version.ref = "lifecycleProcess" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -22,11 +22,6 @@ internal class MonitoringViewModel(
         subscribeToPulse()
     }
 
-    override fun onCleared() {
-        stopMonitoring()
-        super.onCleared()
-    }
-
     fun startMonitoring() {
         state { copy(isTracking = true) }
         heartRateDevice.startScan()
@@ -34,7 +29,7 @@ internal class MonitoringViewModel(
     }
 
     fun stopMonitoring() {
-        state { copy(isTracking = false) }
+        state { copy(isTracking = false, pulse = 0) }
         heartRateDevice.disconnect()
         PulseMonitoringService.stop(context = getApplication())
     }
