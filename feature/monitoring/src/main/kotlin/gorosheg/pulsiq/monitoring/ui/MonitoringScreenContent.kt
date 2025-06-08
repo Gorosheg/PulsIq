@@ -2,7 +2,7 @@ package gorosheg.pulsiq.monitoring.ui
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.EaseInOut
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
@@ -44,9 +44,6 @@ import com.google.accompanist.permissions.MultiplePermissionsState
 import gorosheg.pulsiq.monitoring.ui.model.MonitoringUiState
 import gorosheg.pulsiq.ui.Blue
 import gorosheg.pulsiq.ui.Crimson
-import gorosheg.pulsiq.ui.Orange
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -56,41 +53,31 @@ internal fun MonitoringScreenContent(
     startTracking: () -> Unit,
     stopTracking: () -> Unit
 ) {
-    val targetColor = when {
-        state.pulse < 87 -> Blue
-        state.pulse < 93 -> Orange
-        else -> Crimson
-    }
-
     val animatedColor by animateColorAsState(
-        targetValue = targetColor,
+        targetValue = state.heartColor,
         animationSpec = tween(durationMillis = 500),
         label = "PulseColor"
     )
 
-    val scale = remember { Animatable(1f) }
-    val pulse = rememberUpdatedState(newValue = state.pulse)
+    val scaleAnim = remember { Animatable(1f) }
+    val currentSpeed by rememberUpdatedState(state.heartRateSpeed)
 
-    LaunchedEffect(pulse.value) {
-        scale.stop()
-
-        val speed = when (pulse.value) {
-            in 0..87 -> 2000
-            in 88..94 -> 1000
-            else -> 500
-        }
-
-        launch {
-            while (isActive) {
-                scale.animateTo(1.3f, tween(speed, easing = FastOutSlowInEasing))
-                scale.animateTo(1f, tween(speed, easing = FastOutSlowInEasing))
+    LaunchedEffect(state.pulse > 0) {
+        if (state.pulse <= 0) {
+            scaleAnim.animateTo(
+                1f,
+                animationSpec = tween(300)
+            )
+        } else {
+            while (true) {
+                val half = (currentSpeed / 2).coerceAtLeast(50)
+                scaleAnim.animateTo(1.3f, tween(durationMillis = half, easing = EaseInOut))
+                scaleAnim.animateTo(1f, tween(durationMillis = half, easing = EaseInOut))
             }
         }
     }
 
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-    ) {
+    Surface(modifier = Modifier.fillMaxSize()) {
         if (multiplePermissionState.allPermissionsGranted) {
             Column(
                 modifier = Modifier
@@ -100,10 +87,8 @@ internal fun MonitoringScreenContent(
                 verticalArrangement = Arrangement.SpaceBetween,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                ) {
+                Box(modifier = Modifier.fillMaxSize()) {
+
                     Column(
                         modifier = Modifier
                             .align(Alignment.Center)
@@ -111,19 +96,15 @@ internal fun MonitoringScreenContent(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier
-                                .padding(bottom = 32.dp),
-                        ) {
+                        Box(contentAlignment = Alignment.Center) {
                             Icon(
-                                Icons.Filled.Favorite,
+                                imageVector = Icons.Filled.Favorite,
                                 contentDescription = null,
                                 modifier = Modifier
                                     .size(280.dp)
                                     .graphicsLayer {
-                                        scaleX = scale.value
-                                        scaleY = scale.value
+                                        scaleX = scaleAnim.value
+                                        scaleY = scaleAnim.value
                                     },
                                 tint = animatedColor
                             )
@@ -133,7 +114,6 @@ internal fun MonitoringScreenContent(
                                 fontSize = 72.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = Color.Black,
-                                modifier = Modifier.padding(bottom = 4.dp)
                             )
                         }
                     }
