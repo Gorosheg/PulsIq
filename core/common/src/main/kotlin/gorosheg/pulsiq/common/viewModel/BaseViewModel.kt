@@ -1,7 +1,6 @@
 package gorosheg.pulsiq.common.viewModel
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import gorosheg.pulsiq.common.viewModel.uiStateMapper.UiStateMapper
 import kotlinx.coroutines.channels.Channel
@@ -16,10 +15,9 @@ import kotlinx.coroutines.launch
 
 
 open class BaseViewModel<State, UiState, Effect>(
-    application: Application,
     initState: State,
     uiStateMapper: UiStateMapper<State, UiState>,
-) : AndroidViewModel(application) {
+) : ViewModel() {
 
     private val state: MutableStateFlow<State> = MutableStateFlow(initState)
 

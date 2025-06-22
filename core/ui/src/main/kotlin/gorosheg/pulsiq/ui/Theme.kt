@@ -1,15 +1,16 @@
 package gorosheg.pulsiq.ui
 
-import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Shapes
 import androidx.compose.material3.Typography
-import androidx.compose.ui.graphics.Color
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.runtime.Composable
 
 private val DarkColors = darkColorScheme(
     primary = Blue,
-    onPrimary = Color.White,
+    onPrimary = White,
     background = DarkGray,
-    onBackground = Color.White
+    onBackground = White
 )
 
 @Composable

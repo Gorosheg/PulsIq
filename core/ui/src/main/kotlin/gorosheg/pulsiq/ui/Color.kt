@@ -7,7 +7,8 @@ val Black = Color(0xFF000000)
 
 val DarkGray = Color(0xFF191819)
 val Gray = Color(0xFF232223)
-val mediumGray = Color(0xFF262426)
+val MediumGray = Color(0xFF262426)
+val BlueGray = Color(0xFF20292F)
 
 val Crimson = Color(0xFFFF4D6D)
 val Orange = Color(0xFFFFAA40)

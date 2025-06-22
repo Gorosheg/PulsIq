@@ -21,6 +21,7 @@ internal class MonitoringScreen : Screen {
     override fun Content() {
         val viewModel = getViewModel<MonitoringViewModel>()
         val state by viewModel.uiState.collectAsState()
+        val context = LocalContext.current.applicationContext
 
         val permissions = remember {
             mutableListOf(
@@ -50,8 +51,8 @@ internal class MonitoringScreen : Screen {
         MonitoringScreenContent(
             multiplePermissionState = multiplePermissionState,
             state = state,
-            startTracking = { viewModel.startMonitoring() },
-            stopTracking = { viewModel.stopMonitoring() }
+            startTracking = { viewModel.startMonitoring(context) },
+            stopTracking = { viewModel.stopMonitoring(context) }
         )
     }
 }

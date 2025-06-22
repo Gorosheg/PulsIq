@@ -5,7 +5,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
 import gorosheg.pulsiq.monitoring.ui.heartRateMonitoringService.AppEnabledProvider
 
-class AppEnabledProviderImpl() : AppEnabledProvider, DefaultLifecycleObserver {
+class AppEnabledProviderImpl : AppEnabledProvider, DefaultLifecycleObserver {
 
     override var isAppEnabled: Boolean = false
         private set

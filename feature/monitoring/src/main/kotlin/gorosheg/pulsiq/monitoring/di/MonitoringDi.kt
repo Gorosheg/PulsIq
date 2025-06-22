@@ -11,10 +11,6 @@ val monitoringModule = module {
     factory { MonitoringProvider(::MonitoringScreen) }
 
     viewModel {
-        MonitoringViewModel(
-            application = get(),
-            uiStateMapper = MonitoringUiStateMapper(),
-            heartRateDevice = get()
-        )
+        MonitoringViewModel(heartRateDevice = get())
     }
 }

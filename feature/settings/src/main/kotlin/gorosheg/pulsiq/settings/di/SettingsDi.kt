@@ -8,5 +8,6 @@ import org.koin.dsl.module
 
 val settingsModule = module {
     factory { SettingsProvider(::SettingsScreen) }
+
     viewModel { SettingsViewModel() }
 }

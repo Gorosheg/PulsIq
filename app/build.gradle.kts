@@ -56,4 +56,6 @@ dependencies {
     implementation(project(":feature:monitoring"))
     implementation(project(":feature:settings"))
     implementation(project(":feature:statistics"))
+
+    implementation(libs.androidx.lifecycle.process)
 }
