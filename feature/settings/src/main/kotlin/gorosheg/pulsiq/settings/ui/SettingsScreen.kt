@@ -14,7 +14,8 @@ import androidx.compose.material.Button
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -27,21 +28,25 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
+import com.example.storage.ThresholdsRepository
 import gorosheg.pulsiq.settings.presentation.SettingsViewModel
 import gorosheg.pulsiq.settings.ui.model.SettingsUiState
 import gorosheg.pulsiq.ui.Black
+import org.koin.androidx.compose.get
 import org.koin.androidx.compose.getViewModel
 
 internal class SettingsScreen : Screen {
-
     @Composable
     override fun Content() {
         val viewModel = getViewModel<SettingsViewModel>()
         val state by viewModel.uiState.collectAsState()
+        val thresholdsRepository = get<ThresholdsRepository>()
+
+        // Загружаем один раз значения из SharedPreferences
+        val lowerThreshold = remember { mutableIntStateOf(thresholdsRepository.getLowerThreshold()) }
+        val upperThreshold = remember { mutableIntStateOf(thresholdsRepository.getUpperThreshold()) }
 
         val selectedSetting = remember { mutableStateOf<SettingsUiState.SettingItem?>(null) }
-        val lowerThreshold = remember { mutableIntStateOf(100) }
-        val upperThreshold = remember { mutableIntStateOf(180) }
 
         SettingsScreenContent(
             state = state,
@@ -62,11 +67,7 @@ internal class SettingsScreen : Screen {
                         modifier = Modifier.fillMaxWidth(),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(
-                            text = "Минимальный порог",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = Black
-                        )
+                        Text("Минимальный порог", style = MaterialTheme.typography.titleMedium, color = Black)
                         Spacer(modifier = Modifier.height(16.dp))
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -76,11 +77,7 @@ internal class SettingsScreen : Screen {
                                 onClick = { if (lowerThreshold.intValue > 0) lowerThreshold.intValue -= 1 },
                                 modifier = Modifier.size(48.dp)
                             ) {
-                                Icon(
-                                    imageVector = Icons.Default.Add,
-                                    contentDescription = "Decrease",
-                                    tint = Black
-                                )
+                                Icon(Icons.Default.KeyboardArrowDown, contentDescription = "Decrease", tint = Black)
                             }
                             Text(
                                 text = "${lowerThreshold.intValue}",
@@ -91,20 +88,13 @@ internal class SettingsScreen : Screen {
                                 onClick = { lowerThreshold.intValue += 1 },
                                 modifier = Modifier.size(48.dp)
                             ) {
-                                Icon(
-                                    imageVector = Icons.Default.Add,
-                                    contentDescription = "Increase",
-                                    tint = Black
-                                )
+                                Icon(Icons.Default.KeyboardArrowUp, contentDescription = "Increase", tint = Black)
                             }
                         }
+
                         Spacer(modifier = Modifier.height(24.dp))
 
-                        Text(
-                            text = "Максимальный порог",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = Black
-                        )
+                        Text("Максимальный порог", style = MaterialTheme.typography.titleMedium, color = Black)
                         Spacer(modifier = Modifier.height(16.dp))
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -114,11 +104,7 @@ internal class SettingsScreen : Screen {
                                 onClick = { if (upperThreshold.intValue > 0) upperThreshold.intValue -= 1 },
                                 modifier = Modifier.size(48.dp)
                             ) {
-                                Icon(
-                                    imageVector = Icons.Default.Add,
-                                    contentDescription = "Decrease",
-                                    tint = Black
-                                )
+                                Icon(Icons.Default.KeyboardArrowDown, contentDescription = "Decrease", tint = Black)
                             }
                             Text(
                                 text = "${upperThreshold.intValue}",
@@ -129,17 +115,17 @@ internal class SettingsScreen : Screen {
                                 onClick = { upperThreshold.intValue += 1 },
                                 modifier = Modifier.size(48.dp)
                             ) {
-                                Icon(
-                                    imageVector = Icons.Default.Add,
-                                    contentDescription = "Increase",
-                                    tint = Black
-                                )
+                                Icon(Icons.Default.KeyboardArrowUp, contentDescription = "Increase", tint = Black)
                             }
                         }
+
                         Spacer(modifier = Modifier.height(24.dp))
                         Button(
                             onClick = {
-                                // Действие по применению — скажешь позже
+                                thresholdsRepository.saveThresholds(
+                                    lower = lowerThreshold.intValue,
+                                    upper = upperThreshold.intValue
+                                )
                                 selectedSetting.value = null
                             },
                             modifier = Modifier.fillMaxWidth()
