@@ -1,6 +1,7 @@
 package gorosheg.pulsiq.monitoring.presentation
 
 import android.content.Context
+import gorosheg.pulsiq.common.storage.ThresholdsRepository
 import androidx.lifecycle.viewModelScope
 import gorosheg.pulsiq.bluetooth.HeartRateDevice
 import gorosheg.pulsiq.common.viewModel.BaseViewModel
@@ -14,10 +15,12 @@ import kotlinx.coroutines.flow.onEach
 
 internal class MonitoringViewModel(
     private val heartRateDevice: HeartRateDevice,
+    private val thresholdsRepository: ThresholdsRepository,
 ) : BaseViewModel<MonitoringState, MonitoringUiState, MonitoringEffect>(MonitoringState(), MonitoringUiStateMapper()) {
 
     init {
         subscribeToPulse()
+        subscribeToThresholds()
     }
 
     fun startMonitoring(context: Context) {
@@ -39,6 +42,16 @@ internal class MonitoringViewModel(
                     copy(pulse = it)
                 }
             }
+            .launchIn(viewModelScope)
+    }
+
+    private fun subscribeToThresholds() {
+        thresholdsRepository.lowerThresholdFlow
+            .onEach { lower -> state { copy(lowerThreshold = lower) } }
+            .launchIn(viewModelScope)
+
+        thresholdsRepository.upperThresholdFlow
+            .onEach { upper -> state { copy(upperThreshold = upper) } }
             .launchIn(viewModelScope)
     }
 }

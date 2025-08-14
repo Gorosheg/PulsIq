@@ -7,16 +7,43 @@ import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
+import gorosheg.pulsiq.common.storage.ThresholdsRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
-class PulseAlertController(private val context: Context) {
+class PulseAlertController(
+    private val context: Context,
+    thresholdsRepository: ThresholdsRepository,
+    scope: CoroutineScope
+) {
 
     private var inHighAlertState = false
 
+    @Volatile
+    private var lowerThreshold: Int = thresholdsRepository.getLowerThreshold()
+
+    @Volatile
+    private var upperThreshold: Int = thresholdsRepository.getUpperThreshold()
+
+    init {
+        scope.launch {
+            thresholdsRepository.lowerThresholdFlow.collectLatest { lower ->
+                lowerThreshold = lower
+            }
+        }
+        scope.launch {
+            thresholdsRepository.upperThresholdFlow.collectLatest { upper ->
+                upperThreshold = upper
+            }
+        }
+    }
+
     fun onPulseChanged(bpm: Int) {
-        if (bpm >= 100) {
+        if (bpm >= upperThreshold) {
             inHighAlertState = true
             triggerAlert(AlertType.HIGH)
-        } else if (inHighAlertState && bpm <= 80) {
+        } else if (inHighAlertState && bpm <= lowerThreshold) {
             inHighAlertState = false
             triggerAlert(AlertType.NORMAL)
         }

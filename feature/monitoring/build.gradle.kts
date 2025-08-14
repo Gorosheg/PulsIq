@@ -41,6 +41,4 @@ dependencies {
     implementation(project(":core:common"))
     implementation(project(":core:bluetooth"))
     implementation(project(":core:ui"))
-
-    //implementation (libs.androidx.lifecycle.viewmodel.ktx)
 }

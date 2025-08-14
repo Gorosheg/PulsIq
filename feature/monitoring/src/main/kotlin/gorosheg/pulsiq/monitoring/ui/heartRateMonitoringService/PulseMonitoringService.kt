@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat
 import gorosheg.pulsiq.bluetooth.HeartRateDevice
 import gorosheg.pulsiq.monitoring.R
 import gorosheg.pulsiq.monitoring.presentation.PulseAlertController
+import gorosheg.pulsiq.common.storage.ThresholdsRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -40,7 +41,12 @@ class PulseMonitoringService : Service() {
     override fun onCreate() {
         super.onCreate()
         notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        pulseAlertController = PulseAlertController(applicationContext)
+        val thresholdsRepository: ThresholdsRepository = get()
+        pulseAlertController = PulseAlertController(
+            context = applicationContext,
+            thresholdsRepository = thresholdsRepository,
+            scope = serviceScope
+        )
         remoteViews = RemoteViews(packageName, R.layout.notification_pulse)
         vibratorPermission =
             ContextCompat.checkSelfPermission(this, Manifest.permission.VIBRATE) == PackageManager.PERMISSION_GRANTED

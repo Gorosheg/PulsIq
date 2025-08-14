@@ -30,7 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
-import com.example.storage.ThresholdsRepository
+import gorosheg.pulsiq.common.storage.ThresholdsRepository
 import gorosheg.pulsiq.settings.R
 import gorosheg.pulsiq.settings.presentation.SettingsViewModel
 import gorosheg.pulsiq.settings.ui.model.SettingsUiState
