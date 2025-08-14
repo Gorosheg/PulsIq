@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="min_threshold_title">Минимальный порог</string>
+    <string name="max_threshold_title">Максимальный порог</string>
+    <string name="apply_button_text">Применить</string>
+    <string name="decrease_button_description">Уменьшить</string>
+    <string name="increase_button_description">Увеличить</string>
+</resources>
