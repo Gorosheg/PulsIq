@@ -34,10 +34,10 @@
         </activity>
 
         <service
-            android:name=".monitoring.ui.heartRateMonitoringService.PulseMonitoringService"
+            android:name="gorosheg.pulsiq.pulsenotification.PulseNotificationService"
             android:exported="false" />
 
-        <receiver android:name=".monitoring.ui.heartRateMonitoringService.NotificationDismissedReceiver"
+        <receiver android:name="gorosheg.pulsiq.pulsenotification.NotificationDismissedReceiver"
             android:exported="false"/>
     </application>
 

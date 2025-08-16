@@ -51,8 +51,8 @@ internal class MonitoringScreen : Screen {
         MonitoringScreenContent(
             multiplePermissionState = multiplePermissionState,
             state = state,
-            startTracking = { viewModel.startMonitoring(context) },
-            stopTracking = { viewModel.stopMonitoring(context) }
+            startTracking = viewModel::startMonitoring,
+            stopTracking = viewModel::stopMonitoring
         )
     }
 }

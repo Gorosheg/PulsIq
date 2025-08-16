@@ -3,7 +3,7 @@ package gorosheg.pulsiq
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
-import gorosheg.pulsiq.monitoring.ui.heartRateMonitoringService.AppEnabledProvider
+import gorosheg.pulsiq.common.navigation.AppEnabledProvider
 
 class AppEnabledProviderImpl : AppEnabledProvider, DefaultLifecycleObserver {
 

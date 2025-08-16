@@ -1,4 +1,4 @@
-package gorosheg.pulsiq.monitoring.ui.heartRateMonitoringService
+package gorosheg.pulsiq.pulsenotification
 
 import android.Manifest
 import android.app.Notification
@@ -15,9 +15,9 @@ import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import gorosheg.pulsiq.bluetooth.HeartRateDevice
-import gorosheg.pulsiq.monitoring.R
-import gorosheg.pulsiq.monitoring.presentation.PulseAlertController
+import gorosheg.pulsiq.common.navigation.AppEnabledProvider
 import gorosheg.pulsiq.common.storage.ThresholdsRepository
+import gorosheg.pulsiq.ui.alert.PulseAlertController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -26,7 +26,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.get
 
-class PulseMonitoringService : Service() {
+class PulseNotificationService : Service() {
 
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
@@ -40,7 +40,7 @@ class PulseMonitoringService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         val thresholdsRepository: ThresholdsRepository = get()
         pulseAlertController = PulseAlertController(
             context = applicationContext,
@@ -124,7 +124,7 @@ class PulseMonitoringService : Service() {
         const val NOTIF_ID = 1
 
         fun start(context: Context) {
-            val intent = Intent(context, PulseMonitoringService::class.java)
+            val intent = Intent(context, PulseNotificationService::class.java)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 context.startForegroundService(intent)
             } else {
@@ -133,7 +133,7 @@ class PulseMonitoringService : Service() {
         }
 
         fun stop(context: Context) {
-            context.stopService(Intent(context, PulseMonitoringService::class.java))
+            context.stopService(Intent(context, PulseNotificationService::class.java))
         }
     }
 }

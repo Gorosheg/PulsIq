@@ -1,14 +1,13 @@
 package gorosheg.pulsiq.monitoring.presentation
 
-import android.content.Context
-import gorosheg.pulsiq.common.storage.ThresholdsRepository
 import androidx.lifecycle.viewModelScope
 import gorosheg.pulsiq.bluetooth.HeartRateDevice
+import gorosheg.pulsiq.common.navigation.PulseNotificationInitializer
+import gorosheg.pulsiq.common.storage.ThresholdsRepository
 import gorosheg.pulsiq.common.viewModel.BaseViewModel
 import gorosheg.pulsiq.monitoring.presentation.model.MonitoringEffect
 import gorosheg.pulsiq.monitoring.presentation.model.MonitoringState
 import gorosheg.pulsiq.monitoring.ui.MonitoringUiStateMapper
-import gorosheg.pulsiq.monitoring.ui.heartRateMonitoringService.PulseMonitoringService
 import gorosheg.pulsiq.monitoring.ui.model.MonitoringUiState
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -16,6 +15,7 @@ import kotlinx.coroutines.flow.onEach
 internal class MonitoringViewModel(
     private val heartRateDevice: HeartRateDevice,
     private val thresholdsRepository: ThresholdsRepository,
+    private val pulseNotificationInitializer: PulseNotificationInitializer,
 ) : BaseViewModel<MonitoringState, MonitoringUiState, MonitoringEffect>(
     MonitoringState(),
     MonitoringUiStateMapper()
@@ -26,16 +26,16 @@ internal class MonitoringViewModel(
         subscribeToThresholds()
     }
 
-    fun startMonitoring(context: Context) {
+    fun startMonitoring() {
         state { copy(isTracking = true) }
         heartRateDevice.startScan()
-        PulseMonitoringService.start(context)
+        pulseNotificationInitializer.startPulseNotification()
     }
 
-    fun stopMonitoring(context: Context) {
+    fun stopMonitoring() {
         state { copy(isTracking = false, pulse = 0) }
         heartRateDevice.disconnect()
-        PulseMonitoringService.stop(context)
+        pulseNotificationInitializer.stopPulseNotification()
     }
 
     private fun subscribeToPulse() {

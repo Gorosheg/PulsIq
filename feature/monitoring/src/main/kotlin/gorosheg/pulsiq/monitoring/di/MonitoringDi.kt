@@ -13,7 +13,8 @@ val monitoringModule = module {
     viewModel {
         MonitoringViewModel(
             heartRateDevice = get(),
-            thresholdsRepository = get()
+            thresholdsRepository = get(),
+            pulseNotificationInitializer = get()
         )
     }
 }

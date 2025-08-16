@@ -41,17 +41,6 @@ class BleHeartRateDevice(
 
     private var gatt: BluetoothGatt? = null
 
-    override fun startScan() {
-        val filter = ScanFilter.Builder()
-            .setServiceUuid(ParcelUuid(heartRateServiceUUID))
-            .build()
-        val settings = ScanSettings.Builder()
-            .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
-            .build()
-
-        scanner?.startScan(listOf(filter), settings, scanCallback)
-    }
-
     private val scanCallback = object : ScanCallback() {
         override fun onScanResult(type: Int, result: ScanResult) {
             scanner?.stopScan(this)
@@ -72,7 +61,7 @@ class BleHeartRateDevice(
 
             gatt.setCharacteristicNotification(char, true)
             val descriptor = char.getDescriptor(cccdUUID)
-            descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE)
+            descriptor.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
             gatt.writeDescriptor(descriptor)
         }
 
@@ -94,15 +83,26 @@ class BleHeartRateDevice(
         }
     }
 
-    private fun processHeartRate(value: ByteArray) {
-        val flag = value[0].toInt()
-        val bpm = if (flag and 0x01 == 0) value[1].toInt() and 0xFF
-        else (value[1].toInt() and 0xFF) or ((value[2].toInt() and 0xFF) shl 8)
-        _heartRateFlow.value = bpm
+    override fun startScan() {
+        val filter = ScanFilter.Builder()
+            .setServiceUuid(ParcelUuid(heartRateServiceUUID))
+            .build()
+        val settings = ScanSettings.Builder()
+            .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
+            .build()
+
+        scanner?.startScan(listOf(filter), settings, scanCallback)
     }
 
     override fun disconnect() {
         gatt?.close()
         gatt = null
+    }
+
+    private fun processHeartRate(value: ByteArray) {
+        val flag = value[0].toInt()
+        val bpm = if (flag and 0x01 == 0) value[1].toInt() and 0xFF
+        else (value[1].toInt() and 0xFF) or ((value[2].toInt() and 0xFF) shl 8)
+        _heartRateFlow.value = bpm
     }
 }

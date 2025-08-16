@@ -1,4 +1,4 @@
-package gorosheg.pulsiq.monitoring.presentation
+package gorosheg.pulsiq.ui.alert
 
 import android.content.Context
 import android.media.AudioManager
