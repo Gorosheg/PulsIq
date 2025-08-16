@@ -8,6 +8,7 @@ import gorosheg.pulsiq.monitoring.di.monitoringModule
 import gorosheg.pulsiq.pulsenotification.di.pulseNotificationModule
 import gorosheg.pulsiq.settings.di.settingsModule
 import gorosheg.pulsiq.statistics.di.statisticsModule
+import gorosheg.pulsiq.ui.di.commonUiModule
 import org.koin.core.module.Module
 import org.koin.dsl.module
 
@@ -22,6 +23,7 @@ val appModules: List<Module>
             statisticsModule,
             settingsModule,
             pulseNotificationModule,
+            commonUiModule
         )
     }
 

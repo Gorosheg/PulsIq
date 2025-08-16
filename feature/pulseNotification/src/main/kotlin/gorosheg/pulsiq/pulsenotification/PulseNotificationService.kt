@@ -1,6 +1,5 @@
 package gorosheg.pulsiq.pulsenotification
 
-import android.Manifest
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -8,16 +7,12 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Build
 import android.os.IBinder
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
-import androidx.core.content.ContextCompat
-import gorosheg.pulsiq.bluetooth.HeartRateDevice
+import gorosheg.pulsiq.bluetooth.HeartBeatDataSource
 import gorosheg.pulsiq.common.navigation.AppEnabledProvider
-import gorosheg.pulsiq.common.storage.ThresholdsRepository
-import gorosheg.pulsiq.ui.alert.PulseAlertController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -29,27 +24,16 @@ import org.koin.android.ext.android.get
 class PulseNotificationService : Service() {
 
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-
     private lateinit var notificationManager: NotificationManager
-    private val heartRateDevice by lazy { get<HeartRateDevice>() }
-    private lateinit var pulseAlertController: PulseAlertController
+    private val heartBeatDataSource by lazy { get<HeartBeatDataSource>() }
     private lateinit var remoteViews: RemoteViews
     private lateinit var notificationBuilder: NotificationCompat.Builder
-    private var vibratorPermission: Boolean = false
     private val appEnabledProvider: AppEnabledProvider by lazy { get() }
 
     override fun onCreate() {
         super.onCreate()
         notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-        val thresholdsRepository: ThresholdsRepository = get()
-        pulseAlertController = PulseAlertController(
-            context = applicationContext,
-            thresholdsRepository = thresholdsRepository,
-            scope = serviceScope
-        )
         remoteViews = RemoteViews(packageName, R.layout.notification_pulse)
-        vibratorPermission =
-            ContextCompat.checkSelfPermission(this, Manifest.permission.VIBRATE) == PackageManager.PERMISSION_GRANTED
 
         createNotificationChannel()
 
@@ -82,13 +66,9 @@ class PulseNotificationService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         startForeground(NOTIF_ID, notificationBuilder.build())
         serviceScope.launch {
-            heartRateDevice.heartRateFlow.collectLatest { bpm ->
+            heartBeatDataSource.heartRateFlow.collectLatest { bpm ->
                 remoteViews.setTextViewText(R.id.pulseText, "$bpm bpm")
                 notificationManager.notify(NOTIF_ID, notificationBuilder.build())
-
-                if (vibratorPermission) {
-                    pulseAlertController.onPulseChanged(bpm)
-                }
             }
         }
 
@@ -97,7 +77,7 @@ class PulseNotificationService : Service() {
 
     override fun onDestroy() {
         if (!appEnabledProvider.isAppEnabled) {
-            heartRateDevice.disconnect()
+            heartBeatDataSource.disconnect()
         }
         serviceScope.cancel()
 

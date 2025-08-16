@@ -1,24 +1,32 @@
 package gorosheg.pulsiq.ui.alert
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
 import android.media.AudioManager
 import android.media.ToneGenerator
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
+import androidx.core.content.ContextCompat
+import gorosheg.pulsiq.bluetooth.HeartBeatDataSource
 import gorosheg.pulsiq.common.storage.ThresholdsRepository
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-class PulseAlertController(
+class PulseAlertRepository(
     private val context: Context,
-    thresholdsRepository: ThresholdsRepository,
-    scope: CoroutineScope
+    private val heartBeatDataSource: HeartBeatDataSource,
+    private val thresholdsRepository: ThresholdsRepository,
 ) {
 
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private var inHighAlertState = false
+    private var vibratorPermission: Boolean = false
 
     @Volatile
     private var lowerThreshold: Int = thresholdsRepository.getLowerThreshold()
@@ -26,7 +34,12 @@ class PulseAlertController(
     @Volatile
     private var upperThreshold: Int = thresholdsRepository.getUpperThreshold()
 
-    init {
+    fun initialize() {
+        vibratorPermission = ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.VIBRATE
+        ) == PackageManager.PERMISSION_GRANTED
+
         scope.launch {
             thresholdsRepository.lowerThresholdFlow.collectLatest { lower ->
                 lowerThreshold = lower
@@ -35,6 +48,18 @@ class PulseAlertController(
         scope.launch {
             thresholdsRepository.upperThresholdFlow.collectLatest { upper ->
                 upperThreshold = upper
+            }
+        }
+
+        subscribeToPulse()
+    }
+
+    private fun subscribeToPulse() {
+        scope.launch {
+            heartBeatDataSource.heartRateFlow.collectLatest { bpm ->
+                if (vibratorPermission) {
+                    onPulseChanged(bpm)
+                }
             }
         }
     }

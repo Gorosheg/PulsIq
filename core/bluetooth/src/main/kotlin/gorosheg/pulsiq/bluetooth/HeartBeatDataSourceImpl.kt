@@ -24,9 +24,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import java.util.UUID
 
-class BleHeartRateDevice(
+class HeartBeatDataSourceImpl(
     private val context: Context
-) : HeartRateDevice {
+) : HeartBeatDataSource {
 
     private val _heartRateFlow = MutableStateFlow(0)
     override val heartRateFlow: StateFlow<Int> = _heartRateFlow.asStateFlow()
