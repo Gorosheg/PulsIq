@@ -16,7 +16,10 @@ import kotlinx.coroutines.flow.onEach
 internal class MonitoringViewModel(
     private val heartRateDevice: HeartRateDevice,
     private val thresholdsRepository: ThresholdsRepository,
-) : BaseViewModel<MonitoringState, MonitoringUiState, MonitoringEffect>(MonitoringState(), MonitoringUiStateMapper()) {
+) : BaseViewModel<MonitoringState, MonitoringUiState, MonitoringEffect>(
+    MonitoringState(),
+    MonitoringUiStateMapper()
+) {
 
     init {
         subscribeToPulse()
@@ -47,11 +50,11 @@ internal class MonitoringViewModel(
 
     private fun subscribeToThresholds() {
         thresholdsRepository.lowerThresholdFlow
-            .onEach { lower -> state { copy(lowerThreshold = lower) } }
+            .onEach { lower -> state { copy(lowerThreshold = lower / 100 * 70) } }
             .launchIn(viewModelScope)
 
         thresholdsRepository.upperThresholdFlow
-            .onEach { upper -> state { copy(upperThreshold = upper) } }
+            .onEach { upper -> state { copy(upperThreshold = upper / 100 * 80) } }
             .launchIn(viewModelScope)
     }
 }

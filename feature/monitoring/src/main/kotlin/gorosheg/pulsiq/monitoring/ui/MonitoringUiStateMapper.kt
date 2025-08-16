@@ -10,15 +10,25 @@ internal class MonitoringUiStateMapper : UiStateMapper<MonitoringState, Monitori
     override fun MonitoringState.map(): MonitoringUiState {
         return MonitoringUiState(
             isTracking = isTracking,
+            lowerThreshold = lowerThreshold,
+            upperThreshold = upperThreshold,
             pulse = pulse,
-            heartColor = defineHeartColor(pulse),
+            heartColor = defineHeartColor(
+                pulse,
+                lowerThreshold,
+                upperThreshold
+            ),
             heartRateSpeed = defineHeartRateSpeed(pulse),
         )
     }
 
-    private fun defineHeartColor(pulse: Int): Color {
-        val minPulse = 80
-        val maxPulse = 110
+    private fun defineHeartColor(
+        pulse: Int,
+        lowerThreshold: Int,
+        upperThreshold: Int
+    ): Color {
+        val minPulse = lowerThreshold
+        val maxPulse = upperThreshold
         val clamped = pulse.coerceIn(minPulse, maxPulse)
         val fraction = (clamped - minPulse).toFloat() / (maxPulse - minPulse)
 
@@ -39,7 +49,12 @@ internal class MonitoringUiStateMapper : UiStateMapper<MonitoringState, Monitori
         return Color(interpolatedArgb)
     }
 
-    private fun interpolateColorHSL(start: Float, end: Float, fraction: Float, isHue: Boolean): Float {
+    private fun interpolateColorHSL(
+        start: Float,
+        end: Float,
+        fraction: Float,
+        isHue: Boolean
+    ): Float {
         return if (isHue) {
             val diff = ((end - start + 360) % 360).let { if (it > 180) it - 360 else it }
             (start + diff * fraction + 360) % 360
