@@ -24,7 +24,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import java.util.UUID
 
-class HeartBeatDataSourceImpl(
+internal class HeartBeatDataSourceImpl(
     private val context: Context
 ) : HeartBeatDataSource {
 
@@ -41,14 +41,8 @@ class HeartBeatDataSourceImpl(
 
     private var gatt: BluetoothGatt? = null
 
-    private val scanCallback = object : ScanCallback() {
-        override fun onScanResult(type: Int, result: ScanResult) {
-            scanner?.stopScan(this)
-            gatt = result.device.connectGatt(context, false, gattCallback)
-        }
-    }
-
     private val gattCallback = object : BluetoothGattCallback() {
+
         override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
             if (newState == BluetoothProfile.STATE_CONNECTED) {
                 gatt.discoverServices()
@@ -56,8 +50,10 @@ class HeartBeatDataSourceImpl(
         }
 
         override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
-            val char = gatt.getService(heartRateServiceUUID)
-                ?.getCharacteristic(heartRateMeasurementUUID) ?: return
+            val char = gatt
+                .getService(heartRateServiceUUID)
+                ?.getCharacteristic(heartRateMeasurementUUID)
+                ?: return
 
             gatt.setCharacteristicNotification(char, true)
             val descriptor = char.getDescriptor(cccdUUID)
@@ -65,12 +61,11 @@ class HeartBeatDataSourceImpl(
             gatt.writeDescriptor(descriptor)
         }
 
-        @Deprecated("Deprecated in API 33+")
         override fun onCharacteristicChanged(
             gatt: BluetoothGatt,
             characteristic: BluetoothGattCharacteristic
         ) {
-            processHeartRate(characteristic.value)
+            characteristic.value.buildHeartRate()
         }
 
         @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -79,7 +74,15 @@ class HeartBeatDataSourceImpl(
             characteristic: BluetoothGattCharacteristic,
             value: ByteArray
         ) {
-            processHeartRate(value)
+            value.buildHeartRate()
+        }
+    }
+
+    private val scanCallback = object : ScanCallback() {
+
+        override fun onScanResult(type: Int, result: ScanResult) {
+            scanner?.stopScan(this)
+            gatt = result.device.connectGatt(context, false, gattCallback)
         }
     }
 
@@ -87,6 +90,7 @@ class HeartBeatDataSourceImpl(
         val filter = ScanFilter.Builder()
             .setServiceUuid(ParcelUuid(heartRateServiceUUID))
             .build()
+
         val settings = ScanSettings.Builder()
             .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
             .build()
@@ -99,10 +103,14 @@ class HeartBeatDataSourceImpl(
         gatt = null
     }
 
-    private fun processHeartRate(value: ByteArray) {
-        val flag = value[0].toInt()
-        val bpm = if (flag and 0x01 == 0) value[1].toInt() and 0xFF
-        else (value[1].toInt() and 0xFF) or ((value[2].toInt() and 0xFF) shl 8)
+    private fun ByteArray.buildHeartRate() {
+        val flag = this[0].toInt()
+        val bpm =
+            if (flag and 0x01 == 0) {
+                this[1].toInt() and 0xFF
+            } else {
+                (this[1].toInt() and 0xFF) or ((this[2].toInt() and 0xFF) shl 8)
+            }
         _heartRateFlow.value = bpm
     }
 }

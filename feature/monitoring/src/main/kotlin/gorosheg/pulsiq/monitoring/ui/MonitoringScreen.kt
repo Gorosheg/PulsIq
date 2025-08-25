@@ -7,7 +7,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalContext
 import cafe.adriel.voyager.core.screen.Screen
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
@@ -21,7 +20,6 @@ internal class MonitoringScreen : Screen {
     override fun Content() {
         val viewModel = getViewModel<MonitoringViewModel>()
         val state by viewModel.uiState.collectAsState()
-        val context = LocalContext.current.applicationContext
 
         val permissions = remember {
             mutableListOf(

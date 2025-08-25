@@ -13,7 +13,7 @@ import gorosheg.pulsiq.statistics.navigation.StatisticsProvider
 import org.koin.compose.koinInject
 
 object StatisticsTab : Tab {
-    private fun readResolve(): Any = SettingsTab
+    private fun readResolve(): Any = StatisticsTab
 
     override val options: TabOptions
         @Composable

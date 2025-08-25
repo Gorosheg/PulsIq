@@ -10,8 +10,6 @@ internal class MonitoringUiStateMapper : UiStateMapper<MonitoringState, Monitori
     override fun MonitoringState.map(): MonitoringUiState {
         return MonitoringUiState(
             isTracking = isTracking,
-            lowerThreshold = lowerThreshold,
-            upperThreshold = upperThreshold,
             pulse = pulse,
             heartColor = defineHeartColor(
                 pulse,

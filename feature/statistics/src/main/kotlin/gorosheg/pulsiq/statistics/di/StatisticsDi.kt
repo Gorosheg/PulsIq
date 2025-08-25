@@ -7,6 +7,8 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val statisticsModule = module {
+
     factory { StatisticsProvider(::StatisticsScreen) }
+
     viewModel { StatisticsViewModel() }
 }

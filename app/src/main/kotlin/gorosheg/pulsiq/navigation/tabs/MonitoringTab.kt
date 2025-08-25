@@ -13,7 +13,7 @@ import gorosheg.pulsiq.monitoring.navigation.MonitoringProvider
 import org.koin.compose.koinInject
 
 object MonitoringTab : Tab {
-    private fun readResolve(): Any = SettingsTab
+    private fun readResolve(): Any = MonitoringTab
 
     override val options: TabOptions
         @Composable

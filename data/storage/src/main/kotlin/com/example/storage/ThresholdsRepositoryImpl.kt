@@ -7,10 +7,10 @@ import gorosheg.pulsiq.common.storage.ThresholdsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-class ThresholdsRepositoryImpl(context: Context) : ThresholdsRepository {
+internal class ThresholdsRepositoryImpl(context: Context) : ThresholdsRepository {
 
     private val prefs: SharedPreferences = context.getSharedPreferences(
-        "thresholds",
+        THRESHOLDS,
         Context.MODE_PRIVATE
     )
 
@@ -46,5 +46,6 @@ class ThresholdsRepositoryImpl(context: Context) : ThresholdsRepository {
     companion object {
         private const val KEY_LOWER = "lowerThreshold"
         private const val KEY_UPPER = "upperThreshold"
+        private const val THRESHOLDS = "thresholds"
     }
 }

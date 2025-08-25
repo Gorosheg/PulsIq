@@ -5,8 +5,6 @@ import gorosheg.pulsiq.ui.Blue
 
 internal data class MonitoringUiState(
     val isTracking: Boolean = false,
-    val lowerThreshold: Int = 0,
-    val upperThreshold: Int = 0,
     val pulse: Int = 0,
     val heartColor: Color = Blue,
     val heartRateSpeed: Int = 1000,

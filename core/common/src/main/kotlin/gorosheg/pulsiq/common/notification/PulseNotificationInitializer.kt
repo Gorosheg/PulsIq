@@ -1,4 +1,4 @@
-package gorosheg.pulsiq.common.navigation
+package gorosheg.pulsiq.common.notification
 
 interface PulseNotificationInitializer {
 

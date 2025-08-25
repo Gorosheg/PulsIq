@@ -7,7 +7,6 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.os.IBinder
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
@@ -19,24 +18,59 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import org.koin.android.ext.android.get
+import org.koin.android.ext.android.inject
 
-class PulseNotificationService : Service() {
+internal class PulseNotificationService : Service() {
 
-    private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-    private lateinit var notificationManager: NotificationManager
-    private val heartBeatDataSource by lazy { get<HeartBeatDataSource>() }
-    private lateinit var remoteViews: RemoteViews
+    private val heartBeatDataSource: HeartBeatDataSource by inject()
+    private val appEnabledProvider: AppEnabledProvider by inject()
+    private val notificationManager by lazy { getSystemService(NOTIFICATION_SERVICE) as NotificationManager }
+    private val remoteViews by lazy { RemoteViews(packageName, R.layout.notification_pulse) }
     private lateinit var notificationBuilder: NotificationCompat.Builder
-    private val appEnabledProvider: AppEnabledProvider by lazy { get() }
+    private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     override fun onCreate() {
         super.onCreate()
-        notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-        remoteViews = RemoteViews(packageName, R.layout.notification_pulse)
 
         createNotificationChannel()
+        buildNotification()
+    }
 
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        startForeground(NOTIF_ID, notificationBuilder.build())
+        serviceScope.launch {
+            heartBeatDataSource.heartRateFlow.collectLatest { bpm ->
+                remoteViews.setTextViewText(R.id.pulseText, getString(R.string.bpm, bpm))
+                notificationManager.notify(NOTIF_ID, notificationBuilder.build())
+            }
+        }
+
+        return START_STICKY
+    }
+
+    override fun onDestroy() {
+        if (!appEnabledProvider.isAppEnabled) {
+            heartBeatDataSource.disconnect()
+        }
+        serviceScope.cancel()
+
+        super.onDestroy()
+    }
+
+    override fun onBind(intent: Intent?): IBinder? = null
+
+    private fun createNotificationChannel() {
+        val channel = NotificationChannel(
+            CHANNEL_ID,
+            CHANNEL_NAME,
+            NotificationManager.IMPORTANCE_HIGH
+        ).apply {
+            lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+        }
+        notificationManager.createNotificationChannel(channel)
+    }
+
+    private fun buildNotification() {
         val dismissIntent = Intent(this, NotificationDismissedReceiver::class.java)
         val deletePendingIntent = PendingIntent.getBroadcast(
             this,
@@ -63,53 +97,14 @@ class PulseNotificationService : Service() {
             .setContentIntent(pendingIntent)
     }
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        startForeground(NOTIF_ID, notificationBuilder.build())
-        serviceScope.launch {
-            heartBeatDataSource.heartRateFlow.collectLatest { bpm ->
-                remoteViews.setTextViewText(R.id.pulseText, "$bpm bpm")
-                notificationManager.notify(NOTIF_ID, notificationBuilder.build())
-            }
-        }
-
-        return START_STICKY
-    }
-
-    override fun onDestroy() {
-        if (!appEnabledProvider.isAppEnabled) {
-            heartBeatDataSource.disconnect()
-        }
-        serviceScope.cancel()
-
-        super.onDestroy()
-    }
-
-    override fun onBind(intent: Intent?): IBinder? = null
-
-    private fun createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                CHANNEL_ID,
-                "Pulse Monitoring",
-                NotificationManager.IMPORTANCE_HIGH
-            ).apply {
-                lockscreenVisibility = Notification.VISIBILITY_PUBLIC
-            }
-            notificationManager.createNotificationChannel(channel)
-        }
-    }
-
     companion object {
-        const val CHANNEL_ID = "pulse_monitor_channel"
-        const val NOTIF_ID = 1
+        private const val CHANNEL_ID = "pulse_monitor_channel"
+        private const val CHANNEL_NAME = "pulse Monitoring"
+        private const val NOTIF_ID = 1
 
         fun start(context: Context) {
             val intent = Intent(context, PulseNotificationService::class.java)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                context.startForegroundService(intent)
-            } else {
-                context.startService(intent)
-            }
+            context.startForegroundService(intent)
         }
 
         fun stop(context: Context) {
@@ -117,4 +112,3 @@ class PulseNotificationService : Service() {
         }
     }
 }
-

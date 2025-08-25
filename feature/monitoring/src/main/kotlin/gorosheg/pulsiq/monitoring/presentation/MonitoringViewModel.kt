@@ -2,7 +2,7 @@ package gorosheg.pulsiq.monitoring.presentation
 
 import androidx.lifecycle.viewModelScope
 import gorosheg.pulsiq.bluetooth.HeartBeatDataSource
-import gorosheg.pulsiq.common.navigation.PulseNotificationInitializer
+import gorosheg.pulsiq.common.notification.PulseNotificationInitializer
 import gorosheg.pulsiq.common.storage.ThresholdsRepository
 import gorosheg.pulsiq.common.viewModel.BaseViewModel
 import gorosheg.pulsiq.monitoring.presentation.model.MonitoringEffect
@@ -23,19 +23,18 @@ internal class MonitoringViewModel(
 
     init {
         subscribeToPulse()
-        subscribeToThresholds()
     }
 
     fun startMonitoring() {
-        state { copy(isTracking = true) }
         heartBeatDataSource.startScan()
         pulseNotificationInitializer.startPulseNotification()
+        state { copy(isTracking = true) }
     }
 
     fun stopMonitoring() {
-        state { copy(isTracking = false, pulse = 0) }
         heartBeatDataSource.disconnect()
         pulseNotificationInitializer.stopPulseNotification()
+        state { copy(isTracking = false, pulse = 0) }
     }
 
     private fun subscribeToPulse() {
@@ -45,16 +44,6 @@ internal class MonitoringViewModel(
                     copy(pulse = it)
                 }
             }
-            .launchIn(viewModelScope)
-    }
-
-    private fun subscribeToThresholds() {
-        thresholdsRepository.lowerThresholdFlow
-            .onEach { lower -> state { copy(lowerThreshold = lower / 100 * 70) } }
-            .launchIn(viewModelScope)
-
-        thresholdsRepository.upperThresholdFlow
-            .onEach { upper -> state { copy(upperThreshold = upper / 100 * 80) } }
             .launchIn(viewModelScope)
     }
 }
