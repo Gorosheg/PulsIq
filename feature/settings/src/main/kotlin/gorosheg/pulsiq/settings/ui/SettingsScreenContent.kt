@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import gorosheg.pulsiq.settings.ui.model.SettingsUiState
 import gorosheg.pulsiq.ui.BlueGray
@@ -75,4 +76,20 @@ private fun SettingCard(
             )
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun SettingsScreenContentPreview() {
+    SettingsScreenContent(
+        state = SettingsUiState(
+            settingItems = listOf(
+                SettingsUiState.SettingItem(
+                    id = 0,
+                    title = "Границы пульса"
+                ),
+            )
+        ),
+        onSettingClick = {}
+    )
 }

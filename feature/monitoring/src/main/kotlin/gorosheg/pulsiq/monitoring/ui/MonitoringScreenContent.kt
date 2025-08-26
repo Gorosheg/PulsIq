@@ -29,8 +29,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,8 +41,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.res.stringResource
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import gorosheg.pulsiq.monitoring.R
 import com.google.accompanist.permissions.MultiplePermissionsState
+import com.google.accompanist.permissions.PermissionState
 import gorosheg.pulsiq.monitoring.ui.model.MonitoringUiState
 import gorosheg.pulsiq.ui.Blue
 import gorosheg.pulsiq.ui.Crimson
@@ -59,23 +65,13 @@ internal fun MonitoringScreenContent(
         label = "PulseColor"
     )
 
-    val scaleAnim = remember { Animatable(1f) }
-    val currentSpeed by rememberUpdatedState(state.heartRateSpeed)
+    var scaleAnimation by remember { mutableFloatStateOf(1f) }
 
-    LaunchedEffect(state.pulse > 0) {
-        if (state.pulse <= 0) {
-            scaleAnim.animateTo(
-                1f,
-                animationSpec = tween(300)
-            )
-        } else {
-            while (true) {
-                val half = (currentSpeed / 2).coerceAtLeast(50)
-                scaleAnim.animateTo(1.3f, tween(durationMillis = half, easing = EaseInOut))
-                scaleAnim.animateTo(1f, tween(durationMillis = half, easing = EaseInOut))
-            }
-        }
-    }
+    HeartRateAnimations(
+        pulse = state.pulse,
+        heartRateSpeed = state.heartRateSpeed,
+        onScaleChange = { scaleAnimation = it }
+    )
 
     Surface(modifier = Modifier.fillMaxSize()) {
         if (multiplePermissionState.allPermissionsGranted) {
@@ -88,7 +84,6 @@ internal fun MonitoringScreenContent(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Box(modifier = Modifier.fillMaxSize()) {
-
                     Column(
                         modifier = Modifier
                             .align(Alignment.Center)
@@ -96,76 +91,215 @@ internal fun MonitoringScreenContent(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
-                        Box(contentAlignment = Alignment.Center) {
-                            Icon(
-                                imageVector = Icons.Filled.Favorite,
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .size(280.dp)
-                                    .graphicsLayer {
-                                        scaleX = scaleAnim.value
-                                        scaleY = scaleAnim.value
-                                    },
-                                tint = animatedColor
-                            )
-
-                            Text(
-                                text = state.pulse.toString(),
-                                fontSize = 72.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.Black,
-                            )
-                        }
+                        HeartRateDisplay(
+                            pulse = state.pulse,
+                            heartColor = animatedColor,
+                            scaleAnimation = scaleAnimation
+                        )
                     }
 
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 32.dp)
-                            .align(Alignment.BottomCenter),
-                        horizontalArrangement = Arrangement.Center
+                    Box(
+                        modifier = Modifier.align(Alignment.BottomCenter)
                     ) {
-                        if (!state.isTracking) {
-                            Button(
-                                onClick = startTracking,
-                                modifier = Modifier
-                                    .height(64.dp)
-                                    .width(220.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = Blue)
-                            ) {
-                                Icon(Icons.Default.PlayArrow, contentDescription = null)
-                                Spacer(Modifier.width(12.dp))
-                                Text("Старт", fontSize = 20.sp, fontWeight = FontWeight.Medium)
-                            }
-                        } else {
-                            OutlinedButton(
-                                onClick = stopTracking,
-                                modifier = Modifier
-                                    .height(64.dp)
-                                    .width(220.dp),
-                                border = BorderStroke(3.dp, Crimson),
-                                colors = ButtonDefaults.outlinedButtonColors(contentColor = Crimson)
-                            ) {
-                                Icon(Icons.Default.Close, contentDescription = null)
-                                Spacer(Modifier.width(12.dp))
-                                Text("Остановить", fontSize = 20.sp, fontWeight = FontWeight.Medium)
-                            }
-                        }
+                        ControlButtons(
+                            isTracking = state.isTracking,
+                            startTracking = startTracking,
+                            stopTracking = stopTracking
+                        )
                     }
                 }
             }
         } else {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "Разрешения Bluetooth и геолокации не предоставлены",
-                    fontSize = 20.sp,
-                    color = Color.Gray,
-                    textAlign = TextAlign.Center
-                )
+            PermissionDeniedContent()
+        }
+    }
+}
+
+
+@Composable
+private fun HeartRateAnimations(
+    pulse: Int,
+    heartRateSpeed: Int,
+    onScaleChange: (Float) -> Unit
+) {
+    val scaleAnimation = remember { Animatable(1f) }
+    val currentSpeed by rememberUpdatedState(heartRateSpeed)
+
+    LaunchedEffect(pulse > 0) {
+        if (pulse <= 0) {
+            scaleAnimation.animateTo(
+                1f,
+                animationSpec = tween(300)
+            )
+        } else {
+            while (true) {
+                val half = (currentSpeed / 2).coerceAtLeast(50)
+                scaleAnimation.animateTo(1.3f, tween(durationMillis = half, easing = EaseInOut))
+                scaleAnimation.animateTo(1f, tween(durationMillis = half, easing = EaseInOut))
             }
         }
     }
+
+    LaunchedEffect(scaleAnimation.value) {
+        onScaleChange(scaleAnimation.value)
+    }
+}
+
+@Composable
+private fun HeartRateDisplay(
+    pulse: Int,
+    heartColor: Color,
+    scaleAnimation: Float
+) {
+    Box(contentAlignment = Alignment.Center) {
+        Icon(
+            imageVector = Icons.Filled.Favorite,
+            contentDescription = null,
+            modifier = Modifier
+                .size(280.dp)
+                .graphicsLayer {
+                    scaleX = scaleAnimation
+                    scaleY = scaleAnimation
+                },
+            tint = heartColor
+        )
+
+        Text(
+            text = pulse.toString(),
+            fontSize = 72.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.Black,
+        )
+    }
+}
+
+@Composable
+private fun ControlButtons(
+    isTracking: Boolean,
+    startTracking: () -> Unit,
+    stopTracking: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 32.dp),
+        horizontalArrangement = Arrangement.Center
+    ) {
+        if (!isTracking) {
+            Button(
+                onClick = startTracking,
+                modifier = Modifier
+                    .height(64.dp)
+                    .width(220.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Blue)
+            ) {
+                Icon(Icons.Default.PlayArrow, contentDescription = null)
+                Spacer(Modifier.width(12.dp))
+                Text(stringResource(R.string.start_button_text), fontSize = 20.sp, fontWeight = FontWeight.Medium)
+            }
+        } else {
+            OutlinedButton(
+                onClick = stopTracking,
+                modifier = Modifier
+                    .height(64.dp)
+                    .width(220.dp),
+                border = BorderStroke(3.dp, Crimson),
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = Crimson)
+            ) {
+                Icon(Icons.Default.Close, contentDescription = null)
+                Spacer(Modifier.width(12.dp))
+                Text(stringResource(R.string.stop_button_text), fontSize = 20.sp, fontWeight = FontWeight.Medium)
+            }
+        }
+    }
+}
+
+@Composable
+private fun PermissionDeniedContent() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = stringResource(R.string.permissions_denied_message),
+            fontSize = 20.sp,
+            color = Color.Gray,
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
+@OptIn(ExperimentalPermissionsApi::class)
+@Preview(showBackground = true)
+@Composable
+private fun MonitoringScreenContentPreview() {
+    val mockPermissionState = object : MultiplePermissionsState {
+        override val allPermissionsGranted: Boolean = true
+        override val permissions: List<PermissionState> = emptyList()
+        override val revokedPermissions: List<PermissionState> = emptyList()
+        override val shouldShowRationale: Boolean = false
+        override fun launchMultiplePermissionRequest() {}
+    }
+    
+    MonitoringScreenContent(
+        multiplePermissionState = mockPermissionState,
+        state = MonitoringUiState(
+            isTracking = false,
+            pulse = 0,
+            heartColor = Blue,
+            heartRateSpeed = 100
+        ),
+        startTracking = {},
+        stopTracking = {}
+    )
+}
+
+@OptIn(ExperimentalPermissionsApi::class)
+@Preview(showBackground = true, name = "Tracking State")
+@Composable
+private fun MonitoringScreenContentTrackingPreview() {
+    val mockPermissionState = object : MultiplePermissionsState {
+        override val allPermissionsGranted: Boolean = true
+        override val permissions: List<PermissionState> = emptyList()
+        override val revokedPermissions: List<PermissionState> = emptyList()
+        override val shouldShowRationale: Boolean = false
+        override fun launchMultiplePermissionRequest() {}
+    }
+    
+    MonitoringScreenContent(
+        multiplePermissionState = mockPermissionState,
+        state = MonitoringUiState(
+            isTracking = true,
+            pulse = 120,
+            heartColor = Crimson,
+            heartRateSpeed = 100
+        ),
+        startTracking = {},
+        stopTracking = {}
+    )
+}
+
+@OptIn(ExperimentalPermissionsApi::class)
+@Preview(showBackground = true, name = "No Permissions")
+@Composable
+private fun MonitoringScreenContentNoPermissionsPreview() {
+    val mockPermissionState = object : MultiplePermissionsState {
+        override val allPermissionsGranted: Boolean = false
+        override val permissions: List<PermissionState> = emptyList()
+        override val revokedPermissions: List<PermissionState> = emptyList()
+        override val shouldShowRationale: Boolean = true
+        override fun launchMultiplePermissionRequest() {}
+    }
+    
+    MonitoringScreenContent(
+        multiplePermissionState = mockPermissionState,
+        state = MonitoringUiState(
+            isTracking = false,
+            pulse = 0,
+            heartColor = Blue,
+            heartRateSpeed = 100
+        ),
+        startTracking = {},
+        stopTracking = {}
+    )
 }

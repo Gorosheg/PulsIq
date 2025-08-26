@@ -45,5 +45,4 @@ internal class SettingsScreen : Screen {
             )
         }
     }
-
 }

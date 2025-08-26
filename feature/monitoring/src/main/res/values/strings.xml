@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="start_button_text">Старт</string>
+    <string name="stop_button_text">Остановить</string>
+    <string name="permissions_denied_message">Разрешения Bluetooth и геолокации не предоставлены</string>
+</resources>
