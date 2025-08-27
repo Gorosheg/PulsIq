@@ -11,34 +11,17 @@ import cafe.adriel.voyager.core.screen.Screen
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import gorosheg.pulsiq.monitoring.presentation.MonitoringViewModel
-import org.koin.androidx.compose.getViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalPermissionsApi::class)
 internal class MonitoringScreen : Screen {
 
     @Composable
     override fun Content() {
-        val viewModel = getViewModel<MonitoringViewModel>()
+        val viewModel: MonitoringViewModel = koinViewModel()
         val state by viewModel.uiState.collectAsState()
 
-        val permissions = remember {
-            mutableListOf(
-                Manifest.permission.ACCESS_FINE_LOCATION,
-            ).apply {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    add(Manifest.permission.BLUETOOTH_SCAN)
-                    add(Manifest.permission.BLUETOOTH_CONNECT)
-                } else {
-                    add(Manifest.permission.BLUETOOTH)
-                    add(Manifest.permission.BLUETOOTH_ADMIN)
-                }
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    add(Manifest.permission.POST_NOTIFICATIONS)
-                }
-                add(Manifest.permission.VIBRATE)
-            }
-        }
+        val permissions = remember { buildPermissionList() }
 
         val multiplePermissionState = rememberMultiplePermissionsState(permissions)
 
@@ -52,5 +35,22 @@ internal class MonitoringScreen : Screen {
             startTracking = viewModel::startMonitoring,
             stopTracking = viewModel::stopMonitoring
         )
+    }
+
+    private fun buildPermissionList(): MutableList<String> = mutableListOf(
+        Manifest.permission.ACCESS_FINE_LOCATION,
+        Manifest.permission.VIBRATE
+    ).apply {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            add(Manifest.permission.BLUETOOTH_SCAN)
+            add(Manifest.permission.BLUETOOTH_CONNECT)
+        } else {
+            add(Manifest.permission.BLUETOOTH)
+            add(Manifest.permission.BLUETOOTH_ADMIN)
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            add(Manifest.permission.POST_NOTIFICATIONS)
+        }
     }
 }

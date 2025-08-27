@@ -37,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -91,7 +92,7 @@ internal fun MonitoringScreenContent(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
-                        HeartRateDisplay(
+                        HeartDisplay(
                             pulse = state.pulse,
                             heartColor = animatedColor,
                             scaleAnimation = scaleAnimation
@@ -101,7 +102,7 @@ internal fun MonitoringScreenContent(
                     Box(
                         modifier = Modifier.align(Alignment.BottomCenter)
                     ) {
-                        ControlButtons(
+                        ToggleButton(
                             isTracking = state.isTracking,
                             startTracking = startTracking,
                             stopTracking = stopTracking
@@ -146,7 +147,7 @@ private fun HeartRateAnimations(
 }
 
 @Composable
-private fun HeartRateDisplay(
+private fun HeartDisplay(
     pulse: Int,
     heartColor: Color,
     scaleAnimation: Float
@@ -174,7 +175,7 @@ private fun HeartRateDisplay(
 }
 
 @Composable
-private fun ControlButtons(
+private fun ToggleButton(
     isTracking: Boolean,
     startTracking: () -> Unit,
     stopTracking: () -> Unit
@@ -195,7 +196,7 @@ private fun ControlButtons(
             ) {
                 Icon(Icons.Default.PlayArrow, contentDescription = null)
                 Spacer(Modifier.width(12.dp))
-                Text(stringResource(R.string.start_button_text), fontSize = 20.sp, fontWeight = FontWeight.Medium)
+                ToggleButtonContent(Icons.Default.PlayArrow, R.string.start_button_text)
             }
         } else {
             OutlinedButton(
@@ -206,12 +207,21 @@ private fun ControlButtons(
                 border = BorderStroke(3.dp, Crimson),
                 colors = ButtonDefaults.outlinedButtonColors(contentColor = Crimson)
             ) {
-                Icon(Icons.Default.Close, contentDescription = null)
-                Spacer(Modifier.width(12.dp))
-                Text(stringResource(R.string.stop_button_text), fontSize = 20.sp, fontWeight = FontWeight.Medium)
+                ToggleButtonContent(Icons.Default.Close, R.string.stop_button_text)
             }
         }
     }
+}
+
+@Composable
+fun ToggleButtonContent(icon: ImageVector, text: Int) {
+    Icon(icon, contentDescription = null)
+    Spacer(Modifier.width(12.dp))
+    Text(
+        stringResource(text),
+        fontSize = 20.sp,
+        fontWeight = FontWeight.Medium
+    )
 }
 
 @Composable
@@ -240,7 +250,7 @@ private fun MonitoringScreenContentPreview() {
         override val shouldShowRationale: Boolean = false
         override fun launchMultiplePermissionRequest() {}
     }
-    
+
     MonitoringScreenContent(
         multiplePermissionState = mockPermissionState,
         state = MonitoringUiState(
@@ -265,7 +275,7 @@ private fun MonitoringScreenContentTrackingPreview() {
         override val shouldShowRationale: Boolean = false
         override fun launchMultiplePermissionRequest() {}
     }
-    
+
     MonitoringScreenContent(
         multiplePermissionState = mockPermissionState,
         state = MonitoringUiState(
@@ -290,7 +300,7 @@ private fun MonitoringScreenContentNoPermissionsPreview() {
         override val shouldShowRationale: Boolean = true
         override fun launchMultiplePermissionRequest() {}
     }
-    
+
     MonitoringScreenContent(
         multiplePermissionState = mockPermissionState,
         state = MonitoringUiState(
