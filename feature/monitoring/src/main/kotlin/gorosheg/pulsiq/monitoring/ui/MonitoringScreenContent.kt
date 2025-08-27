@@ -7,7 +7,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,6 +23,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,19 +35,19 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.res.stringResource
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import gorosheg.pulsiq.monitoring.R
 import com.google.accompanist.permissions.MultiplePermissionsState
 import com.google.accompanist.permissions.PermissionState
+import gorosheg.pulsiq.monitoring.R
 import gorosheg.pulsiq.monitoring.ui.model.MonitoringUiState
 import gorosheg.pulsiq.ui.Blue
 import gorosheg.pulsiq.ui.Crimson
@@ -76,38 +76,26 @@ internal fun MonitoringScreenContent(
 
     Surface(modifier = Modifier.fillMaxSize()) {
         if (multiplePermissionState.allPermissionsGranted) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 32.dp)
-                    .padding(top = 48.dp, bottom = 32.dp),
-                verticalArrangement = Arrangement.SpaceBetween,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    Column(
-                        modifier = Modifier
-                            .align(Alignment.Center)
-                            .padding(horizontal = 32.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        HeartDisplay(
-                            pulse = state.pulse,
-                            heartColor = animatedColor,
-                            scaleAnimation = scaleAnimation
-                        )
-                    }
-
-                    Box(
-                        modifier = Modifier.align(Alignment.BottomCenter)
-                    ) {
-                        ToggleButton(
-                            isTracking = state.isTracking,
-                            startTracking = startTracking,
-                            stopTracking = stopTracking
-                        )
-                    }
+            Scaffold(
+                bottomBar = {
+                    ToggleButton(
+                        isTracking = state.isTracking,
+                        startTracking = startTracking,
+                        stopTracking = stopTracking
+                    )
+                }
+            ) { innerPadding ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding)
+                ) {
+                    HeartDisplay(
+                        pulse = state.pulse,
+                        heartColor = animatedColor,
+                        scaleAnimation = scaleAnimation,
+                        modifier = Modifier.align(Alignment.Center)
+                    )
                 }
             }
         } else {
@@ -150,26 +138,23 @@ private fun HeartRateAnimations(
 private fun HeartDisplay(
     pulse: Int,
     heartColor: Color,
-    scaleAnimation: Float
+    scaleAnimation: Float,
+    modifier: Modifier = Modifier
 ) {
-    Box(contentAlignment = Alignment.Center) {
+    Box(modifier = modifier, contentAlignment = Alignment.Center) {
         Icon(
             imageVector = Icons.Filled.Favorite,
             contentDescription = null,
             modifier = Modifier
                 .size(280.dp)
-                .graphicsLayer {
-                    scaleX = scaleAnimation
-                    scaleY = scaleAnimation
-                },
+                .scale(scaleAnimation),
             tint = heartColor
         )
-
         Text(
             text = pulse.toString(),
             fontSize = 72.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.Black,
+            color = Color.Black
         )
     }
 }
@@ -180,34 +165,34 @@ private fun ToggleButton(
     startTracking: () -> Unit,
     stopTracking: () -> Unit
 ) {
+    val onClick = if (isTracking) stopTracking else startTracking
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 32.dp),
+            .padding(horizontal = 32.dp, vertical = 16.dp),
         horizontalArrangement = Arrangement.Center
     ) {
         if (!isTracking) {
             Button(
-                onClick = startTracking,
+                onClick = onClick,
                 modifier = Modifier
                     .height(64.dp)
                     .width(220.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Blue)
             ) {
-                Icon(Icons.Default.PlayArrow, contentDescription = null)
-                Spacer(Modifier.width(12.dp))
-                ToggleButtonContent(Icons.Default.PlayArrow, R.string.start_button_text)
+                ToggleButtonContent(icon = Icons.Default.PlayArrow, text = R.string.start_button_text)
             }
         } else {
             OutlinedButton(
-                onClick = stopTracking,
+                onClick = onClick,
                 modifier = Modifier
                     .height(64.dp)
                     .width(220.dp),
                 border = BorderStroke(3.dp, Crimson),
                 colors = ButtonDefaults.outlinedButtonColors(contentColor = Crimson)
             ) {
-                ToggleButtonContent(Icons.Default.Close, R.string.stop_button_text)
+                ToggleButtonContent(icon = Icons.Default.Close, R.string.stop_button_text)
             }
         }
     }

@@ -1,11 +1,12 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
     namespace = "gorosheg.pulsiq"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "gorosheg.pulsiq"

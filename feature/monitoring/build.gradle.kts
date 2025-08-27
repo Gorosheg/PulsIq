@@ -1,11 +1,12 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
     namespace = "gorosheg.pulsiq.monitoring"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 26
