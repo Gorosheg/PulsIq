@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "gorosheg.pulsiq.statistics"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 26
