@@ -1,6 +1,6 @@
 package gorosheg.pulsiq.settings.ui
 
-import gorosheg.pulsiq.common.viewModel.uiStateMapper.UiStateMapper
+import gorosheg.pulsiq.common.viewModel.ui_state_mapper.UiStateMapper
 import gorosheg.pulsiq.settings.presentation.model.SettingsState
 import gorosheg.pulsiq.settings.ui.model.SettingsUiState
 

@@ -62,7 +62,7 @@ internal fun MonitoringScreenContent(
 ) {
     val animatedColor by animateColorAsState(
         targetValue = state.heartColor,
-        animationSpec = tween(durationMillis = 500),
+        animationSpec = tween(durationMillis = 1000),
         label = "PulseColor"
     )
 
@@ -75,8 +75,8 @@ internal fun MonitoringScreenContent(
     )
 
     Surface(modifier = Modifier.fillMaxSize()) {
-        if (multiplePermissionState.allPermissionsGranted) {
-            Scaffold(
+        if (multiplePermissionState.allPermissionsGranted) { // todo ui state allPermissionsGranted bool
+            Scaffold( // todo fun
                 bottomBar = {
                     ToggleButton(
                         isTracking = state.isTracking,

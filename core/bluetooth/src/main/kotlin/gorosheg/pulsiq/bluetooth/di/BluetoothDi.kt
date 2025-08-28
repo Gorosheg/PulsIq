@@ -7,6 +7,5 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val bluetoothModule = module {
-
     singleOf(::HeartBeatDataSourceImpl) bind HeartBeatDataSource::class
 }

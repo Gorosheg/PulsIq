@@ -1,20 +1,13 @@
 package gorosheg.pulsiq.monitoring.di
 
-import gorosheg.pulsiq.monitoring.navigation.MonitoringProvider
+import gorosheg.pulsiq.monitoring.navigation.MonitoringScreenProvider
 import gorosheg.pulsiq.monitoring.presentation.MonitoringViewModel
 import gorosheg.pulsiq.monitoring.ui.MonitoringScreen
-import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
 val monitoringModule = module {
+    factory { MonitoringScreenProvider(::MonitoringScreen) }
 
-    factory { MonitoringProvider(::MonitoringScreen) }
-
-    viewModel {
-        MonitoringViewModel(
-            heartBeatDataSource = get(),
-            thresholdsRepository = get(),
-            pulseNotificationInitializer = get()
-        )
-    }
+    viewModelOf(::MonitoringViewModel)
 }

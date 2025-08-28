@@ -2,7 +2,7 @@ package gorosheg.pulsiq.common.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import gorosheg.pulsiq.common.viewModel.uiStateMapper.UiStateMapper
+import gorosheg.pulsiq.common.viewModel.ui_state_mapper.UiStateMapper
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,7 +24,7 @@ open class BaseViewModel<State, UiState, Effect>(
     private val _uiState: MutableStateFlow<UiState> = MutableStateFlow(uiStateMapper.mapState(initState))
     val uiState: StateFlow<UiState> = _uiState
 
-    private val eventChannel: Channel<Effect> = Channel<Effect>(Channel.BUFFERED)
+    private val eventChannel: Channel<Effect> = Channel(Channel.BUFFERED)
     val eventsFlow: Flow<Effect> = eventChannel.receiveAsFlow()
 
     init {

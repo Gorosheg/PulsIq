@@ -1,4 +1,4 @@
-package gorosheg.pulsiq.common.viewModel.uiStateMapper
+package gorosheg.pulsiq.common.viewModel.ui_state_mapper
 
 interface UiStateMapper<State, UiState> {
 

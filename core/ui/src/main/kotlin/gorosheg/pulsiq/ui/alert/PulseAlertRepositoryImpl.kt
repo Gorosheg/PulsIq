@@ -1,4 +1,4 @@
-package gorosheg.pulsiq.ui.alert
+package gorosheg.pulsiq.ui.alert // todo separate module
 
 import android.Manifest
 import android.content.Context
@@ -10,8 +10,8 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
 import androidx.core.content.ContextCompat
+import com.example.storage.ThresholdsRepository
 import gorosheg.pulsiq.bluetooth.HeartBeatDataSource
-import gorosheg.pulsiq.common.storage.ThresholdsRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -24,19 +24,19 @@ class PulseAlertRepositoryImpl(
     private val thresholdsRepository: ThresholdsRepository,
 ) : PulseAlertRepository {
 
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-    private var inHighAlertState = false
-    private var vibratorPermission: Boolean = false
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)//todo constructor
+    private var inHighAlertState = false // todo rename
+    private var vibratorPermissionGranted: Boolean = false
 
     @Volatile
-    private var lowerThreshold: Int = thresholdsRepository.getLowerThreshold()
+    private var lowerThreshold: Int = thresholdsRepository.getLowerThreshold() // todo remove
 
     @Volatile
     private var upperThreshold: Int = thresholdsRepository.getUpperThreshold()
 
     override fun initialize() {
-        vibratorPermission = ContextCompat.checkSelfPermission(
-            context,
+        vibratorPermissionGranted = ContextCompat.checkSelfPermission( // todo getter
+            context, // todo separate val extencion context
             Manifest.permission.VIBRATE
         ) == PackageManager.PERMISSION_GRANTED
 
@@ -44,33 +44,32 @@ class PulseAlertRepositoryImpl(
             thresholdsRepository.lowerThresholdFlow.collectLatest { lower ->
                 lowerThreshold = lower
             }
-        }
-        scope.launch {
             thresholdsRepository.upperThresholdFlow.collectLatest { upper ->
                 upperThreshold = upper
             }
         }
 
         subscribeToPulse()
+
     }
 
     private fun subscribeToPulse() {
         scope.launch {
-            heartBeatDataSource.heartRateFlow.collectLatest { bpm ->
-                if (vibratorPermission) {
-                    onPulseChanged(bpm)
-                }
-            }
+            heartBeatDataSource.heartRateFlow.collectLatest(::onPulseChanged)  // todo use combine with thresholds
         }
     }
 
-    fun onPulseChanged(bpm: Int) {
-        if (bpm >= upperThreshold) {
-            inHighAlertState = true
-            triggerAlert(AlertType.HIGH)
-        } else if (inHighAlertState && bpm <= lowerThreshold) {
-            inHighAlertState = false
-            triggerAlert(AlertType.NORMAL)
+    private fun onPulseChanged(bpm: Int) {
+        when {
+            bpm >= upperThreshold -> {
+                inHighAlertState = true
+                triggerAlert(AlertType.HIGH)
+            }
+
+            inHighAlertState && bpm <= lowerThreshold -> {
+                inHighAlertState = false
+                triggerAlert(AlertType.NORMAL)
+            }
         }
     }
 
@@ -89,10 +88,11 @@ class PulseAlertRepositoryImpl(
     }
 
     @Suppress("MissingPermission")
-    private fun vibrateStrong() {
+    private fun vibrateStrong() { // todo type: AlertType
+        if (!vibratorPermissionGranted) return
         val vibrator = getVibrator() ?: return
 
-        vibrator.vibrate(
+        vibrator.vibrate( // todo create extension with type: AlertType
             VibrationEffect.createOneShot(
                 2000,
                 VibrationEffect.DEFAULT_AMPLITUDE
@@ -102,6 +102,7 @@ class PulseAlertRepositoryImpl(
 
     @Suppress("MissingPermission")
     private fun vibrateSoft() {
+        if (!vibratorPermissionGranted) return
         val vibrator = getVibrator() ?: return
 
         vibrator.vibrate(
@@ -114,7 +115,7 @@ class PulseAlertRepositoryImpl(
     }
 
     private fun playHighBeep() {
-        ToneGenerator(AudioManager.STREAM_ALARM, 100).startTone(
+        ToneGenerator(AudioManager.STREAM_ALARM, 100).startTone(// todo create extension with type: AlertType
             ToneGenerator.TONE_PROP_BEEP2,
             500
         )
@@ -127,6 +128,7 @@ class PulseAlertRepositoryImpl(
         )
     }
 
+    // todo construcorot
     private fun getVibrator(): Vibrator? {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             context.getSystemService(VibratorManager::class.java)?.defaultVibrator
@@ -137,6 +139,7 @@ class PulseAlertRepositoryImpl(
     }
 }
 
+// todo separate file
 private enum class AlertType {
     HIGH,
     NORMAL

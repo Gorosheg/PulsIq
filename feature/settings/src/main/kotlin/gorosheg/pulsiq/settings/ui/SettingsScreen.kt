@@ -7,7 +7,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import cafe.adriel.voyager.core.screen.Screen
-import gorosheg.pulsiq.common.storage.ThresholdsRepository
+import com.example.storage.ThresholdsRepository
 import gorosheg.pulsiq.settings.presentation.SettingsViewModel
 import gorosheg.pulsiq.settings.ui.model.SettingsUiState
 import org.koin.androidx.compose.koinViewModel
@@ -19,7 +19,7 @@ internal class SettingsScreen : Screen {
     override fun Content() {
         val viewModel: SettingsViewModel = koinViewModel()
         val state by viewModel.uiState.collectAsState()
-        val thresholdsRepository: ThresholdsRepository = koinInject()
+        val thresholdsRepository: ThresholdsRepository = koinInject() // todo to vm
 
         val lowerThreshold = remember { mutableIntStateOf(thresholdsRepository.getLowerThreshold()) }
         val upperThreshold = remember { mutableIntStateOf(thresholdsRepository.getUpperThreshold()) }

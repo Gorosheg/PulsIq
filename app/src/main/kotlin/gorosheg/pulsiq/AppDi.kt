@@ -3,7 +3,7 @@ package gorosheg.pulsiq
 import com.example.storage.storageModule
 import gorosheg.pulsiq.bluetooth.di.bluetoothModule
 import gorosheg.pulsiq.common.di.commonModule
-import gorosheg.pulsiq.common.navigation.AppEnabledProvider
+import gorosheg.pulsiq.common.activityRunningChecker.ActivityRunningChecker
 import gorosheg.pulsiq.monitoring.di.monitoringModule
 import gorosheg.pulsiq.pulsenotification.di.pulseNotificationModule
 import gorosheg.pulsiq.settings.di.settingsModule
@@ -15,7 +15,7 @@ import org.koin.dsl.module
 val appModules: List<Module>
     get() {
         return listOf(
-            platformModule,
+            appModule,
             commonModule,
             bluetoothModule,
             storageModule,
@@ -27,7 +27,6 @@ val appModules: List<Module>
         )
     }
 
-val platformModule = module {
-
-    single<AppEnabledProvider> { AppEnabledProviderImpl() }
+private val appModule = module {
+    single<ActivityRunningChecker> { ActivityRunningCheckerImpl() }
 }

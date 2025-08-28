@@ -9,7 +9,7 @@ import androidx.compose.ui.res.stringResource
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import gorosheg.pulsiq.R
-import gorosheg.pulsiq.monitoring.navigation.MonitoringProvider
+import gorosheg.pulsiq.monitoring.navigation.MonitoringScreenProvider
 import org.koin.compose.koinInject
 
 object MonitoringTab : Tab {
@@ -32,7 +32,7 @@ object MonitoringTab : Tab {
 
     @Composable
     override fun Content() {
-        val screenProvider: MonitoringProvider = koinInject<MonitoringProvider>()
+        val screenProvider: MonitoringScreenProvider = koinInject<MonitoringScreenProvider>()
 
         SetNavigator(screenProvider())
     }

@@ -1,8 +1,8 @@
-package gorosheg.pulsiq.monitoring.navigation
+package gorosheg.pulsiq.settings.navigation
 
 import cafe.adriel.voyager.core.screen.Screen
 
-fun interface MonitoringProvider {
+fun interface SettingsScreenProvider {
 
     operator fun invoke(): Screen
 }

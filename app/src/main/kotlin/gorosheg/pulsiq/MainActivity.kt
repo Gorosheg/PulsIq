@@ -7,7 +7,8 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.BottomNavigationItem
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -63,24 +64,23 @@ class MainActivity : ComponentActivity() {
         val selected = tabNavigator.current.key == tab.key
         val contentColor = if (selected) Blue else White
 
-        BottomNavigationItem(
+        NavigationBarItem(
             selected = selected,
             onClick = { tabNavigator.current = tab },
             icon = {
                 Icon(
-                    painter = tab.options.icon!!,
-                    contentDescription = tab.options.title,
-                    tint = contentColor
+                    painter = requireNotNull(tab.options.icon),
+                    contentDescription = tab.options.title
                 )
             },
-            label = {
-                Text(
-                    text = tab.options.title,
-                    color = contentColor
-                )
-            },
-            selectedContentColor = Color.Unspecified,
-            unselectedContentColor = Color.Unspecified
+            label = { Text(text = tab.options.title) },
+            colors = NavigationBarItemDefaults.colors(
+                selectedIconColor = contentColor,
+                selectedTextColor = contentColor,
+                unselectedIconColor = contentColor.copy(alpha = 0.7f),
+                unselectedTextColor = contentColor.copy(alpha = 0.7f),
+                indicatorColor = Color.Transparent
+            )
         )
     }
 }

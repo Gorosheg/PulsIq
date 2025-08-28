@@ -7,11 +7,14 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.IBinder
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
+import androidx.core.app.ServiceCompat
+import android.content.pm.ServiceInfo
 import gorosheg.pulsiq.bluetooth.HeartBeatDataSource
-import gorosheg.pulsiq.common.navigation.AppEnabledProvider
+import gorosheg.pulsiq.common.activityRunningChecker.ActivityRunningChecker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -23,7 +26,8 @@ import org.koin.android.ext.android.inject
 internal class PulseNotificationService : Service() {
 
     private val heartBeatDataSource: HeartBeatDataSource by inject()
-    private val appEnabledProvider: AppEnabledProvider by inject()
+    private val activityRunningChecker: ActivityRunningChecker by inject()
+
     private val notificationManager by lazy { getSystemService(NOTIFICATION_SERVICE) as NotificationManager }
     private val remoteViews by lazy { RemoteViews(packageName, R.layout.notification_pulse) }
     private lateinit var notificationBuilder: NotificationCompat.Builder
@@ -31,29 +35,37 @@ internal class PulseNotificationService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-
         createNotificationChannel()
         buildNotification()
-    }
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        startForeground(NOTIF_ID, notificationBuilder.build())
         serviceScope.launch {
             heartBeatDataSource.heartRateFlow.collectLatest { bpm ->
                 remoteViews.setTextViewText(R.id.pulseText, getString(R.string.bpm, bpm))
                 notificationManager.notify(NOTIF_ID, notificationBuilder.build())
             }
         }
+    }
 
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        val fgType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            ServiceInfo.FOREGROUND_SERVICE_TYPE_HEALTH or ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE
+        } else 0
+
+        ServiceCompat.startForeground(
+            this,
+            NOTIF_ID,
+            notificationBuilder.build(),
+            fgType
+        )
         return START_STICKY
     }
 
     override fun onDestroy() {
-        if (!appEnabledProvider.isAppEnabled) {
+        if (!activityRunningChecker.isActivityRunning) {
             heartBeatDataSource.disconnect()
         }
+        ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
         serviceScope.cancel()
-
         super.onDestroy()
     }
 
@@ -99,7 +111,7 @@ internal class PulseNotificationService : Service() {
 
     companion object {
         private const val CHANNEL_ID = "pulse_monitor_channel"
-        private const val CHANNEL_NAME = "pulse Monitoring"
+        private const val CHANNEL_NAME = "Pulse Monitoring"
         private const val NOTIF_ID = 1
 
         fun start(context: Context) {

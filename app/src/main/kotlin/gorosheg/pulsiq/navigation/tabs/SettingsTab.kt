@@ -1,7 +1,6 @@
 package gorosheg.pulsiq.navigation.tabs
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -10,7 +9,7 @@ import androidx.compose.ui.res.stringResource
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import gorosheg.pulsiq.R
-import gorosheg.pulsiq.settings.navigation.SettingsProvider
+import gorosheg.pulsiq.settings.navigation.SettingsScreenProvider
 import org.koin.compose.koinInject
 
 object SettingsTab : Tab {
@@ -33,7 +32,7 @@ object SettingsTab : Tab {
 
     @Composable
     override fun Content() {
-        val screenProvider: SettingsProvider = koinInject<SettingsProvider>()
+        val screenProvider: SettingsScreenProvider = koinInject<SettingsScreenProvider>()
 
         SetNavigator(screenProvider())
     }

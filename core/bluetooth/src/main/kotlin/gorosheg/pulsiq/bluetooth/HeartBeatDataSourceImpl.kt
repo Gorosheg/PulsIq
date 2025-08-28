@@ -1,7 +1,4 @@
-@file:Suppress(
-    "MissingPermission",
-    "DEPRECATION",
-)
+@file:Suppress("MissingPermission")
 
 package gorosheg.pulsiq.bluetooth
 
@@ -20,17 +17,16 @@ import android.os.Build
 import android.os.ParcelUuid
 import androidx.annotation.RequiresApi
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import java.util.UUID
 
-internal class HeartBeatDataSourceImpl(
+internal class HeartBeatDataSourceImpl( // todo auto reconnect
     private val context: Context
 ) : HeartBeatDataSource {
 
-    private val _heartRateFlow = MutableStateFlow(0)
-    override val heartRateFlow: StateFlow<Int> = _heartRateFlow.asStateFlow()
+    // todo debauce 1000
+    override val heartRateFlow: MutableStateFlow<Int> = MutableStateFlow(0) // todo use  flow {emit()}
 
+    // todo все 3 в конструктор
     private val bluetoothManager by lazy { context.getSystemService(BluetoothManager::class.java) }
     private val bluetoothAdapter get() = bluetoothManager?.adapter
     private val scanner get() = bluetoothAdapter?.bluetoothLeScanner
@@ -41,7 +37,7 @@ internal class HeartBeatDataSourceImpl(
 
     private var gatt: BluetoothGatt? = null
 
-    private val gattCallback = object : BluetoothGattCallback() {
+    private val gattCallback = object : BluetoothGattCallback() { // todo onAccelerometerChanged, callbackFlow, awaitClose
 
         override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
             if (newState == BluetoothProfile.STATE_CONNECTED) {
@@ -57,8 +53,8 @@ internal class HeartBeatDataSourceImpl(
 
             gatt.setCharacteristicNotification(char, true)
             val descriptor = char.getDescriptor(cccdUUID)
-            descriptor.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
-            gatt.writeDescriptor(descriptor)
+            descriptor.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE // todo deprecated
+            gatt.writeDescriptor(descriptor) // todo wrap with Facade
         }
 
         override fun onCharacteristicChanged(
@@ -111,6 +107,6 @@ internal class HeartBeatDataSourceImpl(
             } else {
                 (this[1].toInt() and 0xFF) or ((this[2].toInt() and 0xFF) shl 8)
             }
-        _heartRateFlow.value = bpm
+        heartRateFlow.value = bpm
     }
 }

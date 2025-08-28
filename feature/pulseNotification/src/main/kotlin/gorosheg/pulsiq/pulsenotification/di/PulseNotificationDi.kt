@@ -6,7 +6,6 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
 val pulseNotificationModule = module {
-
     single<PulseNotificationInitializer> {
         PulseNotificationInitializerImpl(androidContext())
     }
