@@ -14,7 +14,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
 import android.content.pm.ServiceInfo
 import gorosheg.pulsiq.bluetooth.HeartBeatDataSource
-import gorosheg.pulsiq.common.activityRunningChecker.ActivityRunningChecker
+import gorosheg.pulsiq.common.activityRunningChecker.HeartBeatTrackerLauncher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -26,7 +26,7 @@ import org.koin.android.ext.android.inject
 internal class PulseNotificationService : Service() {
 
     private val heartBeatDataSource: HeartBeatDataSource by inject()
-    private val activityRunningChecker: ActivityRunningChecker by inject()
+    private val heartBeatTrackerLauncher: HeartBeatTrackerLauncher by inject()
 
     private val notificationManager by lazy { getSystemService(NOTIFICATION_SERVICE) as NotificationManager }
     private val remoteViews by lazy { RemoteViews(packageName, R.layout.notification_pulse) }
@@ -35,6 +35,7 @@ internal class PulseNotificationService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+        heartBeatTrackerLauncher.changeServiceState(true)
         createNotificationChannel()
         buildNotification()
 
@@ -61,9 +62,7 @@ internal class PulseNotificationService : Service() {
     }
 
     override fun onDestroy() {
-        if (!activityRunningChecker.isActivityRunning) {
-            heartBeatDataSource.disconnect()
-        }
+        heartBeatTrackerLauncher.changeServiceState(false)
         ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
         serviceScope.cancel()
         super.onDestroy()

@@ -3,7 +3,7 @@ package gorosheg.pulsiq
 import com.example.storage.storageModule
 import gorosheg.pulsiq.bluetooth.di.bluetoothModule
 import gorosheg.pulsiq.common.di.commonModule
-import gorosheg.pulsiq.common.activityRunningChecker.ActivityRunningChecker
+import gorosheg.pulsiq.common.activityRunningChecker.HeartBeatTrackerLauncher
 import gorosheg.pulsiq.monitoring.di.monitoringModule
 import gorosheg.pulsiq.pulsenotification.di.pulseNotificationModule
 import gorosheg.pulsiq.settings.di.settingsModule
@@ -28,5 +28,5 @@ val appModules: List<Module>
     }
 
 private val appModule = module {
-    single<ActivityRunningChecker> { ActivityRunningCheckerImpl() }
+    single<HeartBeatTrackerLauncher> { HeartBeatTrackerLauncherImpl(get()) }
 }

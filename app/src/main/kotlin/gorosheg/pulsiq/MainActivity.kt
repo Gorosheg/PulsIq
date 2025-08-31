@@ -20,22 +20,34 @@ import cafe.adriel.voyager.navigator.tab.CurrentTab
 import cafe.adriel.voyager.navigator.tab.LocalTabNavigator
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabNavigator
+import gorosheg.pulsiq.common.activityRunningChecker.HeartBeatTrackerLauncher
 import gorosheg.pulsiq.navigation.tabs.MonitoringTab
 import gorosheg.pulsiq.navigation.tabs.SettingsTab
 import gorosheg.pulsiq.navigation.tabs.StatisticsTab
 import gorosheg.pulsiq.ui.Blue
 import gorosheg.pulsiq.ui.MyAppTheme
 import gorosheg.pulsiq.ui.White
+import org.koin.android.ext.android.inject
+import kotlin.getValue
 
 class MainActivity : ComponentActivity() {
 
+    private val heartBeatTrackerLauncher: HeartBeatTrackerLauncher by inject()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        heartBeatTrackerLauncher.changeActivityState(true)
+
         setContent {
             MyAppTheme {
                 Content()
             }
         }
+    }
+
+    override fun onDestroy() {
+        heartBeatTrackerLauncher.changeActivityState(false)
+        super.onDestroy()
     }
 
     @Composable

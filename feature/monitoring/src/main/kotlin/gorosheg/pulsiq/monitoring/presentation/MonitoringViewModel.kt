@@ -24,14 +24,12 @@ internal class MonitoringViewModel(
     }
 
     fun startMonitoring() {
-        heartBeatDataSource.startScan() // todo move to appl
-        pulseNotificationInitializer.startPulseNotification() // todo wove to appl
+        pulseNotificationInitializer.startPulseNotification()
         state { copy(isTracking = true) }
     }
 
     fun stopMonitoring() {
-        heartBeatDataSource.disconnect() // todo wove to appl
-        pulseNotificationInitializer.stopPulseNotification() // todo wove to appl
+        pulseNotificationInitializer.stopPulseNotification()
         state { copy(isTracking = false, pulse = 0) }
     }
 
