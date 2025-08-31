@@ -40,12 +40,12 @@
         </activity>
 
         <service
-            android:name="gorosheg.pulsiq.pulsenotification.PulseNotificationService"
+            android:name="gorosheg.pulsiq.pulse_notification.PulseNotificationService"
             android:exported="false"
             android:foregroundServiceType="health|connectedDevice" />
 
         <receiver
-            android:name="gorosheg.pulsiq.pulsenotification.NotificationDismissedReceiver"
+            android:name="gorosheg.pulsiq.pulse_notification.NotificationDismissedReceiver"
             android:exported="false"/>
     </application>
 

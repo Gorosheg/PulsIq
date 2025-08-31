@@ -1,4 +1,4 @@
-package gorosheg.pulsiq.common.activityRunningChecker
+package gorosheg.pulsiq.common.activity_running_checker
 
 interface HeartBeatTrackerLauncher {
 

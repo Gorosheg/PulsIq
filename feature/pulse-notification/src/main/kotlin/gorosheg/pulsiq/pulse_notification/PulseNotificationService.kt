@@ -1,4 +1,4 @@
-package gorosheg.pulsiq.pulsenotification
+package gorosheg.pulsiq.pulse_notification
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -14,7 +14,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
 import android.content.pm.ServiceInfo
 import gorosheg.pulsiq.bluetooth.HeartBeatDataSource
-import gorosheg.pulsiq.common.activityRunningChecker.HeartBeatTrackerLauncher
+import gorosheg.pulsiq.common.activity_running_checker.HeartBeatTrackerLauncher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

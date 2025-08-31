@@ -3,9 +3,8 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.compose.compiler)
 }
-// todo name module with -
 android {
-    namespace = "gorosheg.pulsiq.pulsenotification"
+    namespace = "gorosheg.pulsiq.pulse_notification"
     compileSdk = 36
 
     defaultConfig {

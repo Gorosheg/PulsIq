@@ -1,4 +1,4 @@
-package gorosheg.pulsiq.pulsenotification
+package gorosheg.pulsiq.pulse_notification
 
 import android.content.Context
 import gorosheg.pulsiq.common.notification.PulseNotificationInitializer

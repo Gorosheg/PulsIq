@@ -3,9 +3,9 @@ package gorosheg.pulsiq
 import com.example.storage.storageModule
 import gorosheg.pulsiq.bluetooth.di.bluetoothModule
 import gorosheg.pulsiq.common.di.commonModule
-import gorosheg.pulsiq.common.activityRunningChecker.HeartBeatTrackerLauncher
+import gorosheg.pulsiq.common.activity_running_checker.HeartBeatTrackerLauncher
 import gorosheg.pulsiq.monitoring.di.monitoringModule
-import gorosheg.pulsiq.pulsenotification.di.pulseNotificationModule
+import gorosheg.pulsiq.pulse_notification.di.pulseNotificationModule
 import gorosheg.pulsiq.settings.di.settingsModule
 import gorosheg.pulsiq.statistics.di.statisticsModule
 import gorosheg.pulsiq.ui.di.commonUiModule

@@ -1,7 +1,7 @@
-package gorosheg.pulsiq.pulsenotification.di
+package gorosheg.pulsiq.pulse_notification.di
 
 import gorosheg.pulsiq.common.notification.PulseNotificationInitializer
-import gorosheg.pulsiq.pulsenotification.PulseNotificationInitializerImpl
+import gorosheg.pulsiq.pulse_notification.PulseNotificationInitializerImpl
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 

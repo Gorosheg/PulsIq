@@ -20,7 +20,7 @@ import cafe.adriel.voyager.navigator.tab.CurrentTab
 import cafe.adriel.voyager.navigator.tab.LocalTabNavigator
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabNavigator
-import gorosheg.pulsiq.common.activityRunningChecker.HeartBeatTrackerLauncher
+import gorosheg.pulsiq.common.activity_running_checker.HeartBeatTrackerLauncher
 import gorosheg.pulsiq.navigation.tabs.MonitoringTab
 import gorosheg.pulsiq.navigation.tabs.SettingsTab
 import gorosheg.pulsiq.navigation.tabs.StatisticsTab
