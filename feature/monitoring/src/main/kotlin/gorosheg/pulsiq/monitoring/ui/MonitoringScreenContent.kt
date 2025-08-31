@@ -75,31 +75,48 @@ internal fun MonitoringScreenContent(
     )
 
     Surface(modifier = Modifier.fillMaxSize()) {
-        if (multiplePermissionState.allPermissionsGranted) { // todo ui state allPermissionsGranted bool
-            Scaffold( // todo fun
-                bottomBar = {
-                    ToggleButton(
-                        isTracking = state.isTracking,
-                        startTracking = startTracking,
-                        stopTracking = stopTracking
-                    )
-                }
-            ) { innerPadding ->
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding)
-                ) {
-                    HeartDisplay(
-                        pulse = state.pulse,
-                        heartColor = animatedColor,
-                        scaleAnimation = scaleAnimation,
-                        modifier = Modifier.align(Alignment.Center)
-                    )
-                }
-            }
+        if (multiplePermissionState.allPermissionsGranted) {
+            PermissionGrantedContent(
+                state = state,
+                startTracking = startTracking,
+                stopTracking = stopTracking,
+                animatedColor = animatedColor,
+                scaleAnimation = scaleAnimation
+            )
         } else {
             PermissionDeniedContent()
+        }
+    }
+}
+
+@Composable
+private fun PermissionGrantedContent(
+    state: MonitoringUiState,
+    startTracking: () -> Unit,
+    stopTracking: () -> Unit,
+    animatedColor: Color,
+    scaleAnimation: Float
+) {
+    Scaffold(
+        bottomBar = {
+            ToggleButton(
+                isTracking = state.isTracking,
+                startTracking = startTracking,
+                stopTracking = stopTracking
+            )
+        }
+    ) { innerPadding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+            HeartDisplay(
+                pulse = state.pulse,
+                heartColor = animatedColor,
+                scaleAnimation = scaleAnimation,
+                modifier = Modifier.align(Alignment.Center)
+            )
         }
     }
 }

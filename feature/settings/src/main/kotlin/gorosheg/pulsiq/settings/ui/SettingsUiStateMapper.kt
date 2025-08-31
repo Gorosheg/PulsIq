@@ -7,7 +7,9 @@ import gorosheg.pulsiq.settings.ui.model.SettingsUiState
 internal class SettingsUiStateMapper : UiStateMapper<SettingsState, SettingsUiState> {
     override fun SettingsState.map(): SettingsUiState {
         return SettingsUiState(
-            settingItems = this.settingItems
+            settingItems = settingItems,
+            lowerThreshold= lowerThreshold,
+            upperThreshold = upperThreshold
         )
     }
 }

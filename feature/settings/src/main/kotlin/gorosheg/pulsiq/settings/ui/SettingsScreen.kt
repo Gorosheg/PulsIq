@@ -3,15 +3,12 @@ package gorosheg.pulsiq.settings.ui
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import cafe.adriel.voyager.core.screen.Screen
-import com.example.storage.ThresholdsRepository
 import gorosheg.pulsiq.settings.presentation.SettingsViewModel
 import gorosheg.pulsiq.settings.ui.model.SettingsUiState
 import org.koin.androidx.compose.koinViewModel
-import org.koin.compose.koinInject
 
 internal class SettingsScreen : Screen {
 
@@ -19,10 +16,6 @@ internal class SettingsScreen : Screen {
     override fun Content() {
         val viewModel: SettingsViewModel = koinViewModel()
         val state by viewModel.uiState.collectAsState()
-        val thresholdsRepository: ThresholdsRepository = koinInject() // todo to vm
-
-        val lowerThreshold = remember { mutableIntStateOf(thresholdsRepository.getLowerThreshold()) }
-        val upperThreshold = remember { mutableIntStateOf(thresholdsRepository.getUpperThreshold()) }
         val selectedSetting = remember { mutableStateOf<SettingsUiState.SettingItem?>(null) }
 
         SettingsScreenContent(
@@ -35,11 +28,11 @@ internal class SettingsScreen : Screen {
 
         selectedSetting.value?.let {
             PulseThresholdDialog(
-                lowerThreshold = lowerThreshold,
-                upperThreshold = upperThreshold,
+                lowerThreshold = state.lowerThreshold,
+                upperThreshold = state.upperThreshold,
                 onDismiss = { selectedSetting.value = null },
                 onApply = { lower, upper ->
-                    thresholdsRepository.saveThresholds(lower = lower, upper = upper)
+                    viewModel.updateThresholds(lower = lower, upper = upper)
                     selectedSetting.value = null
                 }
             )

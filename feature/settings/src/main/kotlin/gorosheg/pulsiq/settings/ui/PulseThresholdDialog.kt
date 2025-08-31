@@ -24,8 +24,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -44,11 +44,14 @@ import kotlinx.coroutines.delay
 
 @Composable
 internal fun PulseThresholdDialog(
-    lowerThreshold: MutableState<Int>,
-    upperThreshold: MutableState<Int>,
+    lowerThreshold: Int,
+    upperThreshold: Int,
     onDismiss: () -> Unit,
     onApply: (Int, Int) -> Unit
 ) {
+    var currentLowerThreshold by remember { mutableIntStateOf(lowerThreshold) }
+    var currentUpperThreshold by remember { mutableIntStateOf(upperThreshold) }
+
     AlertDialog(
         onDismissRequest = onDismiss,
         confirmButton = {},
@@ -59,10 +62,9 @@ internal fun PulseThresholdDialog(
             ) {
                 ThresholdSelector(
                     title = stringResource(R.string.min_threshold_title),
-                    value = lowerThreshold.value,
+                    value = currentLowerThreshold,
                     onValueChange = { new ->
-                        lowerThreshold.value =
-                            new.coerceIn(0, minOf(upperThreshold.value, 250))
+                        currentLowerThreshold = new.coerceIn(0, minOf(currentUpperThreshold, 250))
                     }
                 )
 
@@ -70,10 +72,9 @@ internal fun PulseThresholdDialog(
 
                 ThresholdSelector(
                     title = stringResource(R.string.max_threshold_title),
-                    value = upperThreshold.value,
+                    value = currentUpperThreshold,
                     onValueChange = { new ->
-                        upperThreshold.value =
-                            new.coerceIn(maxOf(lowerThreshold.value, 0), 250)
+                        currentUpperThreshold = new.coerceIn(maxOf(currentLowerThreshold, 0), 250)
                     }
                 )
 
@@ -81,7 +82,7 @@ internal fun PulseThresholdDialog(
 
                 ApplyButton(
                     onClick = {
-                        onApply(lowerThreshold.value, upperThreshold.value)
+                        onApply(currentLowerThreshold, currentUpperThreshold)
                     }
                 )
             }
