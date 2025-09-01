@@ -1,4 +1,4 @@
-package gorosheg.pulsiq.ui.alert // todo separate module
+package gorosheg.pulsiq.pulse_alert
 
 import android.content.Context
 import android.media.AudioManager

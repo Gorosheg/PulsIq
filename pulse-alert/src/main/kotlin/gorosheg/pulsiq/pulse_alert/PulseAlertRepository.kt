@@ -1,4 +1,4 @@
-package gorosheg.pulsiq.ui.alert
+package gorosheg.pulsiq.pulse_alert
 
 interface PulseAlertRepository {
 

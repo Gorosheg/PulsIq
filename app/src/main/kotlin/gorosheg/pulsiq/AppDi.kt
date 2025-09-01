@@ -5,6 +5,7 @@ import gorosheg.pulsiq.bluetooth.di.bluetoothModule
 import gorosheg.pulsiq.common.di.commonModule
 import gorosheg.pulsiq.common.activity_running_checker.HeartBeatTrackerLauncher
 import gorosheg.pulsiq.monitoring.di.monitoringModule
+import gorosheg.pulsiq.pulse_alert.di.pulseAlertModule
 import gorosheg.pulsiq.pulse_notification.di.pulseNotificationModule
 import gorosheg.pulsiq.settings.di.settingsModule
 import gorosheg.pulsiq.statistics.di.statisticsModule
@@ -23,6 +24,7 @@ val appModules: List<Module>
             statisticsModule,
             settingsModule,
             pulseNotificationModule,
+            pulseAlertModule,
             commonUiModule
         )
     }

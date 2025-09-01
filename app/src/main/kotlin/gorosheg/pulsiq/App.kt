@@ -2,7 +2,7 @@ package gorosheg.pulsiq
 
 import android.app.Application
 import gorosheg.pulsiq.bluetooth.HeartBeatDataSource
-import gorosheg.pulsiq.ui.alert.PulseAlertRepository
+import gorosheg.pulsiq.pulse_alert.PulseAlertRepository
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.GlobalContext.startKoin

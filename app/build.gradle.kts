@@ -49,6 +49,7 @@ android {
 
 dependencies {
     implementation(project(":core:ui"))
+    implementation(project(":pulse-alert"))
     implementation(project(":core:bluetooth"))
     implementation(project(":core:common"))
     implementation(project(":data:storage"))
