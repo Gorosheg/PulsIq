@@ -1,88 +1,64 @@
 @file:Suppress("MissingPermission")
+@file:OptIn(FlowPreview::class)
 
 package gorosheg.pulsiq.bluetooth
 
+import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothGatt
-import android.bluetooth.BluetoothGattCallback
-import android.bluetooth.BluetoothGattCharacteristic
-import android.bluetooth.BluetoothGattDescriptor
-import android.bluetooth.BluetoothManager
-import android.bluetooth.BluetoothProfile
+import android.bluetooth.le.BluetoothLeScanner
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanFilter
 import android.bluetooth.le.ScanResult
 import android.bluetooth.le.ScanSettings
 import android.content.Context
-import android.os.Build
 import android.os.ParcelUuid
-import androidx.annotation.RequiresApi
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.launch
 import java.util.UUID
 
-internal class HeartBeatDataSourceImpl( // todo auto reconnect
-    private val context: Context
+internal class HeartBeatDataSourceImpl(
+    private val context: Context,
+    private val scanner: BluetoothLeScanner?,
+    private val scope: CoroutineScope = CoroutineScope(Dispatchers.IO),
 ) : HeartBeatDataSource {
 
-    // todo debauce 1000
-    override val heartRateFlow: MutableStateFlow<Int> = MutableStateFlow(0) // todo use  flow {emit()}
-
-    // todo все 3 в конструктор
-    private val bluetoothManager by lazy { context.getSystemService(BluetoothManager::class.java) }
-    private val bluetoothAdapter get() = bluetoothManager?.adapter
-    private val scanner get() = bluetoothAdapter?.bluetoothLeScanner
-
-    private val heartRateServiceUUID = UUID.fromString("0000180D-0000-1000-8000-00805f9b34fb")
-    private val heartRateMeasurementUUID = UUID.fromString("00002A37-0000-1000-8000-00805f9b34fb")
-    private val cccdUUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
-
     private var gatt: BluetoothGatt? = null
+    private var lastDevice: BluetoothDevice? = null
+    private var isUserDisconnected = false
+    private var reconnectionJob: Job? = null
 
-    private val gattCallback = object : BluetoothGattCallback() { // todo onAccelerometerChanged, callbackFlow, awaitClose
-
-        override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
-            if (newState == BluetoothProfile.STATE_CONNECTED) {
-                gatt.discoverServices()
-            }
-        }
-
-        override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
-            val char = gatt
-                .getService(heartRateServiceUUID)
-                ?.getCharacteristic(heartRateMeasurementUUID)
-                ?: return
-
-            gatt.setCharacteristicNotification(char, true)
-            val descriptor = char.getDescriptor(cccdUUID)
-            descriptor.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE // todo deprecated
-            gatt.writeDescriptor(descriptor) // todo wrap with Facade
-        }
-
-        override fun onCharacteristicChanged(
-            gatt: BluetoothGatt,
-            characteristic: BluetoothGattCharacteristic
-        ) {
-            characteristic.value.buildHeartRate()
-        }
-
-        @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-        override fun onCharacteristicChanged(
-            gatt: BluetoothGatt,
-            characteristic: BluetoothGattCharacteristic,
-            value: ByteArray
-        ) {
-            value.buildHeartRate()
-        }
-    }
+    private val heartRateFlow: MutableStateFlow<Int> = MutableStateFlow(0)
 
     private val scanCallback = object : ScanCallback() {
 
         override fun onScanResult(type: Int, result: ScanResult) {
             scanner?.stopScan(this)
-            gatt = result.device.connectGatt(context, false, gattCallback)
+            isUserDisconnected = false
+            lastDevice = result.device
+
+            reconnectionJob?.cancel()
+            reconnectionJob = null
+            connectToGatt()
         }
     }
 
+    override fun subscribeHeartRateFlow(): Flow<Int> {
+        return heartRateFlow
+            .debounce(1000L)
+            .distinctUntilChanged()
+    }
+
     override fun startScan() {
+        isUserDisconnected = false
+
         val filter = ScanFilter.Builder()
             .setServiceUuid(ParcelUuid(heartRateServiceUUID))
             .build()
@@ -95,18 +71,56 @@ internal class HeartBeatDataSourceImpl( // todo auto reconnect
     }
 
     override fun disconnect() {
-        gatt?.close()
+        isUserDisconnected = true
+        reconnectionJob?.cancel()
+        reconnectionJob = null
+
+        scanner?.stopScan(scanCallback)
+        safeCloseGatt()
+    }
+
+    private fun connectToGatt() {
+        scope.launch(Dispatchers.Main.immediate) {
+            safeCloseGatt()
+            lastDevice ?: return@launch
+
+            gatt = lastDevice?.connectGatt(
+                context,
+                false,
+                onPulseChanged(
+                    callback = { pulse -> heartRateFlow.value = pulse },
+                    onDisconnected = ::startReconnectionAttempts
+                )
+            )
+        }
+    }
+
+    private fun startReconnectionAttempts() {
+        if (isUserDisconnected) return
+
+        reconnectionJob?.cancel()
+        reconnectionJob = scope.launch {
+            delay(RECONNECT_DELAY_MS)
+            connectToGatt()
+        }
+    }
+
+    private fun safeCloseGatt() {
+        try {
+            gatt?.disconnect()
+            gatt?.close()
+        } catch (e: Throwable) {
+            e.printStackTrace()
+        }
         gatt = null
     }
 
-    private fun ByteArray.buildHeartRate() {
-        val flag = this[0].toInt()
-        val bpm =
-            if (flag and 0x01 == 0) {
-                this[1].toInt() and 0xFF
-            } else {
-                (this[1].toInt() and 0xFF) or ((this[2].toInt() and 0xFF) shl 8)
-            }
-        heartRateFlow.value = bpm
+    companion object {
+
+        internal val heartRateMeasurementUUID = UUID.fromString("00002A37-0000-1000-8000-00805f9b34fb")
+        internal val cccdUUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
+        internal val heartRateServiceUUID = UUID.fromString("0000180D-0000-1000-8000-00805f9b34fb")
+
+        private const val RECONNECT_DELAY_MS = 1000L
     }
 }

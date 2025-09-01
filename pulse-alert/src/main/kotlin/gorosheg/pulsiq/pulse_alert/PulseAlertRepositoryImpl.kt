@@ -31,7 +31,7 @@ class PulseAlertRepositoryImpl(
 
     private fun subscribeToPulse() {
         combineTransform(
-            heartBeatDataSource.heartRateFlow,
+            heartBeatDataSource.subscribeHeartRateFlow(),
             thresholdsRepository.lowerThresholdFlow,
             thresholdsRepository.upperThresholdFlow
         ) { heartRate, lowerThreshold, upperThreshold ->

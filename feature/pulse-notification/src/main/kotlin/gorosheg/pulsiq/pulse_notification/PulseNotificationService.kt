@@ -40,7 +40,7 @@ internal class PulseNotificationService : Service() {
         buildNotification()
 
         serviceScope.launch {
-            heartBeatDataSource.heartRateFlow.collectLatest { bpm ->
+            heartBeatDataSource.subscribeHeartRateFlow().collectLatest { bpm ->
                 remoteViews.setTextViewText(R.id.pulseText, getString(R.string.bpm, bpm))
                 notificationManager.notify(NOTIF_ID, notificationBuilder.build())
             }

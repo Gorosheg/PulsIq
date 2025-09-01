@@ -8,6 +8,7 @@ import gorosheg.pulsiq.monitoring.presentation.model.MonitoringEffect
 import gorosheg.pulsiq.monitoring.presentation.model.MonitoringState
 import gorosheg.pulsiq.monitoring.ui.MonitoringUiStateMapper
 import gorosheg.pulsiq.monitoring.ui.model.MonitoringUiState
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -18,23 +19,24 @@ internal class MonitoringViewModel(
     initState = MonitoringState(),
     uiStateMapper = MonitoringUiStateMapper()
 ) {
-
-    init {
-        subscribeToPulse()
-    }
+    private var heartBeatSubscriptionJob: Job? = null
 
     fun startMonitoring() {
         pulseNotificationInitializer.startPulseNotification()
+        subscribeToPulse()
         state { copy(isTracking = true) }
     }
 
     fun stopMonitoring() {
         pulseNotificationInitializer.stopPulseNotification()
+        heartBeatSubscriptionJob?.cancel()
+        heartBeatSubscriptionJob = null
         state { copy(isTracking = false, pulse = 0) }
     }
 
     private fun subscribeToPulse() {
-        heartBeatDataSource.heartRateFlow
+        heartBeatSubscriptionJob?.cancel()
+        heartBeatSubscriptionJob = heartBeatDataSource.subscribeHeartRateFlow()
             .onEach { state { copy(pulse = it) } }
             .launchIn(viewModelScope)
     }

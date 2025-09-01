@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface HeartBeatDataSource {
 
-    val heartRateFlow: Flow<Int>
+    fun subscribeHeartRateFlow(): Flow<Int>
 
     fun startScan()
 

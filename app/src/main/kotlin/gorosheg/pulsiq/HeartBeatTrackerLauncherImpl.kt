@@ -25,21 +25,17 @@ internal class HeartBeatTrackerLauncherImpl( // todo: service неверно з�
         ) { activityRunning, serviceRunning ->
             !activityRunning && !serviceRunning
         }.onEach { shouldDisconnect ->
-            println("srbbht activity: ${isActivityRunning.value}, service: ${isNotificationServiceRunning.value}")
             if (shouldDisconnect) {
-                println("srbbht shouldDisconnect")
                 heartBeatDataSource.disconnect()
             }
         }.launchIn(scope)
     }
 
     override fun changeActivityState(isRunning: Boolean) {
-        println("srbbht changeActivityState: $isRunning")
         isActivityRunning.value = isRunning
     }
 
     override fun changeServiceState(isRunning: Boolean) {
-        println("srbbht changeServiceState: $isRunning")
         isNotificationServiceRunning.value = isRunning
     }
 }
