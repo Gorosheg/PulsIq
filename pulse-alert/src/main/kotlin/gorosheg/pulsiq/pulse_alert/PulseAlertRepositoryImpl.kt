@@ -5,7 +5,7 @@ import android.media.AudioManager
 import android.media.ToneGenerator
 import android.os.VibrationEffect
 import android.os.Vibrator
-import com.example.storage.ThresholdsRepository
+import com.example.storage.SettingsRepository
 import gorosheg.pulsiq.bluetooth.HeartBeatDataSource
 import gorosheg.pulsiq.common.utils.vibratorPermissionGranted
 import kotlinx.coroutines.CoroutineScope
@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.onEach
 class PulseAlertRepositoryImpl(
     private val context: Context,
     private val heartBeatDataSource: HeartBeatDataSource,
-    private val thresholdsRepository: ThresholdsRepository,
+    private val settingsRepository: SettingsRepository,
     private val scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO),
     private val vibrator: Vibrator?
 ) : PulseAlertRepository {
@@ -32,8 +32,8 @@ class PulseAlertRepositoryImpl(
     private fun subscribeToPulse() {
         combineTransform(
             heartBeatDataSource.subscribeHeartRateFlow(),
-            thresholdsRepository.lowerThresholdFlow,
-            thresholdsRepository.upperThresholdFlow
+            settingsRepository.lowerThresholdFlow,
+            settingsRepository.upperThresholdFlow,
         ) { heartRate, lowerThreshold, upperThreshold ->
             when {
                 heartRate >= upperThreshold -> emit(PulseType.HIGH)
@@ -52,7 +52,7 @@ class PulseAlertRepositoryImpl(
     @Suppress("MissingPermission")
     private fun PulseType.vibrate() {
         if (!context.vibratorPermissionGranted) return
-
+        if (!settingsRepository.getVibrationEnabled()) return
         val vibration = when (this) {
             PulseType.HIGH -> VibrationEffect.createOneShot(
                 2000,
@@ -68,8 +68,8 @@ class PulseAlertRepositoryImpl(
         vibrator?.vibrate(vibration)
     }
 
-
     private fun PulseType.playBeep() {
+        if (!settingsRepository.getSoundEnabled()) return
         val sound = when (this) {
             PulseType.HIGH -> ToneGenerator.TONE_PROP_BEEP2
             PulseType.RECOVERY -> ToneGenerator.TONE_PROP_BEEP

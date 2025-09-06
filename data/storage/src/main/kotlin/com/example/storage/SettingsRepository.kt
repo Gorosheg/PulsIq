@@ -2,7 +2,7 @@ package com.example.storage
 
 import kotlinx.coroutines.flow.Flow
 
-interface ThresholdsRepository {
+interface SettingsRepository {
 
     val lowerThresholdFlow: Flow<Int>
 
@@ -13,4 +13,10 @@ interface ThresholdsRepository {
     fun getLowerThreshold(): Int
 
     fun getUpperThreshold(): Int
+
+    fun saveSoundVibration(soundEnabled: Boolean, vibrationEnabled: Boolean)
+
+    fun getSoundEnabled(): Boolean
+
+    fun getVibrationEnabled(): Boolean
 }
