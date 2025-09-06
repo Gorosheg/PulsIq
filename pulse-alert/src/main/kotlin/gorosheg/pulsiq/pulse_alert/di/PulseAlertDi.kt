@@ -12,21 +12,22 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
 val pulseAlertModule = module {
+    factory {
+        val context = androidContext()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            context.getSystemService(VibratorManager::class.java)?.defaultVibrator
+        } else {
+            @Suppress("DEPRECATION")
+            context.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
+        }
+    }
+
     single<PulseAlertRepository> {
         PulseAlertRepositoryImpl(
             context = androidContext(),
             heartBeatDataSource = get<HeartBeatDataSource>(),
             thresholdsRepository = get<ThresholdsRepository>(),
-            vibrator = get<Vibrator>()
+            vibrator = get()
         )
-    }
-
-    single<Vibrator> {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            androidContext().getSystemService(VibratorManager::class.java).defaultVibrator
-        } else {
-            @Suppress("DEPRECATION")
-            androidContext().getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-        }
     }
 }

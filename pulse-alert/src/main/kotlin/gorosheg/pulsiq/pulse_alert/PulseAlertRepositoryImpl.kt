@@ -20,7 +20,7 @@ class PulseAlertRepositoryImpl(
     private val heartBeatDataSource: HeartBeatDataSource,
     private val thresholdsRepository: ThresholdsRepository,
     private val scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO),
-    private val vibrator: Vibrator,
+    private val vibrator: Vibrator?
 ) : PulseAlertRepository {
 
     private var isInRecoveryState = false
@@ -52,7 +52,6 @@ class PulseAlertRepositoryImpl(
     @Suppress("MissingPermission")
     private fun PulseType.vibrate() {
         if (!context.vibratorPermissionGranted) return
-        val vibrator = vibrator
 
         val vibration = when (this) {
             PulseType.HIGH -> VibrationEffect.createOneShot(
@@ -66,9 +65,9 @@ class PulseAlertRepositoryImpl(
                 -1
             )
         }
-
-        vibrator.vibrate(vibration)
+        vibrator?.vibrate(vibration)
     }
+
 
     private fun PulseType.playBeep() {
         val sound = when (this) {

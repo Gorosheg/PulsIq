@@ -2,6 +2,7 @@ package gorosheg.pulsiq
 
 import android.app.Application
 import gorosheg.pulsiq.bluetooth.HeartBeatDataSource
+import gorosheg.pulsiq.common.utils.bluetoothPermissionsGranted
 import gorosheg.pulsiq.pulse_alert.PulseAlertRepository
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
@@ -10,9 +11,6 @@ import kotlin.getValue
 
 class App : Application() {
 
-    private val pulseAlertRepository: PulseAlertRepository by inject()
-    private val heartBeatDataSource: HeartBeatDataSource by inject()
-
     override fun onCreate() {
         super.onCreate()
         startKoin {
@@ -20,7 +18,13 @@ class App : Application() {
             modules(appModules)
         }
 
+        val pulseAlertRepository: PulseAlertRepository by inject()
+        val heartBeatDataSource: HeartBeatDataSource by inject()
+
         pulseAlertRepository.initialize()
-        heartBeatDataSource.startScan()
+        
+        if (bluetoothPermissionsGranted) {
+            heartBeatDataSource.startScan()
+        }
     }
 }

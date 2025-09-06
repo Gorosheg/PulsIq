@@ -18,7 +18,7 @@ val bluetoothModule = module {
         )
     }
 
-    single<BluetoothLeScanner?> {
+    factory<BluetoothLeScanner?> {
         val bluetoothManager = androidContext().getSystemService(BluetoothManager::class.java)
         val bluetoothAdapter = bluetoothManager?.adapter
         bluetoothAdapter?.bluetoothLeScanner
