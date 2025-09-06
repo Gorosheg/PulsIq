@@ -29,9 +29,10 @@ android {
 }
 
 dependencies {
+    implementation(project(":core:common"))
+
     implementation(libs.room.ktx)
     implementation(libs.room.runtime)
     implementation(libs.androidx.datastore.preferences)
-    implementation(project(":core:common"))
     ksp(libs.room.compiler)
 }

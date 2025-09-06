@@ -1,4 +1,4 @@
-package com.example.storage
+package com.example.storage.settings
 
 import kotlinx.coroutines.flow.Flow
 

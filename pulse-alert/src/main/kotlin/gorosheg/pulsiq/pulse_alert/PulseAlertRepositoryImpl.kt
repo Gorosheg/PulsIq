@@ -5,7 +5,7 @@ import android.media.AudioManager
 import android.media.ToneGenerator
 import android.os.VibrationEffect
 import android.os.Vibrator
-import com.example.storage.SettingsRepository
+import com.example.storage.settings.SettingsRepository
 import gorosheg.pulsiq.bluetooth.HeartBeatDataSource
 import gorosheg.pulsiq.common.utils.vibratorPermissionGranted
 import kotlinx.coroutines.CoroutineScope

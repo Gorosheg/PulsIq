@@ -1,6 +1,6 @@
 package gorosheg.pulsiq.settings.presentation
 
-import com.example.storage.SettingsRepository
+import com.example.storage.settings.SettingsRepository
 import gorosheg.pulsiq.common.viewModel.BaseViewModel
 import gorosheg.pulsiq.settings.presentation.model.SettingsEffect
 import gorosheg.pulsiq.settings.presentation.model.SettingsState
