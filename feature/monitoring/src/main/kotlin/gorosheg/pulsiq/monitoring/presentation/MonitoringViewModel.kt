@@ -8,6 +8,7 @@ import gorosheg.pulsiq.monitoring.presentation.model.MonitoringEffect
 import gorosheg.pulsiq.monitoring.presentation.model.MonitoringState
 import gorosheg.pulsiq.monitoring.ui.MonitoringUiStateMapper
 import gorosheg.pulsiq.monitoring.ui.model.MonitoringUiState
+import gorosheg.pulsiq.statistics_repository.StatisticsRepository
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -15,6 +16,7 @@ import kotlinx.coroutines.flow.onEach
 internal class MonitoringViewModel(
     private val heartBeatDataSource: HeartBeatDataSource,
     private val pulseNotificationInitializer: PulseNotificationInitializer,
+    private val statisticsRepository: StatisticsRepository,
 ) : BaseViewModel<MonitoringState, MonitoringUiState, MonitoringEffect>(
     initState = MonitoringState(),
     uiStateMapper = MonitoringUiStateMapper()
