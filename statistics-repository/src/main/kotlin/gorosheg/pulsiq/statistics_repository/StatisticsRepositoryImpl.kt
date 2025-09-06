@@ -9,5 +9,4 @@ class StatisticsRepositoryImpl(
     override suspend fun addPulse(pulse: Int) {
         statisticsDatabaseDatasource.addPulse(pulse)
     }
-
 }

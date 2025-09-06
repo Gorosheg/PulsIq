@@ -39,4 +39,8 @@ android {
 dependencies {
     implementation(project(":core:common"))
     implementation(project(":core:ui"))
+    implementation(project(":statistics-repository"))
+
+    implementation(libs.vico.compose)
+    implementation(libs.vico.compose.m3)
 }
