@@ -39,7 +39,10 @@ internal class MonitoringViewModel(
     private fun subscribeToPulse() {
         heartBeatSubscriptionJob?.cancel()
         heartBeatSubscriptionJob = heartBeatDataSource.subscribeHeartRateFlow()
-            .onEach { state { copy(pulse = it) } }
+            .onEach { pulse ->
+                state { copy(pulse = pulse) }
+                statisticsRepository.addPulse(pulse)
+            }
             .launchIn(viewModelScope)
     }
 }
