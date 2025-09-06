@@ -26,16 +26,31 @@ internal class SettingsScreen : Screen {
             }
         )
 
-        selectedSetting.value?.let {
-            PulseThresholdDialog(
-                lowerThreshold = state.lowerThreshold,
-                upperThreshold = state.upperThreshold,
-                onDismiss = { selectedSetting.value = null },
-                onApply = { lower, upper ->
-                    viewModel.updateThresholds(lower = lower, upper = upper)
-                    selectedSetting.value = null
+        selectedSetting.value?.let { setting ->
+            when (setting.id) {
+                0 -> {
+                    PulseThresholdDialog(
+                        lowerThreshold = state.lowerThreshold,
+                        upperThreshold = state.upperThreshold,
+                        onDismiss = { selectedSetting.value = null },
+                        onApply = { lower, upper ->
+                            viewModel.updateThresholds(lower = lower, upper = upper)
+                            selectedSetting.value = null
+                        }
+                    )
                 }
-            )
+                1 -> {
+                    SoundVibrationDialog(
+                        soundEnabled = state.soundEnabled,
+                        vibrationEnabled = state.vibrationEnabled,
+                        onDismiss = { selectedSetting.value = null },
+                        onApply = { sound, vibration ->
+                            viewModel.updateSoundVibration(soundEnabled = sound, vibrationEnabled = vibration)
+                            selectedSetting.value = null
+                        }
+                    )
+                }
+            }
         }
     }
 }

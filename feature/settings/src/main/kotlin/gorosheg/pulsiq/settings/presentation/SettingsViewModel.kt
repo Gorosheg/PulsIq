@@ -16,7 +16,10 @@ internal class SettingsViewModel(
     init {
         state {
             copy(
-                settingItems = listOf(SettingsUiState.SettingItem(id = 0, title = "Границы пульса")),
+                settingItems = listOf(
+                    SettingsUiState.SettingItem(id = 0, title = "Границы пульса"),
+                    SettingsUiState.SettingItem(id = 1, title = "Звук и вибрация")
+                ),
                 lowerThreshold = thresholdsRepository.getLowerThreshold(),
                 upperThreshold = thresholdsRepository.getUpperThreshold()
             )
@@ -26,5 +29,9 @@ internal class SettingsViewModel(
     fun updateThresholds(lower: Int, upper: Int) {
         state { copy(lowerThreshold = lower, upperThreshold = upper) }
         thresholdsRepository.saveThresholds(lower = lower, upper = upper)
+    }
+
+    fun updateSoundVibration(soundEnabled: Boolean, vibrationEnabled: Boolean) {
+        state { copy(soundEnabled = soundEnabled, vibrationEnabled = vibrationEnabled) }
     }
 }

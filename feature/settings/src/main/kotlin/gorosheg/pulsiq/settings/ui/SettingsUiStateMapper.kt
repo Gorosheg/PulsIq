@@ -9,7 +9,9 @@ internal class SettingsUiStateMapper : UiStateMapper<SettingsState, SettingsUiSt
         return SettingsUiState(
             settingItems = settingItems,
             lowerThreshold= lowerThreshold,
-            upperThreshold = upperThreshold
+            upperThreshold = upperThreshold,
+            soundEnabled = soundEnabled,
+            vibrationEnabled = vibrationEnabled
         )
     }
 }
