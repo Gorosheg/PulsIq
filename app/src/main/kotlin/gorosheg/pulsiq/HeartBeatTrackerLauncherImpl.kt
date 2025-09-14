@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
-internal class HeartBeatTrackerLauncherImpl( // todo: service неверно закрывается при дестрое приложения? HeartBeatTrackerLauncherImpl пересоздается?.
+internal class HeartBeatTrackerLauncherImpl(
     private val heartBeatDataSource: HeartBeatDataSource,
     scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 ) : HeartBeatTrackerLauncher {

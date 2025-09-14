@@ -1,11 +1,10 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
-    alias(libs.plugins.compose.compiler)
 }
 
 android {
-    namespace = "gorosheg.pulsiq.monitoring"
+    namespace = "gorosheg.pulsiq.device_connection_repository"
     compileSdk = 36
 
     defaultConfig {
@@ -26,20 +25,9 @@ android {
             jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
         }
     }
-    buildFeatures {
-        compose = true
-    }
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
-    }
 }
 
 dependencies {
     implementation(project(":core:common"))
     implementation(project(":core:bluetooth"))
-    implementation(project(":core:ui"))
-    implementation(project(":statistics-repository"))
-    implementation(project(":feature:device-connection"))
 }

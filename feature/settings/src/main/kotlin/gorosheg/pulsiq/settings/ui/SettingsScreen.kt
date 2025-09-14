@@ -39,6 +39,7 @@ internal class SettingsScreen : Screen {
                         }
                     )
                 }
+
                 1 -> {
                     SoundVibrationDialog(
                         soundEnabled = state.soundEnabled,
@@ -50,6 +51,8 @@ internal class SettingsScreen : Screen {
                         }
                     )
                 }
+
+                2 -> viewModel.navigateToDetailsScreen()
             }
         }
     }

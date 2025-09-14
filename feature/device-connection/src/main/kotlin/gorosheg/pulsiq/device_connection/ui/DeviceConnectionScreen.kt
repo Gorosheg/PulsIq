@@ -15,6 +15,10 @@ internal class DeviceConnectionScreen : Screen {
 
         DeviceConnectionScreenContent(
             state = state,
+            onStartScan = { viewModel.startScan() },
+            onStopScan = { viewModel.stopScan() },
+            onDeviceClick = { address -> viewModel.onDeviceClick(address) },
+            onDisconnect = { viewModel.disconnect() }
         )
     }
 }

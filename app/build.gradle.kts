@@ -57,7 +57,8 @@ dependencies {
     implementation(project(":feature:settings"))
     implementation(project(":feature:statistics"))
     implementation(project(":feature:pulse-notification"))
-    implementation(project(":statistics-repository"))
     implementation(project(":feature:device-connection"))
+    implementation(project(":statistics-repository"))
+    implementation(project(":device-connection-repository"))
     implementation(libs.androidx.lifecycle.process)
 }

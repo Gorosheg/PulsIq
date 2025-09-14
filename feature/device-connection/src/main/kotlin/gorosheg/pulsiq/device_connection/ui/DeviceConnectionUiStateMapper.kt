@@ -8,7 +8,11 @@ internal class DeviceConnectionUiStateMapper : UiStateMapper<DeviceConnectionSta
 
     override fun DeviceConnectionState.map(): DeviceConnectionUiState {
         return DeviceConnectionUiState(
-            a = a
+            isScanning = isScanning,
+            devices = devices,
+            connectedAddress = connectedAddress,
+            connectingAddress = connectingAddress,
+            error = error,
         )
     }
 }

@@ -1,4 +1,4 @@
-package gorosheg.pulsiq.device_connection.navigation
+package gorosheg.pulsiq.common.navigation.provider
 
 import cafe.adriel.voyager.core.screen.Screen
 
