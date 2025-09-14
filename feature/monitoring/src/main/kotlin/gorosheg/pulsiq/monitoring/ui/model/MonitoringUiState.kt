@@ -3,7 +3,7 @@ package gorosheg.pulsiq.monitoring.ui.model
 import androidx.compose.ui.graphics.Color
 import gorosheg.pulsiq.ui.Blue
 
-internal data class MonitoringUiState(
+internal class MonitoringUiState(
     val isTracking: Boolean = false,
     val pulse: Int = 0,
     val heartColor: Color = Blue,

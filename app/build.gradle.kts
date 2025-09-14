@@ -58,6 +58,6 @@ dependencies {
     implementation(project(":feature:statistics"))
     implementation(project(":feature:pulse-notification"))
     implementation(project(":statistics-repository"))
-
+    implementation(project(":feature:device-connection"))
     implementation(libs.androidx.lifecycle.process)
 }
