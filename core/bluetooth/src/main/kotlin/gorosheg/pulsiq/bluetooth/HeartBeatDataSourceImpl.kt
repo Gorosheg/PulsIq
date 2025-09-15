@@ -13,6 +13,7 @@ import android.bluetooth.le.ScanResult
 import android.bluetooth.le.ScanSettings
 import android.content.Context
 import android.os.ParcelUuid
+import android.os.SystemClock
 import gorosheg.pulsiq.bluetooth.model.BleDevice
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -29,7 +30,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.koin.core.definition.Callbacks
 import java.util.UUID
 
 internal class HeartBeatDataSourceImpl(
@@ -52,21 +52,26 @@ internal class HeartBeatDataSourceImpl(
                 .sortedByDescending { it.rssi }
                 .map { it.toBleDevice() }
         }
+        .distinctUntilChanged()
         .stateIn(scope, SharingStarted.Eagerly, emptyList())
 
     private val scanCallback = object : ScanCallback() {
 
-        override fun onScanResult(type: Int, result: ScanResult) {
+        override fun onScanResult(callbackType: Int, result: ScanResult) {
             val dev = result.device ?: return
             val address = dev.address ?: return
-            val connectable = result.isConnectable
+
+            if (callbackType == ScanSettings.CALLBACK_TYPE_MATCH_LOST) {
+                _devices.update { it - address }
+                return
+            }
 
             _devices.update { map ->
                 map + (address to DiscoveredDevice(
                     device = dev,
                     name = dev.name ?: "Unknown",
                     rssi = result.rssi,
-                    isConnectable = connectable
+                    isConnectable = result.isConnectable
                 ))
             }
         }
@@ -99,8 +104,6 @@ internal class HeartBeatDataSourceImpl(
 
     override fun subscribeAvailableDevicesFlow(): Flow<List<BleDevice>> {
         return availableDevices
-            .debounce(1000L)
-            .distinctUntilChanged()
     }
 
     override fun startScan() {
@@ -112,6 +115,9 @@ internal class HeartBeatDataSourceImpl(
 
         val settings = ScanSettings.Builder()
             .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
+            .setCallbackType(ScanSettings.CALLBACK_TYPE_FIRST_MATCH or ScanSettings.CALLBACK_TYPE_MATCH_LOST)
+            .setMatchMode(ScanSettings.MATCH_MODE_AGGRESSIVE)
+            .setReportDelay(0)
             .build()
 
         scanner?.startScan(listOf(filter), settings, scanCallback)
@@ -179,7 +185,6 @@ internal class HeartBeatDataSourceImpl(
         if (isUserDisconnected) return
         reconnectionJob?.cancel()
         reconnectionJob = scope.launch {
-            delay(RECONNECT_DELAY_MS)
             connectToGatt {}
         }
     }
@@ -202,12 +207,9 @@ internal class HeartBeatDataSourceImpl(
     )
 
     companion object {
-
         internal val heartRateMeasurementUUID = UUID.fromString("00002A37-0000-1000-8000-00805f9b34fb")
         internal val cccdUUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
         internal val heartRateServiceUUID = UUID.fromString("0000180D-0000-1000-8000-00805f9b34fb")
-
-        private const val RECONNECT_DELAY_MS = 1000L
     }
 }
 
@@ -215,5 +217,5 @@ private data class DiscoveredDevice(
     val device: BluetoothDevice,
     val name: String,
     val rssi: Int,
-    val isConnectable: Boolean
+    val isConnectable: Boolean,
 )

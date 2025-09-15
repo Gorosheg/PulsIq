@@ -95,4 +95,3 @@ private fun ByteArray.parseHeartRate(): Int {
         (b1 shl 8) or b0
     }
 }
-

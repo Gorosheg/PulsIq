@@ -6,10 +6,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,15 +14,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -37,8 +33,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
@@ -109,12 +103,6 @@ internal fun DeviceConnectionScreenContent(
                 ) { Text("Стоп") }
 
                 Spacer(Modifier.weight(1f))
-
-                if (state.connectedAddress != null) {
-                    OutlinedButton(onClick = onDisconnect) {
-                        Text("Отключить")
-                    }
-                }
             }
 
             Spacer(Modifier.height(16.dp))
@@ -140,14 +128,21 @@ internal fun DeviceConnectionScreenContent(
                         .padding(top = 4.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    items(state.devices, key = { it.address }) { d ->
+                    itemsIndexed(state.devices, key = { _, d -> d.address }) { index, d ->
                         DeviceRow(
                             device = d,
                             isConnected = state.connectedAddress == d.address,
                             isConnecting = state.connectingAddress == d.address,
-                            onClick = { onDeviceClick(d.address) }
+                            onClick = { onDeviceClick(d.address) },
+                            onDisconnect = onDisconnect
                         )
-                        Divider()
+                        if (index < state.devices.lastIndex) {
+                            HorizontalDivider(
+                                modifier = Modifier.padding(vertical = 4.dp),
+                                thickness = 1.dp,
+                                color = MaterialTheme.colorScheme.outlineVariant
+                            )
+                        }
                     }
                 }
             }
@@ -160,11 +155,6 @@ internal fun DeviceConnectionScreenContent(
                 ) {
                     CircularProgressIndicator()
                 }
-            }
-
-            state.connectedAddress?.let { addr ->
-                Spacer(Modifier.height(12.dp))
-                Text("Подключено к: $addr", fontWeight = FontWeight.Medium)
             }
 
             state.error?.let { err ->
@@ -180,12 +170,12 @@ private fun DeviceRow(
     device: UiBleDevice,
     isConnected: Boolean,
     isConnecting: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onDisconnect: () -> Unit
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
             .padding(vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -198,7 +188,10 @@ private fun DeviceRow(
         Spacer(Modifier.width(8.dp))
 
         when {
-            isConnected -> AssistChip(onClick = {}, label = { Text("Подключено") })
+            isConnected -> OutlinedButton(onClick = onDisconnect) {
+                Text("Отключить")
+            }
+
             isConnecting -> AssistChip(onClick = {}, label = { Text("Подключение...") })
             else -> Button(onClick = onClick) { Text("Подключить") }
         }
