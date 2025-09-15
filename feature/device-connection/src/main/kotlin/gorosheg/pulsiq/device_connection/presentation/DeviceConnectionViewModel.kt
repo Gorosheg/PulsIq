@@ -32,34 +32,32 @@ internal class DeviceConnectionViewModel(
         }
     }
 
-    @RequiresPermission(Manifest.permission.BLUETOOTH_SCAN)
     fun startScan() {
         heartBeatDataSource.startScan()
         state { copy(isScanning = true) }
     }
 
-    @RequiresPermission(Manifest.permission.BLUETOOTH_SCAN)
     fun stopScan() {
         heartBeatDataSource.stopScan()
         state { copy(isScanning = false) }
     }
 
-    @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
     fun onDeviceClick(address: String) {
         state { copy(connectingAddress = address) }
         viewModelScope.launch {
-            val result: Result<Unit> = heartBeatDataSource.connect(address)
-            if (result.isSuccess){
-                state { copy(connectedAddress = address) }
-            } else {
-                state { copy(error = result.exceptionOrNull()?.message) }
+            heartBeatDataSource.connect(address) { isConnected ->
+                if (isConnected) {
+                    state { copy(connectedAddress = address) }
+                } else {
+                    state { copy(error = "Ошибка подключения") }
+                }
             }
         }
     }
 
-    @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
     fun disconnect() {
         heartBeatDataSource.disconnect()
+        state { copy(connectedAddress = null, connectingAddress = null) }
     }
 
     private fun List<BleDevice>.toUi(): List<UiBleDevice> {

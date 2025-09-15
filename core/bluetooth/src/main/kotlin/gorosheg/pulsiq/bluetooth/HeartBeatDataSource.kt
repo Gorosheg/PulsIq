@@ -13,7 +13,7 @@ interface HeartBeatDataSource {
 
     fun stopScan()
 
-    fun connect(address: String): Result<Unit>
+    fun connect(address: String, connected: (Boolean) -> Unit)
 
     fun disconnect()
 }

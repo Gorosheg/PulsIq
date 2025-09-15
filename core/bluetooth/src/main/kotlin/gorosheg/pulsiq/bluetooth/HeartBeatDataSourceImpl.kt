@@ -29,6 +29,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.koin.core.definition.Callbacks
 import java.util.UUID
 
 internal class HeartBeatDataSourceImpl(
@@ -120,8 +121,8 @@ internal class HeartBeatDataSourceImpl(
         scanner?.stopScan(scanCallback)
     }
 
-    override fun connect(address: String): Result<Unit> {
-        return try {
+    override fun connect(address: String, connected: (Boolean) -> Unit) {
+        try {
             isUserDisconnected = false
             reconnectionJob?.cancel()
             reconnectionJob = null
@@ -139,12 +140,11 @@ internal class HeartBeatDataSourceImpl(
             lastDevice = device
 
             scope.launch(Dispatchers.Main.immediate) {
-                connectToGatt()
+                connectToGatt(connected::invoke::invoke)
             }
 
-            Result.success(Unit)
-        } catch (t: Throwable) {
-            Result.failure(t)
+        } catch (_: Throwable) {
+            connected.invoke(false)
         }
     }
 
@@ -153,11 +153,11 @@ internal class HeartBeatDataSourceImpl(
         reconnectionJob?.cancel()
         reconnectionJob = null
 
-        scanner?.stopScan(scanCallback)
+        stopScan()
         safeCloseGatt()
     }
 
-    private fun connectToGatt() {
+    private fun connectToGatt(connected: (Boolean) -> Unit) {
         scope.launch(Dispatchers.Main.immediate) {
             safeCloseGatt()
             val device = lastDevice ?: return@launch
@@ -170,6 +170,8 @@ internal class HeartBeatDataSourceImpl(
                     onDisconnected = ::startReconnectionAttempts
                 )
             )
+
+            connected.invoke(gatt != null)
         }
     }
 
@@ -178,7 +180,7 @@ internal class HeartBeatDataSourceImpl(
         reconnectionJob?.cancel()
         reconnectionJob = scope.launch {
             delay(RECONNECT_DELAY_MS)
-            connectToGatt()
+            connectToGatt {}
         }
     }
 
