@@ -1,7 +1,5 @@
 package gorosheg.pulsiq.device_connection.presentation
 
-import android.Manifest
-import androidx.annotation.RequiresPermission
 import androidx.lifecycle.viewModelScope
 import gorosheg.pulsiq.bluetooth.HeartBeatDataSource
 import gorosheg.pulsiq.bluetooth.model.BleDevice
@@ -64,7 +62,7 @@ internal class DeviceConnectionViewModel(
         return map {
             UiBleDevice(
                 name = it.name,
-                address = it.address,
+                address = it.device.address,
             )
         }
     }

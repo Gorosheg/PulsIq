@@ -13,13 +13,11 @@ import android.bluetooth.le.ScanResult
 import android.bluetooth.le.ScanSettings
 import android.content.Context
 import android.os.ParcelUuid
-import android.os.SystemClock
 import gorosheg.pulsiq.bluetooth.model.BleDevice
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -42,15 +40,14 @@ internal class HeartBeatDataSourceImpl(
     private var lastDevice: BluetoothDevice? = null
     private var isUserDisconnected = false
     private var reconnectionJob: Job? = null
+    private var connectionJob: Job? = null
 
     private val heartRateFlow: MutableStateFlow<Int> = MutableStateFlow(0)
 
-    private val _devices = MutableStateFlow<Map<String, DiscoveredDevice>>(emptyMap())
+    private val _devices = MutableStateFlow<List<BleDevice>>(emptyList())
     val availableDevices: StateFlow<List<BleDevice>> = _devices
         .map { m ->
-            m.values
-                .sortedByDescending { it.rssi }
-                .map { it.toBleDevice() }
+            m.sortedByDescending { it.rssi }
         }
         .distinctUntilChanged()
         .stateIn(scope, SharingStarted.Eagerly, emptyList())
@@ -58,42 +55,43 @@ internal class HeartBeatDataSourceImpl(
     private val scanCallback = object : ScanCallback() {
 
         override fun onScanResult(callbackType: Int, result: ScanResult) {
-            val dev = result.device ?: return
-            val address = dev.address ?: return
+            val device: BluetoothDevice = result.device ?: return
 
             if (callbackType == ScanSettings.CALLBACK_TYPE_MATCH_LOST) {
-                _devices.update { it - address }
+                _devices.update { list ->
+                    list.filterNot { it.device.address == device.address }
+                }
                 return
             }
 
-            _devices.update { map ->
-                map + (address to DiscoveredDevice(
-                    device = dev,
-                    name = dev.name ?: "Unknown",
-                    rssi = result.rssi,
-                    isConnectable = result.isConnectable
-                ))
+            _devices.update { list ->
+                val updated = list.filterNot { it.device.address == device.address }
+                updated + device.convertToBleDevice(result)
             }
         }
 
         override fun onBatchScanResults(results: MutableList<ScanResult>) {
-            val updates = results.mapNotNull { r ->
-                val dev = r.device ?: return@mapNotNull null
-                val key = dev.address ?: return@mapNotNull null
-                val connectable = r.isConnectable
-                key to DiscoveredDevice(
-                    device = dev,
-                    name = dev.name ?: "Unknown",
-                    rssi = r.rssi,
-                    isConnectable = connectable
-                )
-            }.toMap()
+            val updates = results.map { result ->
+                val device: BluetoothDevice = result.device ?: return
+                device.convertToBleDevice(result)
+            }
             if (updates.isNotEmpty()) _devices.update { it + updates }
         }
 
         override fun onScanFailed(errorCode: Int) {
-            // можно залогировать/пробросить в UI, если потребуется
+            // можно пробросить в UI
         }
+    }
+
+    private fun BluetoothDevice.convertToBleDevice(
+        result: ScanResult
+    ): BleDevice {
+        return BleDevice(
+            device = this,
+            name = name ?: "Unknown",
+            rssi = result.rssi,
+            isConnectable = result.isConnectable
+        )
     }
 
     override fun subscribeHeartRateFlow(): Flow<Int> {
@@ -104,6 +102,43 @@ internal class HeartBeatDataSourceImpl(
 
     override fun subscribeAvailableDevicesFlow(): Flow<List<BleDevice>> {
         return availableDevices
+    }
+
+    override fun connect(address: String, connected: (Boolean) -> Unit) {
+        try {
+            isUserDisconnected = false
+            reconnectionJob?.cancel()
+            reconnectionJob = null
+
+            val fromCache: BluetoothDevice? = _devices.value.find { it.device.address == address }?.device
+
+            val device = fromCache ?: run {
+                val manager = context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
+                val adapter = manager.adapter
+                adapter?.getRemoteDevice(address)
+            }
+
+            requireNotNull(device) { "Устройство с адресом $address не найдено" }
+
+            lastDevice = device
+
+            connectionJob = scope.launch(Dispatchers.Main.immediate) {
+                connectToGatt(connected)
+            }
+
+        } catch (_: Throwable) {
+            connected.invoke(false)
+        }
+    }
+
+    override fun disconnect() {
+        isUserDisconnected = true
+        reconnectionJob?.cancel()
+        reconnectionJob = null
+        connectionJob?.cancel()
+        connectionJob = null
+        stopScan()
+        safeCloseGatt()
     }
 
     override fun startScan() {
@@ -127,64 +162,25 @@ internal class HeartBeatDataSourceImpl(
         scanner?.stopScan(scanCallback)
     }
 
-    override fun connect(address: String, connected: (Boolean) -> Unit) {
-        try {
-            isUserDisconnected = false
-            reconnectionJob?.cancel()
-            reconnectionJob = null
-
-            val fromCache = _devices.value[address]?.device
-
-            val device = fromCache ?: run {
-                val manager = context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
-                val adapter = manager.adapter
-                adapter?.getRemoteDevice(address)
-            }
-
-            requireNotNull(device) { "Устройство с адресом $address не найдено" }
-
-            lastDevice = device
-
-            scope.launch(Dispatchers.Main.immediate) {
-                connectToGatt(connected::invoke::invoke)
-            }
-
-        } catch (_: Throwable) {
-            connected.invoke(false)
-        }
-    }
-
-    override fun disconnect() {
-        isUserDisconnected = true
-        reconnectionJob?.cancel()
-        reconnectionJob = null
-
-        stopScan()
-        safeCloseGatt()
-    }
-
     private fun connectToGatt(connected: (Boolean) -> Unit) {
-        scope.launch(Dispatchers.Main.immediate) {
-            safeCloseGatt()
-            val device = lastDevice ?: return@launch
+        safeCloseGatt()
+        val device = lastDevice ?: return
 
-            gatt = device.connectGatt(
-                context,
-                false,
-                onPulseChanged(
-                    callback = { pulse -> heartRateFlow.value = pulse },
-                    onDisconnected = ::startReconnectionAttempts
-                )
+        gatt = device.connectGatt(
+            context,
+            false,
+            onPulseChanged(
+                callback = { pulse -> heartRateFlow.value = pulse },
+                connected = connected,
+                onDisconnected = ::startReconnectionAttempts
             )
-
-            connected.invoke(gatt != null)
-        }
+        )
     }
 
     private fun startReconnectionAttempts() {
         if (isUserDisconnected) return
         reconnectionJob?.cancel()
-        reconnectionJob = scope.launch {
+        reconnectionJob = scope.launch(Dispatchers.Main.immediate) {
             connectToGatt {}
         }
     }
@@ -199,23 +195,9 @@ internal class HeartBeatDataSourceImpl(
         gatt = null
     }
 
-    private fun DiscoveredDevice.toBleDevice() = BleDevice(
-        name = name,
-        address = device.address ?: "00:00:00:00:00:00",
-        rssi = rssi,
-        isConnectable = isConnectable
-    )
-
     companion object {
         internal val heartRateMeasurementUUID = UUID.fromString("00002A37-0000-1000-8000-00805f9b34fb")
         internal val cccdUUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
         internal val heartRateServiceUUID = UUID.fromString("0000180D-0000-1000-8000-00805f9b34fb")
     }
 }
-
-private data class DiscoveredDevice(
-    val device: BluetoothDevice,
-    val name: String,
-    val rssi: Int,
-    val isConnectable: Boolean,
-)

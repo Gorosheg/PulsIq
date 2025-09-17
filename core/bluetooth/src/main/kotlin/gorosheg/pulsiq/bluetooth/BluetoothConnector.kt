@@ -15,33 +15,49 @@ import gorosheg.pulsiq.bluetooth.HeartBeatDataSourceImpl.Companion.heartRateServ
 
 internal fun onPulseChanged(
     callback: (Int) -> Unit,
+    connected: (Boolean) -> Unit,
     onDisconnected: (() -> Unit)
 ): BluetoothGattCallback {
     return object : BluetoothGattCallback() {
 
-        override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
+        override fun onConnectionStateChange(
+            gatt: BluetoothGatt,
+            status: Int,
+            newState: Int
+        ) {
             when (newState) {
                 BluetoothProfile.STATE_CONNECTED -> {
                     if (status == BluetoothGatt.GATT_SUCCESS) {
                         gatt.discoverServices()
+                    } else {
+                        connected.invoke(false)
+                        onDisconnected.invoke()
                     }
                 }
 
                 BluetoothProfile.STATE_DISCONNECTED -> {
+                    connected.invoke(false)
                     onDisconnected.invoke()
                 }
             }
         }
 
         override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
-            if (status != BluetoothGatt.GATT_SUCCESS) return
+            if (status != BluetoothGatt.GATT_SUCCESS) {
+                connected.invoke(false)
+                return
+            }
 
             val characteristic = gatt
                 .getService(heartRateServiceUUID)
                 ?.getCharacteristic(heartRateMeasurementUUID)
-                ?: return
+                ?: run {
+                    connected.invoke(false)
+                    return
+                }
 
             gatt.enableNotifications(characteristic)
+            connected.invoke(true)
         }
 
         @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -54,7 +70,10 @@ internal fun onPulseChanged(
         }
 
         @Suppress("DEPRECATION")
-        override fun onCharacteristicChanged(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic) {
+        override fun onCharacteristicChanged(
+            gatt: BluetoothGatt,
+            characteristic: BluetoothGattCharacteristic
+        ) {
             val bytes = characteristic.value ?: return
             callback.invoke(bytes.parseHeartRate())
         }

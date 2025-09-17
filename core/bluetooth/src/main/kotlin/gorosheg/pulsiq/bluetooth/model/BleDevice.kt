@@ -1,8 +1,10 @@
 package gorosheg.pulsiq.bluetooth.model
 
+import android.bluetooth.BluetoothDevice
+
 data class BleDevice(
-    val name: String,
-    val address: String,
     val rssi: Int,
+    val name: String,
+    val device: BluetoothDevice,
     val isConnectable: Boolean
 )
