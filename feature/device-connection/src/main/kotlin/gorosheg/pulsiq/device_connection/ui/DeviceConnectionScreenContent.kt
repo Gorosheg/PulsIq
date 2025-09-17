@@ -116,10 +116,15 @@ internal fun DeviceConnectionScreenContent(
             }
 
             if (state.devices.isEmpty()) {
-                Text(
-                    text = "Нет доступных устройств",
-                    style = MaterialTheme.typography.bodyMedium
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "Нет доступных устройств",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
             } else {
                 LazyColumn(
                     modifier = Modifier
@@ -159,7 +164,12 @@ internal fun DeviceConnectionScreenContent(
 
             state.error?.let { err ->
                 Spacer(Modifier.height(8.dp))
-                Text(err, color = MaterialTheme.colorScheme.error)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(err, color = MaterialTheme.colorScheme.error)
+                }
             }
         }
     }

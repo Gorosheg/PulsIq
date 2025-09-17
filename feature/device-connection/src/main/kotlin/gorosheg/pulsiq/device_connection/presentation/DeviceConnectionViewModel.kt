@@ -24,7 +24,7 @@ internal class DeviceConnectionViewModel(
         viewModelScope.launch {
             heartBeatDataSource.subscribeAvailableDevicesFlow()
                 .onEach {
-                    state { copy(devices = it.toUi()) }
+                    state { copy(devices = it.toUi(), error = null) }
                 }
                 .launchIn(viewModelScope)
         }
@@ -32,22 +32,22 @@ internal class DeviceConnectionViewModel(
 
     fun startScan() {
         heartBeatDataSource.startScan()
-        state { copy(isScanning = true) }
+        state { copy(isScanning = true, error = null) }
     }
 
     fun stopScan() {
         heartBeatDataSource.stopScan()
-        state { copy(isScanning = false) }
+        state { copy(isScanning = false, error = null) }
     }
 
     fun onDeviceClick(address: String) {
-        state { copy(connectingAddress = address) }
+        state { copy(connectingAddress = address, error = null) }
         viewModelScope.launch {
             heartBeatDataSource.connect(address) { isConnected ->
                 if (isConnected) {
                     state { copy(connectedAddress = address) }
                 } else {
-                    state { copy(error = "Ошибка подключения") }
+                    state { copy(connectingAddress = null, error = "Ошибка подключения") }
                 }
             }
         }
@@ -55,7 +55,7 @@ internal class DeviceConnectionViewModel(
 
     fun disconnect() {
         heartBeatDataSource.disconnect()
-        state { copy(connectedAddress = null, connectingAddress = null) }
+        state { copy(connectedAddress = null, connectingAddress = null, error = null) }
     }
 
     private fun List<BleDevice>.toUi(): List<UiBleDevice> {
