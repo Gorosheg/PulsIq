@@ -1,6 +1,6 @@
-package com.example.storage.mapper
+package gorosheg.pulsiq.storage.mapper
 
-import com.example.storage.midel.StatisticsEntity
+import gorosheg.pulsiq.storage.midel.StatisticsEntity
 
 internal fun List<StatisticsEntity>.toDomain(): List<Int> {
     return map(StatisticsEntity::toDomain)

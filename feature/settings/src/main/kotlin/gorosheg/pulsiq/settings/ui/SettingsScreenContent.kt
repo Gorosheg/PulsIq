@@ -21,8 +21,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import gorosheg.pulsiq.settings.ui.model.SettingsUiState
 import gorosheg.pulsiq.ui.BlueGray
@@ -31,7 +31,7 @@ import gorosheg.pulsiq.ui.White
 @Composable
 internal fun SettingsScreenContent(
     state: SettingsUiState,
-    onSettingClick: (id: Int) -> Unit,
+    onSettingClick: (setting: SettingsUiState.SettingItem) -> Unit,
 ) {
     LazyColumn(
         modifier = Modifier
@@ -40,7 +40,7 @@ internal fun SettingsScreenContent(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         items(state.settingItems) { setting ->
-            SettingCard(setting = setting, onClick = { onSettingClick(setting.id) })
+            SettingCard(setting = setting, onClick = { onSettingClick(setting) })
         }
     }
 }
@@ -70,26 +70,10 @@ private fun SettingCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = setting.title,
+                text = stringResource(setting.title),
                 style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium),
                 color = White
             )
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun SettingsScreenContentPreview() {
-    SettingsScreenContent(
-        state = SettingsUiState(
-            settingItems = listOf(
-                SettingsUiState.SettingItem(
-                    id = 0,
-                    title = "Границы пульса"
-                ),
-            )
-        ),
-        onSettingClick = {}
-    )
 }

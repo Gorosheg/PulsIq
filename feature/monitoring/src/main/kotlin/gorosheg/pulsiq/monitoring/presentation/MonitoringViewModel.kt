@@ -1,7 +1,7 @@
 package gorosheg.pulsiq.monitoring.presentation
 
 import androidx.lifecycle.viewModelScope
-import gorosheg.pulsiq.bluetooth.HeartBeatDataSource
+import gorosheg.pulsiq.bluetooth.BluetoothRepository
 import gorosheg.pulsiq.common.notification.PulseNotificationInitializer
 import gorosheg.pulsiq.common.viewModel.BaseViewModel
 import gorosheg.pulsiq.monitoring.presentation.model.MonitoringEffect
@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
 internal class MonitoringViewModel(
-    private val heartBeatDataSource: HeartBeatDataSource,
+    private val bluetoothRepository: BluetoothRepository,
     private val pulseNotificationInitializer: PulseNotificationInitializer,
     private val statisticsRepository: StatisticsRepository,
 ) : BaseViewModel<MonitoringState, MonitoringUiState, MonitoringEffect>(
@@ -26,21 +26,21 @@ internal class MonitoringViewModel(
     fun startMonitoring() {
         pulseNotificationInitializer.startPulseNotification()
         subscribeToPulse()
-        state { copy(isTracking = true) }
+        updateState { copy(isTracking = true) }
     }
 
     fun stopMonitoring() {
         pulseNotificationInitializer.stopPulseNotification()
         heartBeatSubscriptionJob?.cancel()
         heartBeatSubscriptionJob = null
-        state { copy(isTracking = false, pulse = 0) }
+        updateState { copy(isTracking = false, pulse = 0) }
     }
 
     private fun subscribeToPulse() {
         heartBeatSubscriptionJob?.cancel()
-        heartBeatSubscriptionJob = heartBeatDataSource.subscribeHeartRateFlow()
+        heartBeatSubscriptionJob = bluetoothRepository.heartRateFlow
             .onEach { pulse ->
-                state { copy(pulse = pulse) }
+                updateState { copy(pulse = pulse) }
                 statisticsRepository.addPulse(pulse)
             }
             .launchIn(viewModelScope)

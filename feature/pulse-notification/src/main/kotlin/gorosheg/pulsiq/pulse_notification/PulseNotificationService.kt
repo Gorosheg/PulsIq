@@ -13,7 +13,7 @@ import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
 import android.content.pm.ServiceInfo
-import gorosheg.pulsiq.bluetooth.HeartBeatDataSource
+import gorosheg.pulsiq.bluetooth.BluetoothRepository
 import gorosheg.pulsiq.common.activity_running_checker.HeartBeatTrackerLauncher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -25,22 +25,20 @@ import org.koin.android.ext.android.inject
 
 internal class PulseNotificationService : Service() {
 
-    private val heartBeatDataSource: HeartBeatDataSource by inject()
-    private val heartBeatTrackerLauncher: HeartBeatTrackerLauncher by inject()
+    private val bluetoothRepository: BluetoothRepository by inject()
 
     private val notificationManager by lazy { getSystemService(NOTIFICATION_SERVICE) as NotificationManager }
     private val remoteViews by lazy { RemoteViews(packageName, R.layout.notification_pulse) }
     private lateinit var notificationBuilder: NotificationCompat.Builder
-    private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     override fun onCreate() {
         super.onCreate()
-        heartBeatTrackerLauncher.changeServiceState(true)
         createNotificationChannel()
         buildNotification()
 
-        serviceScope.launch {
-            heartBeatDataSource.subscribeHeartRateFlow().collectLatest { bpm ->
+        scope.launch {
+            bluetoothRepository.heartRateFlow.collectLatest { bpm ->
                 remoteViews.setTextViewText(R.id.pulseText, getString(R.string.bpm, bpm))
                 notificationManager.notify(NOTIF_ID, notificationBuilder.build())
             }
@@ -62,9 +60,8 @@ internal class PulseNotificationService : Service() {
     }
 
     override fun onDestroy() {
-        heartBeatTrackerLauncher.changeServiceState(false)
         ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
-        serviceScope.cancel()
+        scope.cancel()
         super.onDestroy()
     }
 

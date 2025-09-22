@@ -4,6 +4,10 @@ package gorosheg.pulsiq
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
+import gorosheg.pulsiq.bluetooth.BluetoothRepository
+import gorosheg.pulsiq.common.utils.hasAllRequiredPermissions
+import gorosheg.pulsiq.common.utils.getMissingPermissionStrings
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
@@ -32,11 +36,19 @@ import kotlin.getValue
 
 class MainActivity : ComponentActivity() {
 
-    private val heartBeatTrackerLauncher: HeartBeatTrackerLauncher by inject()
+    private val bluetoothRepository: BluetoothRepository by inject()
+    
+    private val permissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        if (!permissions.all { it.value }) {
+            checkAndRequestPermissions()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        heartBeatTrackerLauncher.changeActivityState(true)
+        checkAndRequestPermissions()
 
         setContent {
             MyAppTheme {
@@ -44,10 +56,16 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-
-    override fun onDestroy() {
-        heartBeatTrackerLauncher.changeActivityState(false)
-        super.onDestroy()
+    
+    private fun checkAndRequestPermissions() {
+        if (hasAllRequiredPermissions()) {
+            bluetoothRepository.startScan()
+        } else {
+            val missingPermissions = getMissingPermissionStrings()
+            if (missingPermissions.isNotEmpty()) {
+                permissionLauncher.launch(missingPermissions)
+            }
+        }
     }
 
     @Composable

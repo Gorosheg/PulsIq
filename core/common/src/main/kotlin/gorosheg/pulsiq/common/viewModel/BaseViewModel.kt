@@ -27,13 +27,15 @@ open class BaseViewModel<State, UiState, Effect>(
     private val eventChannel: Channel<Effect> = Channel(Channel.BUFFERED)
     val eventsFlow: Flow<Effect> = eventChannel.receiveAsFlow()
 
+    protected val getState: State = state.value
+
     init {
         state.map(uiStateMapper::mapState)
             .onEach { _uiState.value = it }
             .launchIn(viewModelScope)
     }
 
-    protected fun state(update: State.() -> State) {
+    protected fun updateState(update: State.() -> State) {
         state.value = update.invoke(state.value)
     }
 

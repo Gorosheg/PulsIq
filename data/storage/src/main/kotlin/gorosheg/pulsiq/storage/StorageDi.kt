@@ -1,15 +1,15 @@
-package com.example.storage
+package gorosheg.pulsiq.storage
 
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.room.Room
-import com.example.storage.settings.SettingsRepository
-import com.example.storage.settings.SettingsRepositoryImpl
-import com.example.storage.statistics.StatisticsDatabase
-import com.example.storage.statistics.StatisticsDatabaseDatasource
-import com.example.storage.statistics.StatisticsDatabaseDatasourceImpl
+import gorosheg.pulsiq.storage.statistics.StatisticsDatabaseDatasource
+import gorosheg.pulsiq.storage.settings.SettingsRepository
+import gorosheg.pulsiq.storage.settings.SettingsRepositoryImpl
+import gorosheg.pulsiq.storage.statistics.StatisticsDatabase
+import gorosheg.pulsiq.storage.statistics.StatisticsDatabaseDatasourceImpl
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 

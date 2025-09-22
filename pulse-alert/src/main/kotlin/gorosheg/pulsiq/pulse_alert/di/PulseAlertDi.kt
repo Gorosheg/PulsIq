@@ -4,10 +4,10 @@ import android.content.Context
 import android.os.Build
 import android.os.Vibrator
 import android.os.VibratorManager
-import com.example.storage.settings.SettingsRepository
-import gorosheg.pulsiq.bluetooth.HeartBeatDataSource
+import gorosheg.pulsiq.bluetooth.BluetoothRepository
 import gorosheg.pulsiq.pulse_alert.PulseAlertRepository
 import gorosheg.pulsiq.pulse_alert.PulseAlertRepositoryImpl
+import gorosheg.pulsiq.storage.settings.SettingsRepository
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
@@ -24,8 +24,7 @@ val pulseAlertModule = module {
 
     single<PulseAlertRepository> {
         PulseAlertRepositoryImpl(
-            context = androidContext(),
-            heartBeatDataSource = get<HeartBeatDataSource>(),
+            bluetoothRepository = get<BluetoothRepository>(),
             settingsRepository = get<SettingsRepository>(),
             vibrator = get()
         )

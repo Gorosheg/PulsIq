@@ -5,6 +5,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import cafe.adriel.voyager.core.screen.Screen
 import gorosheg.pulsiq.settings.presentation.SettingsViewModel
 import gorosheg.pulsiq.settings.ui.model.SettingsUiState
@@ -16,44 +17,51 @@ internal class SettingsScreen : Screen {
     override fun Content() {
         val viewModel: SettingsViewModel = koinViewModel()
         val state by viewModel.uiState.collectAsState()
-        val selectedSetting = remember { mutableStateOf<SettingsUiState.SettingItem?>(null) }
+        var selectedSetting by remember { mutableStateOf<SettingsUiState.SettingItem?>(null) }
 
         SettingsScreenContent(
             state = state,
-            onSettingClick = { id ->
-                val setting = state.settingItems.firstOrNull { it.id == id }
-                selectedSetting.value = setting
+            onSettingClick = { setting ->
+                selectedSetting = setting
             }
         )
 
-        selectedSetting.value?.let { setting ->
-            when (setting.id) {
-                0 -> {
+        selectedSetting?.let { setting ->
+            when (setting) {
+                is SettingsUiState.SettingItem.ThresholdSettings -> {
                     PulseThresholdDialog(
-                        lowerThreshold = state.lowerThreshold,
-                        upperThreshold = state.upperThreshold,
-                        onDismiss = { selectedSetting.value = null },
+                        setting = setting,
                         onApply = { lower, upper ->
-                            viewModel.updateThresholds(lower = lower, upper = upper)
-                            selectedSetting.value = null
-                        }
+                            viewModel.updateThresholds(
+                                lower = lower,
+                                upper = upper
+                            )
+                            selectedSetting = null
+                        },
+                        onDismiss = { selectedSetting = null }
                     )
                 }
 
-                1 -> {
+                is SettingsUiState.SettingItem.SoundVibration -> {
                     SoundVibrationDialog(
-                        soundEnabled = state.soundEnabled,
-                        vibrationEnabled = state.vibrationEnabled,
-                        onDismiss = { selectedSetting.value = null },
+                        setting = setting,
                         onApply = { sound, vibration ->
-                            viewModel.updateSoundVibration(soundEnabled = sound, vibrationEnabled = vibration)
-                            selectedSetting.value = null
-                        }
+                            viewModel.updateSoundVibration(
+                                soundEnabled = sound,
+                                vibrationEnabled = vibration
+                            )
+                            selectedSetting = null
+                        },
+                        onDismiss = { selectedSetting = null }
                     )
                 }
 
-                2 -> viewModel.navigateToDetailsScreen()
+                is SettingsUiState.SettingItem.DeviceConnection -> {
+                    viewModel.navigateToDetailsScreen()
+                    selectedSetting = null
+                }
             }
         }
     }
+
 }

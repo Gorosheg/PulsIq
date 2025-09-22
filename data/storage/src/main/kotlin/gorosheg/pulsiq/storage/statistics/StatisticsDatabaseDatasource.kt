@@ -1,4 +1,4 @@
-package com.example.storage.statistics
+package gorosheg.pulsiq.storage.statistics
 
 import kotlinx.coroutines.flow.Flow
 

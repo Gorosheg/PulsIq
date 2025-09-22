@@ -1,13 +1,8 @@
 package gorosheg.pulsiq.device_connection.ui
 
-import android.Manifest
-import android.content.Context
-import android.content.pm.PackageManager
-import android.os.Build
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,17 +22,15 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
+import gorosheg.pulsiq.device_connection.ui.model.ConnectingState
 import gorosheg.pulsiq.device_connection.ui.model.DeviceConnectionUiState
-import gorosheg.pulsiq.device_connection.ui.model.UiBleDevice
+import gorosheg.pulsiq.device_connection.ui.model.UiBluetoothDevice
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -48,37 +41,6 @@ internal fun DeviceConnectionScreenContent(
     onDeviceClick: (String) -> Unit,
     onDisconnect: () -> Unit
 ) {
-    val context = LocalContext.current
-    val needsScanPermission = remember { mutableStateOf(!hasBleScanPermission(context)) }
-    val needsConnectPermission = remember { mutableStateOf(!hasBleConnectPermission(context)) }
-    val needsLocationPermission = remember { mutableStateOf(!hasLocationPermissionIfNeeded(context)) }
-
-    val permissionsToRequest = remember {
-        buildList {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                if (needsScanPermission.value) add(Manifest.permission.BLUETOOTH_SCAN)
-                if (needsConnectPermission.value) add(Manifest.permission.BLUETOOTH_CONNECT)
-            } else {
-                if (needsLocationPermission.value) add(Manifest.permission.ACCESS_FINE_LOCATION)
-            }
-        }.toTypedArray()
-    }
-
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestMultiplePermissions(),
-        onResult = {
-            needsScanPermission.value = !hasBleScanPermission(context)
-            needsConnectPermission.value = !hasBleConnectPermission(context)
-            needsLocationPermission.value = !hasLocationPermissionIfNeeded(context)
-        }
-    )
-
-    LaunchedEffect(Unit) {
-        if (permissionsToRequest.isNotEmpty()) {
-            launcher.launch(permissionsToRequest)
-        }
-    }
-
     Scaffold { padding ->
         Column(
             Modifier
@@ -86,100 +48,120 @@ internal fun DeviceConnectionScreenContent(
                 .padding(padding)
                 .padding(16.dp)
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Button(
-                    onClick = onStartScan,
-                    enabled = !state.isScanning && hasAllNeededPermissions(context),
-                ) { Text("Сканировать") }
-
-                Spacer(Modifier.width(12.dp))
-
-                OutlinedButton(
-                    onClick = onStopScan,
-                    enabled = state.isScanning
-                ) { Text("Стоп") }
-
-                Spacer(Modifier.weight(1f))
-            }
-
+            ScanningButtons(onStartScan, state, onStopScan)
             Spacer(Modifier.height(16.dp))
 
-            if (!hasAllNeededPermissions(context)) {
-                Text(
-                    "Нужно выдать разрешения на Bluetooth${if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) " и геолокацию" else ""}.",
-                    color = MaterialTheme.colorScheme.error
-                )
-                Spacer(Modifier.height(8.dp))
-            }
-
             if (state.devices.isEmpty()) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = "Нет доступных устройств",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
+                EmptyDeviceListScreen(state)
             } else {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f, fill = false)
-                        .padding(top = 4.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    itemsIndexed(state.devices, key = { _, d -> d.address }) { index, d ->
-                        DeviceRow(
-                            device = d,
-                            isConnected = state.connectedAddress == d.address,
-                            isConnecting = state.connectingAddress == d.address,
-                            onClick = { onDeviceClick(d.address) },
-                            onDisconnect = onDisconnect
-                        )
-                        if (index < state.devices.lastIndex) {
-                            HorizontalDivider(
-                                modifier = Modifier.padding(vertical = 4.dp),
-                                thickness = 1.dp,
-                                color = MaterialTheme.colorScheme.outlineVariant
-                            )
-                        }
-                    }
-                }
+                DeviceList(state, onDeviceClick, onDisconnect)
             }
 
             if (state.isScanning) {
-                Spacer(Modifier.height(12.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    CircularProgressIndicator()
-                }
+                Scanning()
             }
 
-            state.error?.let { err ->
-                Spacer(Modifier.height(8.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Text(err, color = MaterialTheme.colorScheme.error)
-                }
+            state.error?.let { errorText ->
+                Error(errorText)
             }
         }
     }
 }
 
 @Composable
+private fun ScanningButtons(
+    onStartScan: () -> Unit,
+    state: DeviceConnectionUiState,
+    onStopScan: () -> Unit
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Button(
+            onClick = onStartScan,
+            enabled = !state.isScanning,
+        ) { Text(stringResource(state.scanningButtonText)) }
+
+        Spacer(Modifier.width(12.dp))
+
+        OutlinedButton(
+            onClick = onStopScan,
+            enabled = state.isScanning
+        ) { Text(stringResource(state.stopButtonText)) }
+
+        Spacer(Modifier.weight(1f))
+    }
+}
+
+@Composable
+private fun EmptyDeviceListScreen(state: DeviceConnectionUiState) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = stringResource(state.noAvailableDevicesText),
+            style = MaterialTheme.typography.bodyMedium
+        )
+    }
+}
+
+@Composable
+private fun ColumnScope.DeviceList(
+    state: DeviceConnectionUiState,
+    onDeviceClick: (String) -> Unit,
+    onDisconnect: () -> Unit
+) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxWidth()
+            .weight(1f, fill = false)
+            .padding(top = 4.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        itemsIndexed(state.devices, key = { _, d -> d.address }) { index, d ->
+            DeviceRow(
+                device = d,
+                onClick = { onDeviceClick(d.address) },
+                onDisconnect = onDisconnect
+            )
+            if (index < state.devices.lastIndex) {
+                HorizontalDivider(
+                    modifier = Modifier.padding(vertical = 4.dp),
+                    thickness = 1.dp,
+                    color = MaterialTheme.colorScheme.outlineVariant
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun Scanning() {
+    Spacer(Modifier.height(12.dp))
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center
+    ) {
+        CircularProgressIndicator()
+    }
+}
+
+@Composable
+private fun Error(errorText: Int) {
+    Spacer(Modifier.height(8.dp))
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Text(stringResource(errorText), color = MaterialTheme.colorScheme.error)
+    }
+}
+
+@Composable
 private fun DeviceRow(
-    device: UiBleDevice,
-    isConnected: Boolean,
-    isConnecting: Boolean,
+    device: UiBluetoothDevice,
     onClick: () -> Unit,
     onDisconnect: () -> Unit
 ) {
@@ -190,55 +172,112 @@ private fun DeviceRow(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = device.name.ifBlank { "Безымянное устройство" },
+            text = device.name,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.weight(1f)
         )
 
         Spacer(Modifier.width(8.dp))
 
-        when {
-            isConnected -> OutlinedButton(onClick = onDisconnect) {
-                Text("Отключить")
+        when (device.connectingState) {
+            ConnectingState.CONNECTED -> {
+                OutlinedButton(
+                    onClick = onDisconnect,
+                    content = { Text(stringResource(device.connectingState.buttonText)) }
+                )
             }
 
-            isConnecting -> AssistChip(onClick = {}, label = { Text("Подключение...") })
-            else -> Button(onClick = onClick) { Text("Подключить") }
+            ConnectingState.CONNECTING -> {
+                AssistChip(
+                    onClick = {},
+                    label = { Text(stringResource(device.connectingState.buttonText)) }
+                )
+            }
+
+            ConnectingState.NOT_CONNECTED -> {
+                Button(
+                    onClick = onClick,
+                    content = { Text(stringResource(device.connectingState.buttonText)) }
+                )
+            }
         }
     }
 }
 
-private fun hasAllNeededPermissions(context: Context): Boolean {
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        hasBleScanPermission(context) && hasBleConnectPermission(context)
-    } else {
-        hasLocationPermissionIfNeeded(context)
-    }
+@Preview(showBackground = true)
+@Composable
+private fun DeviceConnectionScreenContentPreview() {
+    DeviceConnectionScreenContent(
+        state = DeviceConnectionUiState(
+            isScanning = false,
+            devices = emptyList(),
+            error = null,
+            noBluetoothPermissionText = gorosheg.pulsiq.device_connection.R.string.noBluetoothPermission
+        ),
+        onStartScan = {},
+        onStopScan = {},
+        onDeviceClick = {},
+        onDisconnect = {}
+    )
 }
 
-private fun hasBleScanPermission(context: Context): Boolean {
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        ContextCompat.checkSelfPermission(
-            context,
-            Manifest.permission.BLUETOOTH_SCAN
-        ) == PackageManager.PERMISSION_GRANTED
-    } else true
+@Preview(showBackground = true, name = "Scanning State")
+@Composable
+private fun DeviceConnectionScreenContentScanningPreview() {
+    DeviceConnectionScreenContent(
+        state = DeviceConnectionUiState(
+            isScanning = true,
+            devices = listOf(
+                UiBluetoothDevice(
+                    name = "Heart Rate Monitor",
+                    address = "00:11:22:33:44:55",
+                    connectingState = ConnectingState.NOT_CONNECTED
+                ),
+                UiBluetoothDevice(
+                    name = "Fitness Tracker",
+                    address = "AA:BB:CC:DD:EE:FF",
+                    connectingState = ConnectingState.CONNECTING
+                )
+            ),
+            error = null,
+            noBluetoothPermissionText = gorosheg.pulsiq.device_connection.R.string.noBluetoothPermission
+        ),
+        onStartScan = {},
+        onStopScan = {},
+        onDeviceClick = {},
+        onDisconnect = {}
+    )
 }
 
-private fun hasBleConnectPermission(context: Context): Boolean {
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        ContextCompat.checkSelfPermission(
-            context,
-            Manifest.permission.BLUETOOTH_CONNECT
-        ) == PackageManager.PERMISSION_GRANTED
-    } else true
-}
-
-private fun hasLocationPermissionIfNeeded(context: Context): Boolean {
-    return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
-        ContextCompat.checkSelfPermission(
-            context,
-            Manifest.permission.ACCESS_FINE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED
-    } else true
+@Preview(showBackground = true, name = "Connected Device")
+@Composable
+private fun DeviceConnectionScreenContentConnectedPreview() {
+    DeviceConnectionScreenContent(
+        state = DeviceConnectionUiState(
+            isScanning = false,
+            devices = listOf(
+                UiBluetoothDevice(
+                    name = "Heart Rate Monitor",
+                    address = "00:11:22:33:44:55",
+                    connectingState = ConnectingState.CONNECTED
+                ),
+                UiBluetoothDevice(
+                    name = "Fitness Tracker",
+                    address = "AA:BB:CC:DD:EE:FF",
+                    connectingState = ConnectingState.NOT_CONNECTED
+                ),
+                UiBluetoothDevice(
+                    name = "Smart Watch",
+                    address = "11:22:33:44:55:66",
+                    connectingState = ConnectingState.CONNECTING
+                )
+            ),
+            error = null,
+            noBluetoothPermissionText = gorosheg.pulsiq.device_connection.R.string.noBluetoothPermission
+        ),
+        onStartScan = {},
+        onStopScan = {},
+        onDeviceClick = {},
+        onDisconnect = {}
+    )
 }

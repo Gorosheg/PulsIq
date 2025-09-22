@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="connectionError">Ошибка подключения</string>
+    <string name="connect">Подключить</string>
+    <string name="connecting">Подключение…</string>
+    <string name="disconect">Отключить</string>
+    <string name="scan">Сканировать</string>
+    <string name="stop">Стоп</string>
+    <string name="noAvailableDevices">Нет доступных устройств</string>
+    <string name="noBluetoothPermission">Нужно выдать разрешения на Bluetooth</string>
+    <string name="noBluetoothLocationPermission">Нужно выдать разрешения на Bluetooth и геолокацию</string>
+</resources>

@@ -1,4 +1,4 @@
-package com.example.storage.midel
+package gorosheg.pulsiq.storage.midel
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

@@ -40,13 +40,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.MultiplePermissionsState
-import com.google.accompanist.permissions.PermissionState
 import gorosheg.pulsiq.monitoring.R
 import gorosheg.pulsiq.monitoring.ui.model.MonitoringUiState
 import gorosheg.pulsiq.ui.Blue
@@ -55,7 +52,6 @@ import gorosheg.pulsiq.ui.Crimson
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 internal fun MonitoringScreenContent(
-    multiplePermissionState: MultiplePermissionsState,
     state: MonitoringUiState,
     startTracking: () -> Unit,
     stopTracking: () -> Unit
@@ -63,7 +59,6 @@ internal fun MonitoringScreenContent(
     val animatedColor by animateColorAsState(
         targetValue = state.heartColor,
         animationSpec = tween(durationMillis = 1000),
-        label = "PulseColor"
     )
 
     var scaleAnimation by remember { mutableFloatStateOf(1f) }
@@ -75,17 +70,13 @@ internal fun MonitoringScreenContent(
     )
 
     Surface(modifier = Modifier.fillMaxSize()) {
-        if (multiplePermissionState.allPermissionsGranted) {
-            PermissionGrantedContent(
-                state = state,
-                startTracking = startTracking,
-                stopTracking = stopTracking,
-                animatedColor = animatedColor,
-                scaleAnimation = scaleAnimation
-            )
-        } else {
-            PermissionDeniedContent()
-        }
+        PermissionGrantedContent(
+            state = state,
+            startTracking = startTracking,
+            stopTracking = stopTracking,
+            animatedColor = animatedColor,
+            scaleAnimation = scaleAnimation
+        )
     }
 }
 
@@ -226,40 +217,17 @@ fun ToggleButtonContent(icon: ImageVector, text: Int) {
     )
 }
 
-@Composable
-private fun PermissionDeniedContent() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = stringResource(R.string.permissions_denied_message),
-            fontSize = 20.sp,
-            color = Color.Gray,
-            textAlign = TextAlign.Center
-        )
-    }
-}
-
 @OptIn(ExperimentalPermissionsApi::class)
 @Preview(showBackground = true)
 @Composable
 private fun MonitoringScreenContentPreview() {
-    val mockPermissionState = object : MultiplePermissionsState {
-        override val allPermissionsGranted: Boolean = true
-        override val permissions: List<PermissionState> = emptyList()
-        override val revokedPermissions: List<PermissionState> = emptyList()
-        override val shouldShowRationale: Boolean = false
-        override fun launchMultiplePermissionRequest() {}
-    }
-
     MonitoringScreenContent(
-        multiplePermissionState = mockPermissionState,
         state = MonitoringUiState(
             isTracking = false,
             pulse = 0,
             heartColor = Blue,
-            heartRateSpeed = 100
+            heartRateSpeed = 100,
+            noBluetoothPermissionText = R.string.permissions_denied_message
         ),
         startTracking = {},
         stopTracking = {}
@@ -270,21 +238,13 @@ private fun MonitoringScreenContentPreview() {
 @Preview(showBackground = true, name = "Tracking State")
 @Composable
 private fun MonitoringScreenContentTrackingPreview() {
-    val mockPermissionState = object : MultiplePermissionsState {
-        override val allPermissionsGranted: Boolean = true
-        override val permissions: List<PermissionState> = emptyList()
-        override val revokedPermissions: List<PermissionState> = emptyList()
-        override val shouldShowRationale: Boolean = false
-        override fun launchMultiplePermissionRequest() {}
-    }
-
     MonitoringScreenContent(
-        multiplePermissionState = mockPermissionState,
         state = MonitoringUiState(
             isTracking = true,
             pulse = 120,
             heartColor = Crimson,
-            heartRateSpeed = 100
+            heartRateSpeed = 100,
+            noBluetoothPermissionText = R.string.permissions_denied_message
         ),
         startTracking = {},
         stopTracking = {}
@@ -295,21 +255,13 @@ private fun MonitoringScreenContentTrackingPreview() {
 @Preview(showBackground = true, name = "No Permissions")
 @Composable
 private fun MonitoringScreenContentNoPermissionsPreview() {
-    val mockPermissionState = object : MultiplePermissionsState {
-        override val allPermissionsGranted: Boolean = false
-        override val permissions: List<PermissionState> = emptyList()
-        override val revokedPermissions: List<PermissionState> = emptyList()
-        override val shouldShowRationale: Boolean = true
-        override fun launchMultiplePermissionRequest() {}
-    }
-
     MonitoringScreenContent(
-        multiplePermissionState = mockPermissionState,
         state = MonitoringUiState(
             isTracking = false,
             pulse = 0,
             heartColor = Blue,
-            heartRateSpeed = 100
+            heartRateSpeed = 100,
+            noBluetoothPermissionText = R.string.permissions_denied_message
         ),
         startTracking = {},
         stopTracking = {}

@@ -1,6 +1,7 @@
 package gorosheg.pulsiq.monitoring.ui
 
 import gorosheg.pulsiq.common.viewModel.ui_state_mapper.UiStateMapper
+import gorosheg.pulsiq.monitoring.R
 import gorosheg.pulsiq.monitoring.presentation.model.MonitoringState
 import gorosheg.pulsiq.monitoring.ui.model.MonitoringUiState
 
@@ -16,6 +17,7 @@ internal class MonitoringUiStateMapper : UiStateMapper<MonitoringState, Monitori
                 maxPulse = upperThreshold
             ),
             heartRateSpeed = HeartStateBuilder.buildHeartRateSpeed(pulse),
+            noBluetoothPermissionText = R.string.permissions_denied_message
         )
     }
 }

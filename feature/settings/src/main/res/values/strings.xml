@@ -5,4 +5,13 @@
     <string name="apply_button_text">Применить</string>
     <string name="decrease_button_description">Уменьшить</string>
     <string name="increase_button_description">Увеличить</string>
+    <string name="sound">Звук</string>
+    <string name="vibration">Вибрация</string>
+    <string name="pulseThresholds">Границы пульса</string>
+    <string name="soundVibration">Звук и вибрация</string>
+    <string name="findDevices">Найти устройства</string>
+    <string name="pulse_preview_title">Предварительный просмотр</string>
+    <string name="normal_range">Норма</string>
+    <string name="low_range">Низкий</string>
+    <string name="high_range">Высокий</string>
 </resources>

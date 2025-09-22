@@ -1,7 +1,6 @@
 package gorosheg.pulsiq.monitoring.ui
 
-import android.Manifest
-import android.os.Build
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -21,37 +20,11 @@ internal class MonitoringScreen : Screen {
         val viewModel: MonitoringViewModel = koinViewModel()
         val state by viewModel.uiState.collectAsState()
 
-        val permissions = remember { buildPermissionList() }
-        val multiplePermissionState = rememberMultiplePermissionsState(permissions)
-
-        LaunchedEffect(Unit) {
-            multiplePermissionState.launchMultiplePermissionRequest()
-        }
 
         MonitoringScreenContent(
-            multiplePermissionState = multiplePermissionState,
             state = state,
             startTracking = viewModel::startMonitoring,
             stopTracking = viewModel::stopMonitoring
         )
-    }
-
-    private fun buildPermissionList(): MutableList<String> {
-        return mutableListOf(
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.VIBRATE
-        ).apply {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                add(Manifest.permission.BLUETOOTH_SCAN)
-                add(Manifest.permission.BLUETOOTH_CONNECT)
-            } else {
-                add(Manifest.permission.BLUETOOTH)
-                add(Manifest.permission.BLUETOOTH_ADMIN)
-            }
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                add(Manifest.permission.POST_NOTIFICATIONS)
-            }
-        }
     }
 }

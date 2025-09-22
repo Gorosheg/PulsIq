@@ -1,9 +1,9 @@
-package com.example.storage.statistics
+package gorosheg.pulsiq.storage.statistics
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.example.storage.dao.StatisticsDao
-import com.example.storage.midel.StatisticsEntity
+import gorosheg.pulsiq.storage.dao.StatisticsDao
+import gorosheg.pulsiq.storage.midel.StatisticsEntity
 
 @Database(
     entities = [

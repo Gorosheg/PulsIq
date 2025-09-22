@@ -22,19 +22,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import gorosheg.pulsiq.settings.R
+import gorosheg.pulsiq.settings.ui.model.SettingsUiState
 import gorosheg.pulsiq.ui.Blue
 import gorosheg.pulsiq.ui.White
 
 @Composable
 internal fun SoundVibrationDialog(
-    soundEnabled: Boolean,
-    vibrationEnabled: Boolean,
+    setting: SettingsUiState.SettingItem.SoundVibration,
     onDismiss: () -> Unit,
     onApply: (Boolean, Boolean) -> Unit
 ) {
-    var currentSoundEnabled by remember { mutableStateOf(soundEnabled) }
-    var currentVibrationEnabled by remember { mutableStateOf(vibrationEnabled) }
+    var currentSoundEnabled by remember { mutableStateOf(setting.soundEnabled) }
+    var currentVibrationEnabled by remember { mutableStateOf(setting.vibrationEnabled) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -45,7 +48,7 @@ internal fun SoundVibrationDialog(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 SwitchRow(
-                    title = "Звук",
+                    title = stringResource(setting.soundSwitchText),
                     checked = currentSoundEnabled,
                     onCheckedChange = { currentSoundEnabled = it }
                 )
@@ -53,14 +56,14 @@ internal fun SoundVibrationDialog(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 SwitchRow(
-                    title = "Вибрация",
+                    title = stringResource(setting.vibrationSwitchText),
                     checked = currentVibrationEnabled,
                     onCheckedChange = { currentVibrationEnabled = it }
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                SoundVibrationApplyButton(
+                ApplyButton(
                     onClick = {
                         onApply(currentSoundEnabled, currentVibrationEnabled)
                     }
@@ -102,7 +105,7 @@ private fun SwitchRow(
 }
 
 @Composable
-private fun SoundVibrationApplyButton(onClick: () -> Unit) {
+private fun ApplyButton(onClick: () -> Unit) {
     Button(
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(
@@ -117,4 +120,21 @@ private fun SoundVibrationApplyButton(onClick: () -> Unit) {
             style = MaterialTheme.typography.bodyMedium
         )
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun SoundVibrationDialogPreview() {
+    val mockSetting = SettingsUiState.SettingItem.SoundVibration(
+        soundEnabled = true,
+        vibrationEnabled = false,
+        soundSwitchText = R.string.sound,
+        vibrationSwitchText = R.string.vibration
+    )
+    
+    SoundVibrationDialog(
+        setting = mockSetting,
+        onDismiss = {},
+        onApply = { _, _ -> }
+    )
 }

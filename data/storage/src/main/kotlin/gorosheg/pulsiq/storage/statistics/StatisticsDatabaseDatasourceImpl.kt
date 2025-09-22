@@ -1,8 +1,8 @@
-package com.example.storage.statistics
+package gorosheg.pulsiq.storage.statistics
 
-import com.example.storage.dao.StatisticsDao
-import com.example.storage.mapper.toDomain
-import com.example.storage.mapper.toEntity
+import gorosheg.pulsiq.storage.dao.StatisticsDao
+import gorosheg.pulsiq.storage.mapper.toDomain
+import gorosheg.pulsiq.storage.mapper.toEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch

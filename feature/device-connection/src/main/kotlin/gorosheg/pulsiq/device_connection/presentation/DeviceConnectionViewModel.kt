@@ -1,69 +1,61 @@
 package gorosheg.pulsiq.device_connection.presentation
 
 import androidx.lifecycle.viewModelScope
-import gorosheg.pulsiq.bluetooth.HeartBeatDataSource
-import gorosheg.pulsiq.bluetooth.model.BleDevice
+import gorosheg.pulsiq.bluetooth.BluetoothRepository
 import gorosheg.pulsiq.common.viewModel.BaseViewModel
 import gorosheg.pulsiq.device_connection.presentation.model.DeviceConnectionEffect
 import gorosheg.pulsiq.device_connection.presentation.model.DeviceConnectionState
+import gorosheg.pulsiq.device_connection.presentation.model.ErrorType
 import gorosheg.pulsiq.device_connection.ui.DeviceConnectionUiStateMapper
 import gorosheg.pulsiq.device_connection.ui.model.DeviceConnectionUiState
-import gorosheg.pulsiq.device_connection.ui.model.UiBleDevice
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 internal class DeviceConnectionViewModel(
-    private val heartBeatDataSource: HeartBeatDataSource,
+    private val bluetoothRepository: BluetoothRepository,
 ) : BaseViewModel<DeviceConnectionState, DeviceConnectionUiState, DeviceConnectionEffect>(
     initState = DeviceConnectionState(),
     uiStateMapper = DeviceConnectionUiStateMapper()
 ) {
 
     init {
-        viewModelScope.launch {
-            heartBeatDataSource.subscribeAvailableDevicesFlow()
-                .onEach {
-                    state { copy(devices = it.toUi(), error = null) }
+        bluetoothRepository.availableDevices
+            .onEach {
+                updateState { copy(devices = it, error = null) }
+            }
+            .launchIn(viewModelScope)
+
+        bluetoothRepository.connectedDevice
+            .onEach {
+                if (it != null) {
+                    updateState { copy(connectedAddress = it) }
+                } else {
+                    updateState { copy(connectingAddress = null, error = ErrorType.NO_CONNECTING) }
                 }
-                .launchIn(viewModelScope)
-        }
+            }
+            .launchIn(viewModelScope)
     }
 
     fun startScan() {
-        heartBeatDataSource.startScan()
-        state { copy(isScanning = true, error = null) }
+        bluetoothRepository.startScan()
+        updateState { copy(isScanning = true, error = null) }
     }
 
     fun stopScan() {
-        heartBeatDataSource.stopScan()
-        state { copy(isScanning = false, error = null) }
+        bluetoothRepository.stopScan()
+        updateState { copy(isScanning = false, error = null) }
     }
 
     fun onDeviceClick(address: String) {
-        state { copy(connectingAddress = address, error = null) }
+        updateState { copy(connectingAddress = address, error = null) }
         viewModelScope.launch {
-            heartBeatDataSource.connect(address) { isConnected ->
-                if (isConnected) {
-                    state { copy(connectedAddress = address) }
-                } else {
-                    state { copy(connectingAddress = null, error = "Ошибка подключения") }
-                }
-            }
+            bluetoothRepository.connect(address)
         }
     }
 
     fun disconnect() {
-        heartBeatDataSource.disconnect()
-        state { copy(connectedAddress = null, connectingAddress = null, error = null) }
-    }
-
-    private fun List<BleDevice>.toUi(): List<UiBleDevice> {
-        return map {
-            UiBleDevice(
-                name = it.name,
-                address = it.device.address,
-            )
-        }
+        bluetoothRepository.disconnect()
+        updateState { copy(connectedAddress = null, connectingAddress = null, error = null) }
     }
 }

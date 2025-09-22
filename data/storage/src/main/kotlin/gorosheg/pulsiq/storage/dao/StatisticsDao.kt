@@ -1,10 +1,10 @@
-package com.example.storage.dao
+package gorosheg.pulsiq.storage.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy.Companion.IGNORE
 import androidx.room.Query
-import com.example.storage.midel.StatisticsEntity
+import gorosheg.pulsiq.storage.midel.StatisticsEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao

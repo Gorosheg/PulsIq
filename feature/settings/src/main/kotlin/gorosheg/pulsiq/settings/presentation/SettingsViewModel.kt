@@ -1,6 +1,6 @@
 package gorosheg.pulsiq.settings.presentation
 
-import com.example.storage.settings.SettingsRepository
+import androidx.lifecycle.viewModelScope
 import gorosheg.pulsiq.common.navigation.NavigatorHolder
 import gorosheg.pulsiq.common.navigation.provider.DeviceConnectionScreenProvider
 import gorosheg.pulsiq.common.viewModel.BaseViewModel
@@ -8,6 +8,8 @@ import gorosheg.pulsiq.settings.presentation.model.SettingsEffect
 import gorosheg.pulsiq.settings.presentation.model.SettingsState
 import gorosheg.pulsiq.settings.ui.SettingsUiStateMapper
 import gorosheg.pulsiq.settings.ui.model.SettingsUiState
+import gorosheg.pulsiq.storage.settings.SettingsRepository
+import kotlinx.coroutines.launch
 
 internal class SettingsViewModel(
     private val settingsRepository: SettingsRepository,
@@ -18,29 +20,38 @@ internal class SettingsViewModel(
     uiStateMapper = SettingsUiStateMapper()
 ) {
     init {
-        state {
-            copy(
-                settingItems = listOf(
-                    SettingsUiState.SettingItem(id = 0, title = "Границы пульса"),
-                    SettingsUiState.SettingItem(id = 1, title = "Звук и вибрация"),
-                    SettingsUiState.SettingItem(id = 2, title = "Найти устройства")
-                ),
-                lowerThreshold = settingsRepository.getLowerThreshold(),
-                upperThreshold = settingsRepository.getUpperThreshold(),
-                soundEnabled = settingsRepository.getSoundEnabled(),
-                vibrationEnabled = settingsRepository.getVibrationEnabled()
-            )
+        viewModelScope.launch {
+            val lowerThreshold = settingsRepository.getLowerThreshold()
+            val upperThreshold = settingsRepository.getUpperThreshold()
+            val soundEnabled = settingsRepository.getSoundEnabled()
+            val vibrationEnabled = settingsRepository.getVibrationEnabled()
+            updateState {
+                copy(
+                    lowerThreshold = lowerThreshold,
+                    upperThreshold = upperThreshold,
+                    soundEnabled = soundEnabled,
+                    vibrationEnabled = vibrationEnabled,
+                )
+            }
         }
+
     }
 
     fun updateThresholds(lower: Int, upper: Int) {
-        state { copy(lowerThreshold = lower, upperThreshold = upper) }
-        settingsRepository.saveThresholds(lower = lower, upper = upper)
+        updateState { copy(lowerThreshold = lower, upperThreshold = upper) }
+        viewModelScope.launch {
+            settingsRepository.saveThresholds(lower = lower, upper = upper)
+        }
     }
 
     fun updateSoundVibration(soundEnabled: Boolean, vibrationEnabled: Boolean) {
-        state { copy(soundEnabled = soundEnabled, vibrationEnabled = vibrationEnabled) }
-        settingsRepository.saveSoundVibration(soundEnabled = soundEnabled, vibrationEnabled = vibrationEnabled)
+        updateState { copy(soundEnabled = soundEnabled, vibrationEnabled = vibrationEnabled) }
+        viewModelScope.launch {
+            settingsRepository.saveSoundVibration(
+                soundEnabled = soundEnabled,
+                vibrationEnabled = vibrationEnabled
+            )
+        }
     }
 
     fun navigateToDetailsScreen() {

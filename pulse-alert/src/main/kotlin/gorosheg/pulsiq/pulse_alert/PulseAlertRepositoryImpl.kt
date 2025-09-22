@@ -1,13 +1,11 @@
 package gorosheg.pulsiq.pulse_alert
 
-import android.content.Context
 import android.media.AudioManager
 import android.media.ToneGenerator
 import android.os.VibrationEffect
 import android.os.Vibrator
-import com.example.storage.settings.SettingsRepository
-import gorosheg.pulsiq.bluetooth.HeartBeatDataSource
-import gorosheg.pulsiq.common.utils.vibratorPermissionGranted
+import gorosheg.pulsiq.bluetooth.BluetoothRepository
+import gorosheg.pulsiq.storage.settings.SettingsRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -16,11 +14,10 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
 class PulseAlertRepositoryImpl(
-    private val context: Context,
-    private val heartBeatDataSource: HeartBeatDataSource,
+    private val bluetoothRepository: BluetoothRepository,
     private val settingsRepository: SettingsRepository,
+    private val vibrator: Vibrator?,
     private val scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO),
-    private val vibrator: Vibrator?
 ) : PulseAlertRepository {
 
     private var isInRecoveryState = false
@@ -31,7 +28,7 @@ class PulseAlertRepositoryImpl(
 
     private fun subscribeToPulse() {
         combineTransform(
-            heartBeatDataSource.subscribeHeartRateFlow(),
+            bluetoothRepository.heartRateFlow,
             settingsRepository.lowerThresholdFlow,
             settingsRepository.upperThresholdFlow,
         ) { heartRate, lowerThreshold, upperThreshold ->
@@ -44,14 +41,13 @@ class PulseAlertRepositoryImpl(
             .onEach { pulseType ->
                 isInRecoveryState = pulseType == PulseType.HIGH
                 pulseType.vibrate()
-                pulseType.playBeep()
+                pulseType.beep()
             }
             .launchIn(scope)
     }
 
     @Suppress("MissingPermission")
-    private fun PulseType.vibrate() {
-        if (!context.vibratorPermissionGranted) return
+    private suspend fun PulseType.vibrate() {
         if (!settingsRepository.getVibrationEnabled()) return
         val vibration = when (this) {
             PulseType.HIGH -> VibrationEffect.createOneShot(
@@ -68,7 +64,7 @@ class PulseAlertRepositoryImpl(
         vibrator?.vibrate(vibration)
     }
 
-    private fun PulseType.playBeep() {
+    private suspend fun PulseType.beep() {
         if (!settingsRepository.getSoundEnabled()) return
         val sound = when (this) {
             PulseType.HIGH -> ToneGenerator.TONE_PROP_BEEP2
