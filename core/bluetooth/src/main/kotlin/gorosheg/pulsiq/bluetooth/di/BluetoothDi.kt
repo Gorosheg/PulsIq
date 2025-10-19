@@ -27,18 +27,14 @@ val bluetoothModule = module {
         )
     }
 
-    single <BluetoothConnector>{
+    single<BluetoothConnector> {
         BluetoothConnector()
     }
 
-    single <BluetoothScanner>{
-        BluetoothScanner(get())
-    }
-
-    factory<BluetoothLeScanner?> {
+    single<BluetoothScanner> {
         val bluetoothManager = androidContext().getSystemService(BluetoothManager::class.java)
         val bluetoothAdapter = bluetoothManager?.adapter
-        bluetoothAdapter?.bluetoothLeScanner
+        BluetoothScanner(bluetoothAdapter?.bluetoothLeScanner)
     }
 
     single<ScanFilter> {

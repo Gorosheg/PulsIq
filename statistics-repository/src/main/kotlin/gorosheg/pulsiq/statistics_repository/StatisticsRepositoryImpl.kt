@@ -1,6 +1,7 @@
 package gorosheg.pulsiq.statistics_repository
 
 import gorosheg.pulsiq.storage.statistics.StatisticsDatabaseDatasource
+import kotlinx.coroutines.flow.Flow
 
 class StatisticsRepositoryImpl(
     private val statisticsDatabaseDatasource: StatisticsDatabaseDatasource
@@ -8,5 +9,9 @@ class StatisticsRepositoryImpl(
 
     override suspend fun addPulse(pulse: Int) {
         statisticsDatabaseDatasource.addPulse(pulse)
+    }
+
+    override suspend fun getPulse(): Flow<List<Int>> {
+        return statisticsDatabaseDatasource.getPulse()
     }
 }
