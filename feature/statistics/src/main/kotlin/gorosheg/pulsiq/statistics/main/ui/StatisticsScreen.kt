@@ -1,8 +1,8 @@
-package gorosheg.pulsiq.statistics.ui
+package gorosheg.pulsiq.statistics.main.ui
 
 import androidx.compose.runtime.Composable
 import cafe.adriel.voyager.core.screen.Screen
-import gorosheg.pulsiq.statistics.presentation.StatisticsViewModel
+import gorosheg.pulsiq.statistics.main.presentation.StatisticsViewModel
 import org.koin.androidx.compose.koinViewModel
 
 internal class StatisticsScreen : Screen {

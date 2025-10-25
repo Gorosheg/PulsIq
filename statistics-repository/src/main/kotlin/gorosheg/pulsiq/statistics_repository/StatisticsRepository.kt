@@ -11,7 +11,7 @@ interface StatisticsRepository {
 
     suspend fun addPulse(pulse: Int)
 
-    suspend fun getPulse(): Flow<List<PulseStatistic>>
+    fun getPulse(): Flow<List<PulseStatistic>>
 
     suspend fun getPulse(id: Int): PulseStatistic?
 

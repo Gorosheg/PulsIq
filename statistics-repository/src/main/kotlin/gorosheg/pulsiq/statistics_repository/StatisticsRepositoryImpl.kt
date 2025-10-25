@@ -20,7 +20,7 @@ class StatisticsRepositoryImpl(
         statisticsDatabaseDatasource.addPulse(pulse)
     }
 
-    override suspend fun getPulse(): Flow<List<PulseStatistic>> {
+    override fun getPulse(): Flow<List<PulseStatistic>> {
         return statisticsDatabaseDatasource.getPulse()
     }
 

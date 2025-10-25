@@ -9,7 +9,7 @@ import androidx.compose.ui.res.stringResource
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import gorosheg.pulsiq.R
-import gorosheg.pulsiq.statistics.navigation.StatisticsScreenProvider
+import gorosheg.pulsiq.statistics.main.navigation.StatisticsScreenProvider
 import org.koin.compose.koinInject
 
 object StatisticsTab : Tab {

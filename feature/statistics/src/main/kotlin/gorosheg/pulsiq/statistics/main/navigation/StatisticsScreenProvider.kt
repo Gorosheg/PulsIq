@@ -1,4 +1,4 @@
-package gorosheg.pulsiq.statistics.navigation
+package gorosheg.pulsiq.statistics.main.navigation
 
 import cafe.adriel.voyager.core.screen.Screen
 
