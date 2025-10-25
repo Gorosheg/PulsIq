@@ -5,15 +5,17 @@ import kotlinx.coroutines.flow.Flow
 
 interface StatisticsDatabaseDatasource {
 
-    fun getPulse(): Flow<List<PulseStatistic>>
+    suspend fun createStatisticsSession()
+
+    suspend fun stopStatisticsSession()
 
     suspend fun addPulse(pulse: Int)
 
-    suspend fun clearAll()
-
-    suspend fun createStatisticsSession()
+    fun getPulse(): Flow<List<PulseStatistic>>
 
     suspend fun getPulse(id: Int): PulseStatistic?
 
     suspend fun deletePulseStatistic(id: Int)
+
+    suspend fun clearAll()
 }

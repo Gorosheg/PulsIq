@@ -17,6 +17,12 @@ internal interface StatisticsDao {
         insert(StatisticsEntity(dateStart = System.currentTimeMillis()))
     }
 
+    suspend fun stopStatisticsSession() {
+        val current = getLast() ?: return
+        val updated = current.copy(dateEnd = System.currentTimeMillis())
+        update(updated)
+    }
+
     @Transaction
     suspend fun addPulseToCurrent(pulse: Int) {
         val current = getLast() ?: return

@@ -8,11 +8,31 @@ class StatisticsRepositoryImpl(
     private val statisticsDatabaseDatasource: StatisticsDatabaseDatasource
 ) : StatisticsRepository {
 
+    override suspend fun createStatisticsSession() {
+        statisticsDatabaseDatasource.createStatisticsSession()
+    }
+
+    override suspend fun stopStatisticsSession(){
+        statisticsDatabaseDatasource.stopStatisticsSession()
+    }
+
     override suspend fun addPulse(pulse: Int) {
         statisticsDatabaseDatasource.addPulse(pulse)
     }
 
     override suspend fun getPulse(): Flow<List<PulseStatistic>> {
         return statisticsDatabaseDatasource.getPulse()
+    }
+
+    override suspend fun getPulse(id: Int): PulseStatistic? {
+        return statisticsDatabaseDatasource.getPulse(id)
+    }
+
+    override suspend fun deletePulseStatistic(id: Int) {
+        statisticsDatabaseDatasource.deletePulseStatistic(id)
+    }
+
+    override suspend fun clearAll() {
+        statisticsDatabaseDatasource.clearAll()
     }
 }

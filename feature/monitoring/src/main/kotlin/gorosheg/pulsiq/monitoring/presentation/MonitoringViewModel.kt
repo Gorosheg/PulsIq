@@ -12,6 +12,7 @@ import gorosheg.pulsiq.statistics_repository.StatisticsRepository
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 internal class MonitoringViewModel(
     private val bluetoothRepository: BluetoothRepository,
@@ -24,6 +25,9 @@ internal class MonitoringViewModel(
     private var heartBeatSubscriptionJob: Job? = null
 
     fun startMonitoring() {
+        viewModelScope.launch {
+            statisticsRepository.createStatisticsSession()
+        }
         pulseNotificationInitializer.startPulseNotification()
         subscribeToPulse()
         updateState { copy(isTracking = true) }
@@ -34,6 +38,9 @@ internal class MonitoringViewModel(
         heartBeatSubscriptionJob?.cancel()
         heartBeatSubscriptionJob = null
         updateState { copy(isTracking = false, pulse = 0) }
+        viewModelScope.launch {
+            statisticsRepository.stopStatisticsSession()
+        }
     }
 
     private fun subscribeToPulse() {

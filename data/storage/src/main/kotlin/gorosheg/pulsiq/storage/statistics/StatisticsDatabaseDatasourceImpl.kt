@@ -20,6 +20,12 @@ internal class StatisticsDatabaseDatasourceImpl(
         }
     }
 
+    override suspend fun stopStatisticsSession() {
+        withContext(Dispatchers.IO) {
+            statisticsDao.stopStatisticsSession()
+        }
+    }
+
     override suspend fun addPulse(pulse: Int) {
         withContext(Dispatchers.IO) {
             statisticsDao.addPulseToCurrent(pulse)
