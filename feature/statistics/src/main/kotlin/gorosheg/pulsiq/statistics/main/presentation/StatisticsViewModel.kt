@@ -24,7 +24,7 @@ internal class StatisticsViewModel(
     private fun getStatistics() {
         statisticsRepository.getPulse()
             .onEach { pulseStatistic ->
-                updateState { copy(pulseStatisticList = pulseStatisticList) }
+                updateState { copy(pulseStatisticList = pulseStatistic) }
             }
             .launchIn(viewModelScope)
     }
