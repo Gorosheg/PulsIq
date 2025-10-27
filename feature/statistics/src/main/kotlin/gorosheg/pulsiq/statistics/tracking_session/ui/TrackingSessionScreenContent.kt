@@ -12,9 +12,10 @@ import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLineCartesianLa
 import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
+import gorosheg.pulsiq.statistics.tracking_session.ui.model.TrackingSessionUiState
 
 @Composable
-fun TrackingSessionScreenContent(modifier: Modifier = Modifier) {
+internal fun TrackingSessionScreenContent(state: TrackingSessionUiState) {
     val modelProducer = remember { CartesianChartModelProducer() }
 
     LaunchedEffect(Unit) {
@@ -30,6 +31,8 @@ fun TrackingSessionScreenContent(modifier: Modifier = Modifier) {
     CartesianChartHost(
         chart = chart,
         modelProducer = modelProducer,
-        modifier = modifier.fillMaxWidth().height(220.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(220.dp),
     )
 }

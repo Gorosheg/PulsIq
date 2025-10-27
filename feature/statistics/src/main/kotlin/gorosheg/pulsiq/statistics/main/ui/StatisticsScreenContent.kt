@@ -37,7 +37,8 @@ import gorosheg.pulsiq.ui.White
 @Composable
 internal fun StatisticsScreenContent(
     state: StatisticsUiState,
-    onTrackingSessionSwipe: (Int) -> Unit,
+    onSwipe: (Int) -> Unit,
+    onClick: (Int) -> Unit,
 ) {
     LazyColumn(
         modifier = Modifier
@@ -46,7 +47,11 @@ internal fun StatisticsScreenContent(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(state.pulseStatisticList, key = { it.id }) { item ->
-            StatisticSwipeItem(item, onTrackingSessionSwipe)
+            StatisticSwipeItem(
+                item = item,
+                onSwipe = onSwipe,
+                onClick = onClick
+            )
         }
     }
 }
@@ -55,11 +60,12 @@ internal fun StatisticsScreenContent(
 @Composable
 private fun StatisticSwipeItem(
     item: UiPulseStatistic,
-    onStatisticSessionSwipe: (Int) -> Unit,
+    onSwipe: (Int) -> Unit,
+    onClick: (Int) -> Unit,
 ) {
     val swipeState = rememberSwipeToDismissBoxState(confirmValueChange = { value ->
         if (value == SwipeToDismissBoxValue.EndToStart) {
-            onStatisticSessionSwipe(item.id)
+            onSwipe(item.id)
             true
         } else {
             false
@@ -71,12 +77,15 @@ private fun StatisticSwipeItem(
         enableDismissFromStartToEnd = false,
         enableDismissFromEndToStart = true,
         backgroundContent = {},
-        content = { StatisticCard(item) }
+        content = { StatisticCard(item, onClick) }
     )
 }
 
 @Composable
-private fun StatisticCard(item: UiPulseStatistic) {
+private fun StatisticCard(
+    item: UiPulseStatistic,
+    onClick: (Int) -> Unit,
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -84,7 +93,7 @@ private fun StatisticCard(item: UiPulseStatistic) {
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = ripple(),
-            ) { },
+            ) { onClick(item.id) },
         elevation = CardDefaults.cardElevation(4.dp),
         shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(containerColor = BlueGray),
@@ -133,7 +142,8 @@ private fun StatisticsScreenContentPreview() {
                     )
                 )
             ),
-            {}
+            onSwipe = {},
+            onClick = {}
         )
     }
 }

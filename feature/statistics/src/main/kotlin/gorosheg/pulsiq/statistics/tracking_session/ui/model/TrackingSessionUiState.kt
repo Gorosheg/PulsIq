@@ -1,4 +1,5 @@
 package gorosheg.pulsiq.statistics.tracking_session.ui.model
 
-class TrackingSessionUiState {
-}
+internal data class TrackingSessionUiState(
+    val a: Int = 1
+)

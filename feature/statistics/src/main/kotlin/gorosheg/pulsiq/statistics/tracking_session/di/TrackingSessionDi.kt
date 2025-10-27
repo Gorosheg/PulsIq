@@ -1,13 +1,13 @@
 package gorosheg.pulsiq.statistics.tracking_session.di
 
-import gorosheg.pulsiq.statistics.main.navigation.StatisticsScreenProvider
-import gorosheg.pulsiq.statistics.main.presentation.StatisticsViewModel
-import gorosheg.pulsiq.statistics.main.ui.StatisticsScreen
+import gorosheg.pulsiq.common.navigation.provider.TrackingSessionScreenProvider
+import gorosheg.pulsiq.statistics.tracking_session.presentation.TrackingSessionViewModel
+import gorosheg.pulsiq.statistics.tracking_session.ui.TrackingSessionScreen
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
 val trackingSessionModule = module {
-    factory { StatisticsScreenProvider(::StatisticsScreen) }
+    factory { TrackingSessionScreenProvider { TrackingSessionScreen() } }
 
-    viewModelOf(::StatisticsViewModel)
+    viewModelOf(::TrackingSessionViewModel)
 }

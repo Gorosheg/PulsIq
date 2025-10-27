@@ -1,6 +1,8 @@
 package gorosheg.pulsiq.statistics.main.presentation
 
 import androidx.lifecycle.viewModelScope
+import gorosheg.pulsiq.common.navigation.NavigatorHolder
+import gorosheg.pulsiq.common.navigation.provider.TrackingSessionScreenProvider
 import gorosheg.pulsiq.common.viewModel.BaseViewModel
 import gorosheg.pulsiq.statistics.main.presentation.model.StatisticsEffect
 import gorosheg.pulsiq.statistics.main.presentation.model.StatisticsState
@@ -13,6 +15,8 @@ import kotlinx.coroutines.launch
 
 internal class StatisticsViewModel(
     private val statisticsRepository: StatisticsRepository,
+    private val navigator: NavigatorHolder,
+    private val trackingSessionScreenProvider: TrackingSessionScreenProvider,
 ) : BaseViewModel<StatisticsState, StatisticsUiState, StatisticsEffect>(
     initState = StatisticsState(),
     uiStateMapper = StatisticsUiStateMapper()
@@ -26,6 +30,10 @@ internal class StatisticsViewModel(
         viewModelScope.launch {
             statisticsRepository.deletePulseStatistic(id)
         }
+    }
+
+    fun navigateToTrackingSession(id: Int) {
+        navigator.navigator?.push(trackingSessionScreenProvider(trackingSessionId = id))
     }
 
     private fun getStatistics() {

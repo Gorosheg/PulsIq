@@ -1,0 +1,3 @@
+package gorosheg.pulsiq.statistics.tracking_session.presentation.model
+
+sealed class TrackingSessionEffect

@@ -16,7 +16,8 @@ internal class StatisticsScreen : Screen {
 
         StatisticsScreenContent(
             state = state,
-            onTrackingSessionSwipe = viewModel::removeTrackingSession
+            onSwipe = viewModel::removeTrackingSession,
+            onClick = viewModel::navigateToTrackingSession
         )
     }
 }
