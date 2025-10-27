@@ -24,6 +24,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import gorosheg.pulsiq.settings.R
 import gorosheg.pulsiq.settings.ui.model.SettingsUiState
 import gorosheg.pulsiq.ui.BlueGray
 import gorosheg.pulsiq.ui.White
@@ -75,5 +76,32 @@ private fun SettingCard(
                 color = White
             )
         }
+    }
+}
+
+@androidx.compose.ui.tooling.preview.Preview(showBackground = true, name = "SettingsScreenContent Preview")
+@Composable
+private fun SettingsScreenContentPreview() {
+    gorosheg.pulsiq.ui.MyAppTheme {
+        SettingsScreenContent(
+            state = SettingsUiState(
+                settingItems = listOf(
+                    SettingsUiState.SettingItem.ThresholdSettings(
+                        lowerThreshold = 140,
+                        upperThreshold = 180,
+                        minimumThresholdText = R.string.min_threshold_title,
+                        maximumThresholdText = R.string.max_threshold_title,
+                    ),
+                    SettingsUiState.SettingItem.SoundVibration(
+                        soundEnabled = true,
+                        vibrationEnabled = false,
+                        soundSwitchText = R.string.sound,
+                        vibrationSwitchText = R.string.vibration,
+                    ),
+                    SettingsUiState.SettingItem.DeviceConnection
+                )
+            ),
+            onSettingClick = {}
+        )
     }
 }
