@@ -15,7 +15,8 @@ internal class StatisticsScreen : Screen {
         val state by viewModel.uiState.collectAsState()
 
         StatisticsScreenContent(
-            state = state
+            state = state,
+            onTrackingSessionSwipe = viewModel::removeTrackingSession
         )
     }
 }

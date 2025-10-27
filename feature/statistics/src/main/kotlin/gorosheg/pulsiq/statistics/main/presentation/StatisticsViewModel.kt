@@ -9,6 +9,7 @@ import gorosheg.pulsiq.statistics.main.ui.model.StatisticsUiState
 import gorosheg.pulsiq.statistics_repository.StatisticsRepository
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 internal class StatisticsViewModel(
     private val statisticsRepository: StatisticsRepository,
@@ -19,6 +20,12 @@ internal class StatisticsViewModel(
 
     init {
         getStatistics()
+    }
+
+    fun removeTrackingSession(id: Int) {
+        viewModelScope.launch {
+            statisticsRepository.deletePulseStatistic(id)
+        }
     }
 
     private fun getStatistics() {
