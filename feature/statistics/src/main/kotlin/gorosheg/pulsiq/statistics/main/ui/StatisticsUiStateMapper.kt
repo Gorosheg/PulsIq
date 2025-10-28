@@ -21,20 +21,10 @@ internal class StatisticsUiStateMapper : UiStateMapper<StatisticsState, Statisti
 
     private fun List<PulseStatistic>.toUiPulseStatistic(): List<UiPulseStatistic> {
         return this.map { pulseStatistic ->
-            val pulse = pulseStatistic.pulse
-            val highest = pulse.maxOrNull() ?: 0
-            val lowest = pulse.minOrNull() ?: 0
-            val average = if (pulse.isNotEmpty()) pulse.average().toInt() else 0
-
             UiPulseStatistic(
                 id = pulseStatistic.id,
-                dateStart = formatDate(pulseStatistic.dateStart),
-                dateEnd = pulseStatistic.dateEnd?.let { formatDate(it) } ?: "",
                 name = pulseStatistic.name,
-                pulse = pulse,
-                highestPulse = highest,
-                lowestPulse = lowest,
-                averagePulse = average,
+                dateStart = formatDate(pulseStatistic.dateStart),
             )
         }
     }

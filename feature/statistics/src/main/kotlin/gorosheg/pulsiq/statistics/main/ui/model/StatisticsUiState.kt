@@ -6,11 +6,6 @@ internal data class StatisticsUiState(
 
 internal data class UiPulseStatistic(
     val id: Int,
-    val dateStart: String,
-    val dateEnd: String,
     val name: String,
-    val pulse: List<Int>,
-    val highestPulse: Int,
-    val lowestPulse: Int,
-    val averagePulse: Int,
+    val dateStart: String,
 )

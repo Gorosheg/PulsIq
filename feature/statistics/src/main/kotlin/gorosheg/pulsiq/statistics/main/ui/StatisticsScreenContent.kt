@@ -122,23 +122,13 @@ private fun StatisticsScreenContentPreview() {
                 pulseStatisticList = listOf(
                     UiPulseStatistic(
                         id = 1,
-                        dateStart = "26.10. 10:00",
-                        dateEnd = "26.10. 10:30",
                         name = "Morning Run",
-                        pulse = listOf(80, 95, 100),
-                        highestPulse = 120,
-                        lowestPulse = 70,
-                        averagePulse = 90
+                        dateStart = "26.10. 10:00",
                     ),
                     UiPulseStatistic(
                         id = 2,
-                        dateStart = "26.10. 18:00",
-                        dateEnd = "26.10. 18:45",
                         name = "Evening Walk",
-                        pulse = listOf(75, 85, 88),
-                        highestPulse = 100,
-                        lowestPulse = 65,
-                        averagePulse = 80
+                        dateStart = "26.10. 18:00",
                     )
                 )
             ),

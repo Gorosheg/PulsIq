@@ -7,7 +7,7 @@ import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
 val trackingSessionModule = module {
-    factory { TrackingSessionScreenProvider { TrackingSessionScreen() } }
+    factory { TrackingSessionScreenProvider {  trackingSessionId -> TrackingSessionScreen(trackingSessionId) } }
 
     viewModelOf(::TrackingSessionViewModel)
 }
