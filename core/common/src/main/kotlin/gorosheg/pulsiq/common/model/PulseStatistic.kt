@@ -5,5 +5,5 @@ data class PulseStatistic(
     val dateStart: Long,
     val dateEnd: Long?,
     val name: String,
-    val pulse: List<Int>,
+    val pulse: List<Pair<Int, Long>>,
 )

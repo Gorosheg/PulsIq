@@ -26,7 +26,8 @@ internal interface StatisticsDao {
     @Transaction
     suspend fun addPulseToCurrent(pulse: Int) {
         val current = getLast() ?: return
-        val updated = current.copy(pulse = current.pulse + pulse)
+        val pulseWithTime = pulse to System.currentTimeMillis()
+        val updated = current.copy(pulse = current.pulse + pulseWithTime)
         update(updated)
     }
 

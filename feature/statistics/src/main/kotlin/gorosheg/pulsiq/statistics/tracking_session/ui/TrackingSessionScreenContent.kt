@@ -29,7 +29,7 @@ internal fun TrackingSessionScreenContent(state: TrackingSessionUiState) {
         LaunchedEffect(state.pulse) {
             modelProducer.runTransaction {
                 lineSeries {
-                    series(state.pulse.map { it.toFloat() as Number })
+                    series(state.pulse.map { it.first.toFloat() as Number })
                 }
             }
         }
@@ -75,16 +75,17 @@ internal fun TrackingSessionScreenContent(state: TrackingSessionUiState) {
 @Composable
 private fun TrackingSessionScreenContentPreview() {
     gorosheg.pulsiq.ui.MyAppTheme {
-        val pulse = listOf(72, 78, 85, 92, 110, 105, 98, 88, 95, 102, 96, 90)
+        val pulseValues = listOf(72, 78, 85, 92, 110, 105, 98, 88, 95, 102, 96, 90)
+        val pulsePairs = pulseValues.mapIndexed { index, value -> value to (1_700_000_000_000L + index * 60_000L) }
         TrackingSessionScreenContent(
             state = TrackingSessionUiState(
                 name = "Утренняя тренировка",
                 dateStart = "26.10. 10:00",
                 dateEnd = "26.10. 11:00",
-                pulse = pulse,
-                highestPulse = pulse.maxOrNull() ?: 0,
-                lowestPulse = pulse.minOrNull() ?: 0,
-                averagePulse = if (pulse.isNotEmpty()) pulse.average().toInt() else 0,
+                pulse = pulsePairs,
+                highestPulse = pulseValues.maxOrNull() ?: 0,
+                lowestPulse = pulseValues.minOrNull() ?: 0,
+                averagePulse = pulseValues.average().toInt(),
             )
         )
     }

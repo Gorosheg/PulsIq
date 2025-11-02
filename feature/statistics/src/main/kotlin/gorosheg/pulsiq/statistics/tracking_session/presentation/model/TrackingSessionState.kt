@@ -5,5 +5,5 @@ internal data class TrackingSessionState(
     val dateStart: Long = 0,
     val dateEnd: Long = 0,
     val name: String = "",
-    val pulse: List<Int> = emptyList(),
+    val pulse: List<Pair<Int, Long>> = emptyList(),
 )
