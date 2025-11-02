@@ -41,11 +41,11 @@ dependencies {
     implementation(project(":core:ui"))
     implementation(project(":statistics-repository"))
 
+    implementation(libs.vico.core)
     implementation(libs.vico.compose)
     implementation(libs.vico.compose.m3)
     implementation(libs.androidx.compose.ui.viewbinding)
 
-    // For @Preview annotation and design-time tooling
     implementation(libs.androidx.ui.tooling.preview)
     debugImplementation(libs.androidx.ui.tooling)
 }
