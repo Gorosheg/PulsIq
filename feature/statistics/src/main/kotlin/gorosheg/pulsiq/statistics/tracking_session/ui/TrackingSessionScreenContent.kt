@@ -1,42 +1,50 @@
 package gorosheg.pulsiq.statistics.tracking_session.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Create
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.Icon
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Create
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -60,7 +68,12 @@ import gorosheg.pulsiq.ui.White
 import kotlin.math.roundToInt
 
 @Composable
-internal fun TrackingSessionScreenContent(state: TrackingSessionUiState) {
+internal fun TrackingSessionScreenContent(
+    state: TrackingSessionUiState,
+    onEditClick: () -> Unit,
+    onCloseEditDialogClick: () -> Unit,
+    onNameChanged: (String) -> Unit,
+) {
     val modelProducer = remember { CartesianChartModelProducer() }
 
     if (state.pulse.isNotEmpty()) {
@@ -142,17 +155,21 @@ internal fun TrackingSessionScreenContent(state: TrackingSessionUiState) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Row(
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(end = 8.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
                             text = state.name,
-                            style = MaterialTheme.typography.headlineSmall,
+                            fontSize = 20.sp,
                             fontWeight = FontWeight.SemiBold,
                             color = White,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.weight(1f, fill = false)
                         )
-                        CapsuleIcon(icon = Icons.Default.Create, contentDescription = null)
+                        CapsuleIcon(icon = Icons.Default.Create, onClick = onEditClick)
                     }
 
                     Text(
@@ -161,6 +178,7 @@ internal fun TrackingSessionScreenContent(state: TrackingSessionUiState) {
                         color = White,
                     )
                 }
+
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Capsule(text = timeStart)
                     Text(
@@ -241,10 +259,9 @@ internal fun TrackingSessionScreenContent(state: TrackingSessionUiState) {
                         .fillMaxWidth()
                         .weight(1f)
                 ) {
-                    // Узкая колонка под вертикальный заголовок без лишних отступов
                     Box(
                         modifier = Modifier
-                            .width(24.dp)                  // контролируемая ширина подписи
+                            .width(24.dp)
                             .fillMaxHeight(),
                         contentAlignment = Alignment.Center
                     ) {
@@ -256,11 +273,11 @@ internal fun TrackingSessionScreenContent(state: TrackingSessionUiState) {
                                 letterSpacing = 0.sp
                             ),
                             color = White,
-                            maxLines = 1,                 // запрет переносов
+                            maxLines = 1,
                             softWrap = false,
-                            overflow = TextOverflow.Visible,// запрет переносов
+                            overflow = TextOverflow.Visible,
                             modifier = Modifier
-                                .graphicsLayer { rotationZ = -90f } // поворот без изменения измерений родителя
+                                .graphicsLayer { rotationZ = -90f }
                         )
                     }
 
@@ -304,6 +321,70 @@ internal fun TrackingSessionScreenContent(state: TrackingSessionUiState) {
             }
         }
         Spacer(Modifier.height(12.dp))
+    }
+
+    if (state.isEditDialogShow) {
+        val focusManager = androidx.compose.ui.platform.LocalFocusManager.current
+        val keyboardController = LocalSoftwareKeyboardController.current
+        AlertDialog(
+            onDismissRequest = {
+                keyboardController?.hide()
+                focusManager.clearFocus(force = true)
+                onCloseEditDialogClick.invoke()
+            },
+            confirmButton = {},
+            text = {
+                val focusRequester = remember { FocusRequester() }
+                LaunchedEffect(Unit) {
+                    focusRequester.requestFocus()
+                    keyboardController?.show()
+                }
+                Column {
+                    val initial = remember(state.isEditDialogShow, state.name) {
+                        androidx.compose.ui.text.input.TextFieldValue(
+                            text = state.name,
+                            selection = androidx.compose.ui.text.TextRange(state.name.length)
+                        )
+                    }
+                    val tfvState =
+                        androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(initial) }
+
+                    LaunchedEffect(state.isEditDialogShow) {
+                        if (state.isEditDialogShow) {
+                            tfvState.value = initial
+                            tfvState.value =
+                                tfvState.value.copy(selection = androidx.compose.ui.text.TextRange(tfvState.value.text.length))
+                        }
+                    }
+
+                    TextField(
+                        value = tfvState.value,
+                        onValueChange = {
+                            tfvState.value = it
+                            onNameChanged.invoke(it.text)
+                        },
+                        modifier = Modifier.focusRequester(focusRequester),
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                        keyboardActions = KeyboardActions(
+                            onDone = {
+                                keyboardController?.hide()
+                                focusManager.clearFocus(force = true)
+                                onCloseEditDialogClick.invoke()
+                            }
+                        )
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Button(onClick = {
+                        keyboardController?.hide()
+                        focusManager.clearFocus(force = true)
+                        onCloseEditDialogClick.invoke()
+                    }) {
+                        Text(text = "Сохранить")
+                    }
+                }
+            }
+        )
     }
 }
 
@@ -362,6 +443,30 @@ private fun Capsule(
     }
 }
 
+@Composable
+private fun CapsuleIcon(
+    icon: ImageVector,
+    contentDescription: String? = null,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
+    Box(
+        modifier = modifier
+            .clip(MaterialTheme.shapes.large)
+            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f))
+            .padding(horizontal = 10.dp, vertical = 6.dp)
+            .clickable(onClick = { onClick.invoke() }),
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = contentDescription,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.size(16.dp)
+        )
+    }
+}
+
 @androidx.compose.ui.tooling.preview.Preview(showBackground = true, name = "TrackingSessionScreenContent Preview")
 @Composable
 private fun TrackingSessionScreenContentPreview() {
@@ -377,30 +482,10 @@ private fun TrackingSessionScreenContentPreview() {
                 highestPulse = pulseValues.maxOrNull() ?: 0,
                 lowestPulse = pulseValues.minOrNull() ?: 0,
                 averagePulse = pulseValues.average().toInt(),
-            )
-        )
-    }
-}
-
-
-@Composable
-private fun CapsuleIcon(
-    icon: ImageVector,
-    contentDescription: String?,
-    modifier: Modifier = Modifier,
-) {
-    Box(
-        modifier = modifier
-            .clip(MaterialTheme.shapes.large)
-            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f))
-            .padding(horizontal = 10.dp, vertical = 6.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = contentDescription,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.size(16.dp)
+            ),
+            onEditClick = {},
+            onCloseEditDialogClick = {},
+            onNameChanged = {},
         )
     }
 }

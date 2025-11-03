@@ -1,3 +1,0 @@
-package gorosheg.pulsiq.device_connection.presentation.model
-
-sealed class DeviceConnectionEffect

@@ -3,7 +3,6 @@ package gorosheg.pulsiq.device_connection.presentation
 import androidx.lifecycle.viewModelScope
 import gorosheg.pulsiq.bluetooth.BluetoothRepository
 import gorosheg.pulsiq.common.viewModel.BaseViewModel
-import gorosheg.pulsiq.device_connection.presentation.model.DeviceConnectionEffect
 import gorosheg.pulsiq.device_connection.presentation.model.DeviceConnectionState
 import gorosheg.pulsiq.device_connection.presentation.model.ErrorType
 import gorosheg.pulsiq.device_connection.ui.DeviceConnectionUiStateMapper
@@ -14,7 +13,7 @@ import kotlinx.coroutines.launch
 
 internal class DeviceConnectionViewModel(
     private val bluetoothRepository: BluetoothRepository,
-) : BaseViewModel<DeviceConnectionState, DeviceConnectionUiState, DeviceConnectionEffect>(
+) : BaseViewModel<DeviceConnectionState, DeviceConnectionUiState>(
     initState = DeviceConnectionState(),
     uiStateMapper = DeviceConnectionUiStateMapper()
 ) {

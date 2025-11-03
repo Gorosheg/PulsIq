@@ -26,6 +26,12 @@ internal class StatisticsDatabaseDatasourceImpl(
         }
     }
 
+    override suspend fun changeStatisticsSessionName(id: Int, name: String) {
+        withContext(Dispatchers.IO) {
+            statisticsDao.changeStatisticsSessionName(id = id, name = name)
+        }
+    }
+
     override suspend fun addPulse(pulse: Int) {
         withContext(Dispatchers.IO) {
             statisticsDao.addPulseToCurrent(pulse)

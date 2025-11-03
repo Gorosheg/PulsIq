@@ -26,6 +26,7 @@ internal class TrackingSessionUiStateMapper : UiStateMapper<TrackingSessionState
             highestPulse = pulseValues.maxOrNull() ?: 0,
             lowestPulse = pulseValues.minOrNull() ?: 0,
             averagePulse = average,
+            isEditDialogShow = isEditDialogShow
         )
     }
 

@@ -23,6 +23,9 @@ internal class TrackingSessionScreen(
 
         TrackingSessionScreenContent(
             state = state,
+            onEditClick = { viewModel.onEditClick() },
+            onCloseEditDialogClick = { viewModel.closeEditDialog() },
+            onNameChanged = { viewModel.changeName(it) }
         )
     }
 }

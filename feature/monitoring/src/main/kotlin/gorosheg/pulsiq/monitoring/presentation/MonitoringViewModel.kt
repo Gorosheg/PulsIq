@@ -4,7 +4,6 @@ import androidx.lifecycle.viewModelScope
 import gorosheg.pulsiq.bluetooth.BluetoothRepository
 import gorosheg.pulsiq.common.notification.PulseNotificationInitializer
 import gorosheg.pulsiq.common.viewModel.BaseViewModel
-import gorosheg.pulsiq.monitoring.presentation.model.MonitoringEffect
 import gorosheg.pulsiq.monitoring.presentation.model.MonitoringState
 import gorosheg.pulsiq.monitoring.ui.MonitoringUiStateMapper
 import gorosheg.pulsiq.monitoring.ui.model.MonitoringUiState
@@ -18,7 +17,7 @@ internal class MonitoringViewModel(
     private val bluetoothRepository: BluetoothRepository,
     private val pulseNotificationInitializer: PulseNotificationInitializer,
     private val statisticsRepository: StatisticsRepository,
-) : BaseViewModel<MonitoringState, MonitoringUiState, MonitoringEffect>(
+) : BaseViewModel<MonitoringState, MonitoringUiState>(
     initState = MonitoringState(),
     uiStateMapper = MonitoringUiStateMapper()
 ) {

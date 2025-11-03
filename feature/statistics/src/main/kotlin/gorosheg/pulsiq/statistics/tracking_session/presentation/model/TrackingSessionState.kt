@@ -6,4 +6,5 @@ internal data class TrackingSessionState(
     val dateEnd: Long = 0,
     val name: String = "",
     val pulse: List<Pair<Int, Long>> = emptyList(),
+    val isEditDialogShow: Boolean = false,
 )

@@ -8,4 +8,5 @@ internal data class TrackingSessionUiState(
     val highestPulse: Int,
     val lowestPulse: Int,
     val averagePulse: Int,
+    val isEditDialogShow: Boolean = false,
 )

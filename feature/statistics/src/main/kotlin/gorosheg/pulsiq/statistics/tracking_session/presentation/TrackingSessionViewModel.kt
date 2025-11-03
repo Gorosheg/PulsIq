@@ -3,7 +3,6 @@ package gorosheg.pulsiq.statistics.tracking_session.presentation
 import androidx.lifecycle.viewModelScope
 import gorosheg.pulsiq.common.model.PulseStatistic
 import gorosheg.pulsiq.common.viewModel.BaseViewModel
-import gorosheg.pulsiq.statistics.tracking_session.presentation.model.TrackingSessionEffect
 import gorosheg.pulsiq.statistics.tracking_session.presentation.model.TrackingSessionState
 import gorosheg.pulsiq.statistics.tracking_session.ui.TrackingSessionUiStateMapper
 import gorosheg.pulsiq.statistics.tracking_session.ui.model.TrackingSessionUiState
@@ -12,7 +11,7 @@ import kotlinx.coroutines.launch
 
 internal class TrackingSessionViewModel(
     private val statisticsRepository: StatisticsRepository,
-) : BaseViewModel<TrackingSessionState, TrackingSessionUiState, TrackingSessionEffect>(
+) : BaseViewModel<TrackingSessionState, TrackingSessionUiState>(
     initState = TrackingSessionState(),
     uiStateMapper = TrackingSessionUiStateMapper()
 ) {
@@ -30,6 +29,31 @@ internal class TrackingSessionViewModel(
                     pulse = trackingSession.pulse,
                 )
             }
+        }
+    }
+
+    fun onEditClick() {
+        updateState {
+            copy(
+                isEditDialogShow = true,
+            )
+        }
+    }
+
+    fun closeEditDialog() {
+        updateState {
+            copy(
+                isEditDialogShow = false,
+            )
+        }
+    }
+
+    fun changeName(name: String) {
+        viewModelScope.launch {
+            statisticsRepository.changeStatisticsSessionName(id = getState.id, name = name)
+        }
+        updateState {
+            copy(name = name)
         }
     }
 }

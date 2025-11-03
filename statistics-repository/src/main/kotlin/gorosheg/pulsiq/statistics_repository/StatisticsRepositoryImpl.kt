@@ -12,8 +12,12 @@ class StatisticsRepositoryImpl(
         statisticsDatabaseDatasource.createStatisticsSession()
     }
 
-    override suspend fun stopStatisticsSession(){
+    override suspend fun stopStatisticsSession() {
         statisticsDatabaseDatasource.stopStatisticsSession()
+    }
+
+    override suspend fun changeStatisticsSessionName(id: Int, name: String) {
+        statisticsDatabaseDatasource.changeStatisticsSessionName(id = id, name = name)
     }
 
     override suspend fun addPulse(pulse: Int) {

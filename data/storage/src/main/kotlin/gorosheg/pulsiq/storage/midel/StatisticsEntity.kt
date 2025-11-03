@@ -9,6 +9,6 @@ internal data class StatisticsEntity(
     val id: Int = 0,
     val dateStart: Long,
     val dateEnd: Long? = null,
-    val name: String = "тренировка",
+    val name: String = "Тренировка",
     val pulse: List<Pair<Int, Long>> = emptyList(),
 )

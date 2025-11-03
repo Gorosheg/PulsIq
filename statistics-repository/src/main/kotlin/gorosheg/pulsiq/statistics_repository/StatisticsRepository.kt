@@ -9,6 +9,8 @@ interface StatisticsRepository {
 
     suspend fun stopStatisticsSession()
 
+    suspend fun changeStatisticsSessionName(id: Int, name: String)
+
     suspend fun addPulse(pulse: Int)
 
     fun getPulse(): Flow<List<PulseStatistic>>

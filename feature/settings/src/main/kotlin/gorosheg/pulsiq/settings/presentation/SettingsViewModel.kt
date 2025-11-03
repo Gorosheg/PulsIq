@@ -4,7 +4,6 @@ import androidx.lifecycle.viewModelScope
 import gorosheg.pulsiq.common.navigation.NavigatorHolder
 import gorosheg.pulsiq.common.navigation.provider.DeviceConnectionScreenProvider
 import gorosheg.pulsiq.common.viewModel.BaseViewModel
-import gorosheg.pulsiq.settings.presentation.model.SettingsEffect
 import gorosheg.pulsiq.settings.presentation.model.SettingsState
 import gorosheg.pulsiq.settings.ui.SettingsUiStateMapper
 import gorosheg.pulsiq.settings.ui.model.SettingsUiState
@@ -15,7 +14,7 @@ internal class SettingsViewModel(
     private val settingsRepository: SettingsRepository,
     private val navigator: NavigatorHolder,
     private val deviceConnectionScreenProvider: DeviceConnectionScreenProvider,
-) : BaseViewModel<SettingsState, SettingsUiState, SettingsEffect>(
+) : BaseViewModel<SettingsState, SettingsUiState>(
     initState = SettingsState(),
     uiStateMapper = SettingsUiStateMapper()
 ) {

@@ -23,6 +23,12 @@ internal interface StatisticsDao {
         update(updated)
     }
 
+    suspend fun changeStatisticsSessionName(id: Int, name: String) {
+        val current = getById(id) ?: return
+        val updated = current.copy(name = name)
+        update(updated)
+    }
+
     @Transaction
     suspend fun addPulseToCurrent(pulse: Int) {
         val current = getLast() ?: return

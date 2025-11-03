@@ -4,7 +4,6 @@ import androidx.lifecycle.viewModelScope
 import gorosheg.pulsiq.common.navigation.NavigatorHolder
 import gorosheg.pulsiq.common.navigation.provider.TrackingSessionScreenProvider
 import gorosheg.pulsiq.common.viewModel.BaseViewModel
-import gorosheg.pulsiq.statistics.main.presentation.model.StatisticsEffect
 import gorosheg.pulsiq.statistics.main.presentation.model.StatisticsState
 import gorosheg.pulsiq.statistics.main.ui.StatisticsUiStateMapper
 import gorosheg.pulsiq.statistics.main.ui.model.StatisticsUiState
@@ -17,7 +16,7 @@ internal class StatisticsViewModel(
     private val statisticsRepository: StatisticsRepository,
     private val navigator: NavigatorHolder,
     private val trackingSessionScreenProvider: TrackingSessionScreenProvider,
-) : BaseViewModel<StatisticsState, StatisticsUiState, StatisticsEffect>(
+) : BaseViewModel<StatisticsState, StatisticsUiState>(
     initState = StatisticsState(),
     uiStateMapper = StatisticsUiStateMapper()
 ) {
