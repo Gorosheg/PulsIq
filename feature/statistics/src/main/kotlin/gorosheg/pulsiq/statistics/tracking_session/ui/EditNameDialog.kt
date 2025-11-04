@@ -1,0 +1,127 @@
+package gorosheg.pulsiq.statistics.tracking_session.ui
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import gorosheg.pulsiq.statistics.tracking_session.ui.model.TrackingSessionUiState
+import gorosheg.pulsiq.ui.Blue
+
+@Composable
+internal fun EditNameDialog(
+    state: TrackingSessionUiState,
+    onCloseEditDialogClick: () -> Unit,
+    onNameChanged: (String) -> Unit,
+) {
+    val focusManager = androidx.compose.ui.platform.LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
+    AlertDialog(
+        onDismissRequest = {
+            keyboardController?.hide()
+            focusManager.clearFocus(force = true)
+            onCloseEditDialogClick.invoke()
+        },
+        confirmButton = {},
+        text = {
+            val focusRequester = remember { FocusRequester() }
+            LaunchedEffect(Unit) {
+                focusRequester.requestFocus()
+                keyboardController?.show()
+            }
+            Column {
+                val initial = remember(state.isEditDialogShow, state.name) {
+                    TextFieldValue(
+                        text = state.name,
+                        selection = TextRange(state.name.length)
+                    )
+                }
+                val tfvState = remember { mutableStateOf(initial) }
+
+                LaunchedEffect(state.isEditDialogShow) {
+                    if (state.isEditDialogShow) {
+                        tfvState.value = initial
+                        tfvState.value = tfvState.value.copy(selection = TextRange(tfvState.value.text.length))
+                    }
+                }
+
+                TextField(
+                    value = tfvState.value,
+                    onValueChange = {
+                        tfvState.value = it
+                        onNameChanged.invoke(it.text)
+                    },
+                    modifier = Modifier.focusRequester(focusRequester),
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(
+                        onDone = {
+                            keyboardController?.hide()
+                            focusManager.clearFocus(force = true)
+                            onCloseEditDialogClick.invoke()
+                        }
+                    )
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    onClick = {
+                        keyboardController?.hide()
+                        focusManager.clearFocus(force = true)
+                        onCloseEditDialogClick.invoke()
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Blue),
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text(
+                        text = "Сохранить",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
+            }
+        }
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun EditNameDialogPreview() {
+    val mockState = TrackingSessionUiState(
+        name = "Тренировка",
+        dateStart = "",
+        dateEnd = "",
+        pulse = emptyList(),
+        highestPulse = 180,
+        lowestPulse = 110,
+        averagePulse = 140,
+        isEditDialogShow = true,
+    )
+
+    EditNameDialog(
+        state = mockState,
+        onCloseEditDialogClick = {},
+        onNameChanged = {},
+    )
+}

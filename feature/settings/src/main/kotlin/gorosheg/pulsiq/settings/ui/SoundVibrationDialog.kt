@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -90,7 +89,7 @@ private fun SwitchRow(
             style = MaterialTheme.typography.titleMedium,
             color = White
         )
-        
+
         Switch(
             checked = checked,
             onCheckedChange = onCheckedChange,
@@ -113,7 +112,7 @@ private fun ApplyButton(onClick: () -> Unit) {
             contentColor = White
         ),
         shape = RoundedCornerShape(8.dp),
-        modifier = Modifier.padding(horizontal = 24.dp)
+        modifier = Modifier.fillMaxWidth()
     ) {
         Text(
             text = "Применить",
@@ -131,7 +130,7 @@ private fun SoundVibrationDialogPreview() {
         soundSwitchText = R.string.sound,
         vibrationSwitchText = R.string.vibration
     )
-    
+
     SoundVibrationDialog(
         setting = mockSetting,
         onDismiss = {},

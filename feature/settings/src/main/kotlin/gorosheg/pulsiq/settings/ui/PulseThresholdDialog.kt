@@ -3,7 +3,6 @@ package gorosheg.pulsiq.settings.ui
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.waitForUpOrCancellation
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,17 +12,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -43,11 +38,9 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import gorosheg.pulsiq.settings.R
 import gorosheg.pulsiq.settings.ui.model.SettingsUiState
 import gorosheg.pulsiq.ui.Blue
-import gorosheg.pulsiq.ui.Crimson
 import gorosheg.pulsiq.ui.White
 import kotlinx.coroutines.delay
 
@@ -206,9 +199,9 @@ private fun ApplyButton(
 ) {
     Button(
         onClick = onClick,
-        modifier = Modifier.fillMaxWidth(),
         colors = ButtonDefaults.buttonColors(containerColor = Blue),
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(12.dp),
+        modifier = Modifier.fillMaxWidth(),
     ) {
         Text(
             text = stringResource(R.string.apply_button_text),
@@ -226,7 +219,7 @@ private fun PulseThresholdDialogPreview() {
         minimumThresholdText = R.string.min_threshold_title,
         maximumThresholdText = R.string.max_threshold_title
     )
-    
+
     PulseThresholdDialog(
         setting = mockSetting,
         onDismiss = {},

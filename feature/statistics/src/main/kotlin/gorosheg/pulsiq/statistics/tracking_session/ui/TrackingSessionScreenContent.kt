@@ -16,35 +16,26 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Create
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -324,66 +315,10 @@ internal fun TrackingSessionScreenContent(
     }
 
     if (state.isEditDialogShow) {
-        val focusManager = androidx.compose.ui.platform.LocalFocusManager.current
-        val keyboardController = LocalSoftwareKeyboardController.current
-        AlertDialog(
-            onDismissRequest = {
-                keyboardController?.hide()
-                focusManager.clearFocus(force = true)
-                onCloseEditDialogClick.invoke()
-            },
-            confirmButton = {},
-            text = {
-                val focusRequester = remember { FocusRequester() }
-                LaunchedEffect(Unit) {
-                    focusRequester.requestFocus()
-                    keyboardController?.show()
-                }
-                Column {
-                    val initial = remember(state.isEditDialogShow, state.name) {
-                        androidx.compose.ui.text.input.TextFieldValue(
-                            text = state.name,
-                            selection = androidx.compose.ui.text.TextRange(state.name.length)
-                        )
-                    }
-                    val tfvState =
-                        androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(initial) }
-
-                    LaunchedEffect(state.isEditDialogShow) {
-                        if (state.isEditDialogShow) {
-                            tfvState.value = initial
-                            tfvState.value =
-                                tfvState.value.copy(selection = androidx.compose.ui.text.TextRange(tfvState.value.text.length))
-                        }
-                    }
-
-                    TextField(
-                        value = tfvState.value,
-                        onValueChange = {
-                            tfvState.value = it
-                            onNameChanged.invoke(it.text)
-                        },
-                        modifier = Modifier.focusRequester(focusRequester),
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                        keyboardActions = KeyboardActions(
-                            onDone = {
-                                keyboardController?.hide()
-                                focusManager.clearFocus(force = true)
-                                onCloseEditDialogClick.invoke()
-                            }
-                        )
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Button(onClick = {
-                        keyboardController?.hide()
-                        focusManager.clearFocus(force = true)
-                        onCloseEditDialogClick.invoke()
-                    }) {
-                        Text(text = "Сохранить")
-                    }
-                }
-            }
+        EditNameDialog(
+            state = state,
+            onNameChanged = onNameChanged,
+            onCloseEditDialogClick = onCloseEditDialogClick
         )
     }
 }
@@ -445,9 +380,9 @@ private fun Capsule(
 
 @Composable
 private fun CapsuleIcon(
+    modifier: Modifier = Modifier,
     icon: ImageVector,
     contentDescription: String? = null,
-    modifier: Modifier = Modifier,
     onClick: () -> Unit,
 ) {
     Box(

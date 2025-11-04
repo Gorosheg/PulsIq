@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -41,8 +42,9 @@ internal class BluetoothRepositoryImpl(
     private var reconnectionJob: Job? = null
     private var connectionJob: Job? = null
 
-    val _heartRateFlow: MutableStateFlow<Int> = MutableStateFlow(0)
+    val _heartRateFlow: MutableStateFlow<Int?> = MutableStateFlow(null)
     override val heartRateFlow: Flow<Int> = _heartRateFlow
+        .filterNotNull()
         .debounce(1000L)
         .distinctUntilChanged()
 

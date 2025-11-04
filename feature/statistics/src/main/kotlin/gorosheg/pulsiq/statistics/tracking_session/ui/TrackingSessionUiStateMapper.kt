@@ -12,8 +12,7 @@ internal class TrackingSessionUiStateMapper : UiStateMapper<TrackingSessionState
     private val dateFormatter = DateTimeFormatter.ofPattern("dd.MM. HH:mm")
 
     override fun TrackingSessionState.map(): TrackingSessionUiState {
-        val pulsePairs = this.pulse.drop(1)
-        val pulseValues = pulsePairs.map { it.first }
+        val pulseValues = pulse.map { it.first }
         val average =
             if (pulseValues.isNotEmpty()) pulseValues.average().toInt()
             else 0
@@ -22,7 +21,7 @@ internal class TrackingSessionUiStateMapper : UiStateMapper<TrackingSessionState
             dateStart = formatDate(this.dateStart),
             dateEnd = formatDate(this.dateEnd),
             name = this.name,
-            pulse = pulsePairs,
+            pulse = pulse,
             highestPulse = pulseValues.maxOrNull() ?: 0,
             lowestPulse = pulseValues.minOrNull() ?: 0,
             averagePulse = average,
