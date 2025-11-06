@@ -37,8 +37,9 @@ internal class StatisticsViewModel(
 
     private fun getStatistics() {
         statisticsRepository.getPulse()
-            .onEach { pulseStatistic ->
-                updateState { copy(pulseStatisticList = pulseStatistic) }
+            .onEach { list ->
+                val groups = buildGroups(list)
+                updateState { copy(pulseStatisticList = groups) }
             }
             .launchIn(viewModelScope)
     }

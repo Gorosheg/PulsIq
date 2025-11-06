@@ -1,7 +1,12 @@
 package gorosheg.pulsiq.statistics.main.ui.model
 
 internal data class StatisticsUiState(
-    val pulseStatisticList: List<UiPulseStatistic> = emptyList(),
+    val pulseStatisticList: List<UiPulseStatisticGroup> = emptyList(),
+)
+
+internal data class UiPulseStatisticGroup(
+    val title: String,
+    val items: List<UiPulseStatistic>,
 )
 
 internal data class UiPulseStatistic(

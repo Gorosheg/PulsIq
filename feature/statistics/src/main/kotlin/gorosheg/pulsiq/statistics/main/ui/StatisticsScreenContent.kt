@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import gorosheg.pulsiq.statistics.main.ui.model.StatisticsUiState
 import gorosheg.pulsiq.statistics.main.ui.model.UiPulseStatistic
+import gorosheg.pulsiq.statistics.main.ui.model.UiPulseStatisticGroup
 import gorosheg.pulsiq.ui.BlueGray
 import gorosheg.pulsiq.ui.MyAppTheme
 import gorosheg.pulsiq.ui.White
@@ -46,14 +47,31 @@ internal fun StatisticsScreenContent(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items(state.pulseStatisticList, key = { it.id }) { item ->
-            StatisticSwipeItem(
-                item = item,
-                onSwipe = onSwipe,
-                onClick = onClick
-            )
+        state.pulseStatisticList.forEachIndexed { index, group ->
+            item(key = "header_${index}_${group.title}") {
+                GroupHeader(title = group.title)
+            }
+            items(group.items, key = { it.id }) { item ->
+                StatisticSwipeItem(
+                    item = item,
+                    onSwipe = onSwipe,
+                    onClick = onClick
+                )
+            }
         }
     }
+}
+
+@Composable
+private fun GroupHeader(title: String) {
+    Text(
+        text = title,
+        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
+        color = White,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp, bottom = 4.dp)
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -120,15 +138,30 @@ private fun StatisticsScreenContentPreview() {
         StatisticsScreenContent(
             state = StatisticsUiState(
                 pulseStatisticList = listOf(
-                    UiPulseStatistic(
-                        id = 1,
-                        name = "Morning Run",
-                        dateStart = "26.10. 10:00",
+                    UiPulseStatisticGroup(
+                        title = "Сегодня",
+                        items = listOf(
+                            UiPulseStatistic(
+                                id = 1,
+                                name = "Morning Run",
+                                dateStart = "26.10. 10:00",
+                            ),
+                            UiPulseStatistic(
+                                id = 2,
+                                name = "Evening Walk",
+                                dateStart = "26.10. 18:00",
+                            )
+                        )
                     ),
-                    UiPulseStatistic(
-                        id = 2,
-                        name = "Evening Walk",
-                        dateStart = "26.10. 18:00",
+                    UiPulseStatisticGroup(
+                        title = "Октябрь",
+                        items = listOf(
+                            UiPulseStatistic(
+                                id = 3,
+                                name = "Gym",
+                                dateStart = "15.10. 19:30",
+                            )
+                        )
                     )
                 )
             ),
