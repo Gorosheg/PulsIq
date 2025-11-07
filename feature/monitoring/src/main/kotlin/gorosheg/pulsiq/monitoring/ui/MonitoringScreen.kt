@@ -2,13 +2,10 @@ package gorosheg.pulsiq.monitoring.ui
 
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import cafe.adriel.voyager.core.screen.Screen
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import gorosheg.pulsiq.monitoring.presentation.MonitoringViewModel
 import org.koin.androidx.compose.koinViewModel
 
@@ -24,7 +21,9 @@ internal class MonitoringScreen : Screen {
         MonitoringScreenContent(
             state = state,
             startTracking = viewModel::startMonitoring,
-            stopTracking = viewModel::stopMonitoring
+            stopTracking = viewModel::stopMonitoring,
+            onSessionNameChanged = viewModel::changeSessionName,
+            onNameDialogDismiss = viewModel::onNameDialogDismiss,
         )
     }
 }

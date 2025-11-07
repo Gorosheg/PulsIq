@@ -33,27 +33,17 @@ internal class TrackingSessionViewModel(
     }
 
     fun onEditClick() {
-        updateState {
-            copy(
-                isEditDialogShow = true,
-            )
-        }
+        updateState { copy(isEditDialogShow = true) }
     }
 
     fun closeEditDialog() {
-        updateState {
-            copy(
-                isEditDialogShow = false,
-            )
-        }
+        updateState { copy(isEditDialogShow = false) }
     }
 
     fun changeName(name: String) {
         viewModelScope.launch {
             statisticsRepository.changeStatisticsSessionName(id = getState.id, name = name)
         }
-        updateState {
-            copy(name = name)
-        }
+        updateState { copy(name = name) }
     }
 }

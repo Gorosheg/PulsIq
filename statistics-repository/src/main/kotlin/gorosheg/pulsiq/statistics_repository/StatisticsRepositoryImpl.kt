@@ -16,7 +16,7 @@ class StatisticsRepositoryImpl(
         statisticsDatabaseDatasource.stopStatisticsSession()
     }
 
-    override suspend fun changeStatisticsSessionName(id: Int, name: String) {
+    override suspend fun changeStatisticsSessionName(id: Int?, name: String) {
         statisticsDatabaseDatasource.changeStatisticsSessionName(id = id, name = name)
     }
 

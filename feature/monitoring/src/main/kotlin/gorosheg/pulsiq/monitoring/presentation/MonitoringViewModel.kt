@@ -36,10 +36,21 @@ internal class MonitoringViewModel(
         pulseNotificationInitializer.stopPulseNotification()
         heartBeatSubscriptionJob?.cancel()
         heartBeatSubscriptionJob = null
-        updateState { copy(isTracking = false, pulse = 0) }
         viewModelScope.launch {
             statisticsRepository.stopStatisticsSession()
         }
+        updateState { copy(isTracking = false, pulse = 0, isSetNameDialogShow = true) }
+    }
+
+    fun onNameDialogDismiss() {
+        viewModelScope.launch {
+            statisticsRepository.changeStatisticsSessionName(name = getState.sessionName)
+        }
+        updateState { copy(isSetNameDialogShow = false, sessionName = "") }
+    }
+
+    fun changeSessionName(name: String) {
+        updateState { copy(sessionName = name) }
     }
 
     private fun subscribeToPulse() {

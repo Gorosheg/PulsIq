@@ -48,13 +48,16 @@ import gorosheg.pulsiq.monitoring.R
 import gorosheg.pulsiq.monitoring.ui.model.MonitoringUiState
 import gorosheg.pulsiq.ui.Blue
 import gorosheg.pulsiq.ui.Crimson
+import gorosheg.pulsiq.ui.EditNameDialog
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 internal fun MonitoringScreenContent(
     state: MonitoringUiState,
     startTracking: () -> Unit,
-    stopTracking: () -> Unit
+    stopTracking: () -> Unit,
+    onSessionNameChanged: (String) -> Unit,
+    onNameDialogDismiss: () -> Unit,
 ) {
     val animatedColor by animateColorAsState(
         targetValue = state.heartColor,
@@ -76,6 +79,14 @@ internal fun MonitoringScreenContent(
             stopTracking = stopTracking,
             animatedColor = animatedColor,
             scaleAnimation = scaleAnimation
+        )
+    }
+
+    if (state.isSetNameDialogShow) {
+        EditNameDialog(
+            name = state.sessionName,
+            onNameChanged = { onSessionNameChanged(it) },
+            onCloseEditDialogClick = { onNameDialogDismiss() }
         )
     }
 }
@@ -227,10 +238,11 @@ private fun MonitoringScreenContentPreview() {
             pulse = 0,
             heartColor = Blue,
             heartRateSpeed = 100,
-            noBluetoothPermissionText = R.string.permissions_denied_message
         ),
         startTracking = {},
-        stopTracking = {}
+        stopTracking = {},
+        onSessionNameChanged = {},
+        onNameDialogDismiss = {},
     )
 }
 
@@ -244,26 +256,10 @@ private fun MonitoringScreenContentTrackingPreview() {
             pulse = 120,
             heartColor = Crimson,
             heartRateSpeed = 100,
-            noBluetoothPermissionText = R.string.permissions_denied_message
         ),
         startTracking = {},
-        stopTracking = {}
-    )
-}
-
-@OptIn(ExperimentalPermissionsApi::class)
-@Preview(showBackground = true, name = "No Permissions")
-@Composable
-private fun MonitoringScreenContentNoPermissionsPreview() {
-    MonitoringScreenContent(
-        state = MonitoringUiState(
-            isTracking = false,
-            pulse = 0,
-            heartColor = Blue,
-            heartRateSpeed = 100,
-            noBluetoothPermissionText = R.string.permissions_denied_message
-        ),
-        startTracking = {},
-        stopTracking = {}
+        stopTracking = {},
+        onSessionNameChanged = {},
+        onNameDialogDismiss = {},
     )
 }

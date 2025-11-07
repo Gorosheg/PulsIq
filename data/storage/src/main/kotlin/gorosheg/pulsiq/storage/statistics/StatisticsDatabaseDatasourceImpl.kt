@@ -26,7 +26,7 @@ internal class StatisticsDatabaseDatasourceImpl(
         }
     }
 
-    override suspend fun changeStatisticsSessionName(id: Int, name: String) {
+    override suspend fun changeStatisticsSessionName(id: Int?, name: String) {
         withContext(Dispatchers.IO) {
             statisticsDao.changeStatisticsSessionName(id = id, name = name)
         }

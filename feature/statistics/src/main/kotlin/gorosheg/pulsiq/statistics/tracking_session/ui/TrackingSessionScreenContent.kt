@@ -54,6 +54,7 @@ import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
 import com.patrykandpatrick.vico.core.common.data.ExtraStore
 import gorosheg.pulsiq.statistics.tracking_session.ui.model.TrackingSessionUiState
 import gorosheg.pulsiq.ui.BlueGray
+import gorosheg.pulsiq.ui.EditNameDialog
 import gorosheg.pulsiq.ui.Gray
 import gorosheg.pulsiq.ui.White
 import kotlin.math.roundToInt
@@ -316,7 +317,7 @@ internal fun TrackingSessionScreenContent(
 
     if (state.isEditDialogShow) {
         EditNameDialog(
-            state = state,
+            name = state.name,
             onNameChanged = onNameChanged,
             onCloseEditDialogClick = onCloseEditDialogClick
         )

@@ -19,12 +19,17 @@ internal interface StatisticsDao {
 
     suspend fun stopStatisticsSession() {
         val current = getLast() ?: return
+        if (current.dateEnd != null) return
         val updated = current.copy(dateEnd = System.currentTimeMillis())
         update(updated)
     }
 
-    suspend fun changeStatisticsSessionName(id: Int, name: String) {
-        val current = getById(id) ?: return
+    suspend fun changeStatisticsSessionName(id: Int?, name: String) {
+        val current =  if (id == null) {
+            getLast() ?: return
+        } else {
+            getById(id) ?: return
+        }
         val updated = current.copy(name = name)
         update(updated)
     }

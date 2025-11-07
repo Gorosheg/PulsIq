@@ -5,4 +5,6 @@ internal data class MonitoringState(
 	val pulse: Int = 0,
 	val lowerThreshold: Int = 100,
 	val upperThreshold: Int = 180,
+	val isSetNameDialogShow: Boolean = false,
+	val sessionName: String = "",
 )

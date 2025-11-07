@@ -37,6 +37,7 @@ import kotlin.getValue
 class MainActivity : ComponentActivity() {
 
     private val bluetoothRepository: BluetoothRepository by inject()
+    private val heartBeatTrackerLauncher: HeartBeatTrackerLauncher by inject()
     
     private val permissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -48,6 +49,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        heartBeatTrackerLauncher.changeActivityState(true)
         checkAndRequestPermissions()
 
         setContent {
@@ -56,7 +58,12 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-    
+
+    override fun onDestroy() {
+        heartBeatTrackerLauncher.changeActivityState(false)
+        super.onDestroy()
+    }
+
     private fun checkAndRequestPermissions() {
         if (hasAllRequiredPermissions()) {
             bluetoothRepository.startScan()

@@ -1,4 +1,4 @@
-package gorosheg.pulsiq.statistics.tracking_session.ui
+package gorosheg.pulsiq.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -20,22 +20,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import gorosheg.pulsiq.statistics.tracking_session.ui.model.TrackingSessionUiState
-import gorosheg.pulsiq.ui.Blue
 
 @Composable
-internal fun EditNameDialog(
-    state: TrackingSessionUiState,
+fun EditNameDialog(
+    name: String,
     onCloseEditDialogClick: () -> Unit,
     onNameChanged: (String) -> Unit,
 ) {
-    val focusManager = androidx.compose.ui.platform.LocalFocusManager.current
+    val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
     AlertDialog(
         onDismissRequest = {
@@ -51,19 +50,19 @@ internal fun EditNameDialog(
                 keyboardController?.show()
             }
             Column {
-                val initial = remember(state.isEditDialogShow, state.name) {
+                val initial = remember(name) {
                     TextFieldValue(
-                        text = state.name,
-                        selection = TextRange(state.name.length)
+                        text = name,
+                        selection = TextRange(name.length)
                     )
                 }
                 val tfvState = remember { mutableStateOf(initial) }
 
-                LaunchedEffect(state.isEditDialogShow) {
-                    if (state.isEditDialogShow) {
-                        tfvState.value = initial
-                        tfvState.value = tfvState.value.copy(selection = TextRange(tfvState.value.text.length))
-                    }
+                LaunchedEffect(name) {
+                    tfvState.value = TextFieldValue(
+                        text = name,
+                        selection = TextRange(name.length)
+                    )
                 }
 
                 TextField(
@@ -108,19 +107,8 @@ internal fun EditNameDialog(
 @Preview(showBackground = true)
 @Composable
 private fun EditNameDialogPreview() {
-    val mockState = TrackingSessionUiState(
-        name = "Тренировка",
-        dateStart = "",
-        dateEnd = "",
-        pulse = emptyList(),
-        highestPulse = 180,
-        lowestPulse = 110,
-        averagePulse = 140,
-        isEditDialogShow = true,
-    )
-
     EditNameDialog(
-        state = mockState,
+        name = "Тренировка",
         onCloseEditDialogClick = {},
         onNameChanged = {},
     )

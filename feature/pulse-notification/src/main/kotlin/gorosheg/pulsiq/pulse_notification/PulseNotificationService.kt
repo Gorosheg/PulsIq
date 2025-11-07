@@ -26,6 +26,7 @@ import org.koin.android.ext.android.inject
 internal class PulseNotificationService : Service() {
 
     private val bluetoothRepository: BluetoothRepository by inject()
+    private val heartBeatTrackerLauncher: HeartBeatTrackerLauncher by inject()
 
     private val notificationManager by lazy { getSystemService(NOTIFICATION_SERVICE) as NotificationManager }
     private val remoteViews by lazy { RemoteViews(packageName, R.layout.notification_pulse) }
@@ -34,6 +35,7 @@ internal class PulseNotificationService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+        heartBeatTrackerLauncher.changeServiceState(true)
         createNotificationChannel()
         buildNotification()
 
@@ -60,8 +62,9 @@ internal class PulseNotificationService : Service() {
     }
 
     override fun onDestroy() {
-        ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
+        heartBeatTrackerLauncher.changeServiceState(false)
         scope.cancel()
+        ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
         super.onDestroy()
     }
 

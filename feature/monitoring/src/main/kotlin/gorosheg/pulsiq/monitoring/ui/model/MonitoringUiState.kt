@@ -8,5 +8,6 @@ internal class MonitoringUiState(
     val pulse: Int = 0,
     val heartColor: Color = Blue,
     val heartRateSpeed: Int = 1000,
-    val noBluetoothPermissionText: Int
+    val isSetNameDialogShow: Boolean = false,
+    val sessionName: String = "",
 )
