@@ -1,4 +1,4 @@
-package gorosheg.pulsiq.settings.ui
+package gorosheg.pulsiq.settings.ui.components
 
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
@@ -198,7 +198,7 @@ private fun ApplyButton(
     onClick: () -> Unit
 ) {
     Button(
-        onClick = onClick,
+        onClick = {onClick.invoke()},
         colors = ButtonDefaults.buttonColors(containerColor = Blue),
         shape = RoundedCornerShape(12.dp),
         modifier = Modifier.fillMaxWidth(),

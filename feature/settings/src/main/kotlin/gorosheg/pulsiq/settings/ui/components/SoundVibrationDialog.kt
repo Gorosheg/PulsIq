@@ -1,4 +1,4 @@
-package gorosheg.pulsiq.settings.ui
+package gorosheg.pulsiq.settings.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

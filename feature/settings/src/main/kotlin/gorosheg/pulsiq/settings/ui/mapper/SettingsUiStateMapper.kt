@@ -1,4 +1,4 @@
-package gorosheg.pulsiq.settings.ui
+package gorosheg.pulsiq.settings.ui.mapper
 
 import gorosheg.pulsiq.common.viewModel.ui_state_mapper.UiStateMapper
 import gorosheg.pulsiq.settings.R
@@ -14,6 +14,7 @@ internal class SettingsUiStateMapper : UiStateMapper<SettingsState, SettingsUiSt
                 soundEnabled = soundEnabled,
                 vibrationEnabled = vibrationEnabled,
             ),
+            selectedSettingItem = selectedSettingItem
         )
     }
 
@@ -39,5 +40,4 @@ internal class SettingsUiStateMapper : UiStateMapper<SettingsState, SettingsUiSt
             SettingsUiState.SettingItem.DeviceConnection
         )
     }
-
 }

@@ -4,6 +4,7 @@ import gorosheg.pulsiq.settings.R
 
 internal data class SettingsUiState(
     val settingItems: List<SettingItem> = emptyList(),
+    val selectedSettingItem: SettingItem? = null,
 ) {
     sealed class SettingItem(internal val title: Int) {
 
