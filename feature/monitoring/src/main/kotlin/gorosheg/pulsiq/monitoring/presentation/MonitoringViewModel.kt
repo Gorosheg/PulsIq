@@ -5,7 +5,7 @@ import gorosheg.pulsiq.bluetooth.BluetoothRepository
 import gorosheg.pulsiq.common.notification.PulseNotificationInitializer
 import gorosheg.pulsiq.common.viewModel.BaseViewModel
 import gorosheg.pulsiq.monitoring.presentation.model.MonitoringState
-import gorosheg.pulsiq.monitoring.ui.MonitoringUiStateMapper
+import gorosheg.pulsiq.monitoring.ui.mapper.MonitoringUiStateMapper
 import gorosheg.pulsiq.monitoring.ui.model.MonitoringUiState
 import gorosheg.pulsiq.statistics_repository.StatisticsRepository
 import kotlinx.coroutines.Job

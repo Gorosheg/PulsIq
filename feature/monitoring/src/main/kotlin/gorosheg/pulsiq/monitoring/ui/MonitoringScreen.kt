@@ -17,7 +17,6 @@ internal class MonitoringScreen : Screen {
         val viewModel: MonitoringViewModel = koinViewModel()
         val state by viewModel.uiState.collectAsState()
 
-
         MonitoringScreenContent(
             state = state,
             startTracking = viewModel::startMonitoring,

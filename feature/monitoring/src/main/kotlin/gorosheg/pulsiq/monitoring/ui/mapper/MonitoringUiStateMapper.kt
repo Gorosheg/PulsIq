@@ -1,4 +1,4 @@
-package gorosheg.pulsiq.monitoring.ui
+package gorosheg.pulsiq.monitoring.ui.mapper
 
 import gorosheg.pulsiq.common.viewModel.ui_state_mapper.UiStateMapper
 import gorosheg.pulsiq.monitoring.presentation.model.MonitoringState

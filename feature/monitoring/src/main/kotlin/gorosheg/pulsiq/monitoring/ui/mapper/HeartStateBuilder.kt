@@ -1,4 +1,4 @@
-package gorosheg.pulsiq.monitoring.ui
+package gorosheg.pulsiq.monitoring.ui.mapper
 
 import androidx.compose.ui.graphics.Color
 import androidx.core.graphics.ColorUtils
