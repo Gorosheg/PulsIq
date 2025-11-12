@@ -1,6 +1,8 @@
 package gorosheg.pulsiq.statistics.main.presentation
 
+import android.content.Context
 import gorosheg.pulsiq.common.model.PulseStatistic
+import gorosheg.pulsiq.statistics.R
 import gorosheg.pulsiq.statistics.main.presentation.model.PulseStatisticGroup
 import java.time.Instant
 import java.time.LocalDate
@@ -8,7 +10,7 @@ import java.time.ZoneId
 import java.time.format.TextStyle
 import java.util.Locale
 
-internal fun buildGroups(list: List<PulseStatistic>): List<PulseStatisticGroup> {
+internal fun buildGroups(list: List<PulseStatistic>, context: Context): List<PulseStatisticGroup> {
     val ruLocale = Locale("ru")
     val zone: ZoneId = ZoneId.systemDefault()
     val today = LocalDate.now(zone)
@@ -30,7 +32,7 @@ internal fun buildGroups(list: List<PulseStatistic>): List<PulseStatisticGroup> 
     if (todayList.isNotEmpty()) {
         result.add(
             PulseStatisticGroup(
-                title = "Сегодня",
+                title = context.getString(R.string.today),
                 items = todayList.sortedByDescending { it.dateStart }
             )
         )
@@ -38,7 +40,7 @@ internal fun buildGroups(list: List<PulseStatistic>): List<PulseStatisticGroup> 
     if (yesterdayList.isNotEmpty()) {
         result.add(
             PulseStatisticGroup(
-                title = "Вчера",
+                title = context.getString(R.string.yesterday),
                 items = yesterdayList.sortedByDescending { it.dateStart }
             )
         )

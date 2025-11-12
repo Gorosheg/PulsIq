@@ -4,7 +4,7 @@ import androidx.lifecycle.viewModelScope
 import gorosheg.pulsiq.common.model.PulseStatistic
 import gorosheg.pulsiq.common.viewModel.BaseViewModel
 import gorosheg.pulsiq.statistics.tracking_session.presentation.model.TrackingSessionState
-import gorosheg.pulsiq.statistics.tracking_session.ui.TrackingSessionUiStateMapper
+import gorosheg.pulsiq.statistics.tracking_session.ui.mapper.TrackingSessionUiStateMapper
 import gorosheg.pulsiq.statistics.tracking_session.ui.model.TrackingSessionUiState
 import gorosheg.pulsiq.statistics_repository.StatisticsRepository
 import kotlinx.coroutines.launch

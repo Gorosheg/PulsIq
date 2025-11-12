@@ -1,11 +1,12 @@
 package gorosheg.pulsiq.statistics.main.presentation
 
+import android.content.Context
 import androidx.lifecycle.viewModelScope
 import gorosheg.pulsiq.common.navigation.NavigatorHolder
 import gorosheg.pulsiq.common.navigation.provider.TrackingSessionScreenProvider
 import gorosheg.pulsiq.common.viewModel.BaseViewModel
 import gorosheg.pulsiq.statistics.main.presentation.model.StatisticsState
-import gorosheg.pulsiq.statistics.main.ui.StatisticsUiStateMapper
+import gorosheg.pulsiq.statistics.main.ui.mapper.StatisticsUiStateMapper
 import gorosheg.pulsiq.statistics.main.ui.model.StatisticsUiState
 import gorosheg.pulsiq.statistics_repository.StatisticsRepository
 import kotlinx.coroutines.flow.launchIn
@@ -16,6 +17,7 @@ internal class StatisticsViewModel(
     private val statisticsRepository: StatisticsRepository,
     private val navigator: NavigatorHolder,
     private val trackingSessionScreenProvider: TrackingSessionScreenProvider,
+    private val context: Context,
 ) : BaseViewModel<StatisticsState, StatisticsUiState>(
     initState = StatisticsState(),
     uiStateMapper = StatisticsUiStateMapper()
@@ -38,7 +40,7 @@ internal class StatisticsViewModel(
     private fun getStatistics() {
         statisticsRepository.getPulse()
             .onEach { list ->
-                val groups = buildGroups(list)
+                val groups = buildGroups(list, context)
                 updateState { copy(pulseStatisticList = groups) }
             }
             .launchIn(viewModelScope)

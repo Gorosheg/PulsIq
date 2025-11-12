@@ -1,4 +1,4 @@
-package gorosheg.pulsiq.statistics.main.ui
+package gorosheg.pulsiq.statistics.main.ui.mapper
 
 import gorosheg.pulsiq.common.model.PulseStatistic
 import gorosheg.pulsiq.common.viewModel.ui_state_mapper.UiStateMapper
@@ -13,7 +13,7 @@ import java.time.format.DateTimeFormatter
 
 internal class StatisticsUiStateMapper : UiStateMapper<StatisticsState, StatisticsUiState> {
 
-    private val dateFormatter = DateTimeFormatter.ofPattern("dd.MM. HH:mm")
+    private val dateFormatter = DateTimeFormatter.ofPattern("dd.MM HH:mm")
 
     override fun StatisticsState.map(): StatisticsUiState {
         return StatisticsUiState(
