@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberBottom
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberStart
@@ -18,6 +19,7 @@ import com.patrykandpatrick.vico.core.cartesian.data.CartesianLayerRangeProvider
 import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
 import com.patrykandpatrick.vico.core.common.data.ExtraStore
 import gorosheg.pulsiq.statistics.tracking_session.ui.model.ChartState
+import gorosheg.pulsiq.ui.MyAppTheme
 import kotlin.math.roundToInt
 
 @Composable
@@ -76,10 +78,10 @@ internal fun PulseChart(
     )
 }
 
-@androidx.compose.ui.tooling.preview.Preview(showBackground = true, name = "PulseChart Preview")
+@Preview()
 @Composable
 private fun PulseChartPreview() {
-    gorosheg.pulsiq.ui.MyAppTheme {
+    MyAppTheme {
         val pulseValues: List<Int> = listOf(72, 78, 85, 92, 110, 105, 98, 88, 95, 102, 96, 90)
         val timeSeconds: List<Int> = pulseValues.indices.map { it * 60 }
         PulseChart(

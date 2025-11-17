@@ -9,8 +9,9 @@ internal data class TrackingSessionUiState(
 
 internal data class TrackingSessionHeaderState(
     val name: String,
-    val dateStart: String,
-    val dateEnd: String,
+    val timeStart: String,
+    val timeEnd: String,
+    val date: String,
 )
 
 internal data class ChartState(
@@ -20,7 +21,7 @@ internal data class ChartState(
 )
 
 internal data class PulseSummaryState(
-    val highestPulse: Int,
-    val lowestPulse: Int,
-    val averagePulse: Int,
+    val highestPulse: String,
+    val lowestPulse: String,
+    val averagePulse: String,
 )

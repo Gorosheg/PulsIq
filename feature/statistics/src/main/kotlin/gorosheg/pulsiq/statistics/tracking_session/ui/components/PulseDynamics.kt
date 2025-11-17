@@ -18,15 +18,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import gorosheg.pulsiq.statistics.R
 import gorosheg.pulsiq.statistics.tracking_session.ui.model.ChartState
 import gorosheg.pulsiq.ui.BlueGray
+import gorosheg.pulsiq.ui.MyAppTheme
 import gorosheg.pulsiq.ui.White
-
 
 @Composable
 internal fun PulseDynamics(chartState: ChartState?) {
@@ -45,7 +48,7 @@ internal fun PulseDynamics(chartState: ChartState?) {
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(
-                text = "Динамика пульса",
+                text = stringResource(R.string.pulse_dynamic_header),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Medium,
                 color = White
@@ -63,7 +66,7 @@ internal fun PulseDynamics(chartState: ChartState?) {
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "Пульс",
+                        text = stringResource(R.string.pulse),
                         style = MaterialTheme.typography.bodySmall.copy(
                             platformStyle = PlatformTextStyle(includeFontPadding = false),
                             lineHeight = MaterialTheme.typography.bodySmall.fontSize,
@@ -73,8 +76,7 @@ internal fun PulseDynamics(chartState: ChartState?) {
                         maxLines = 1,
                         softWrap = false,
                         overflow = TextOverflow.Visible,
-                        modifier = Modifier
-                            .graphicsLayer { rotationZ = -90f }
+                        modifier = Modifier.graphicsLayer { rotationZ = -90f }
                     )
                 }
 
@@ -92,7 +94,7 @@ internal fun PulseDynamics(chartState: ChartState?) {
             }
 
             Text(
-                text = "Время",
+                text = stringResource(R.string.time),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
@@ -101,10 +103,10 @@ internal fun PulseDynamics(chartState: ChartState?) {
     }
 }
 
-@androidx.compose.ui.tooling.preview.Preview(showBackground = true, name = "PulseDynamics Preview")
+@Preview()
 @Composable
 private fun PulseDynamicsPreview() {
-    gorosheg.pulsiq.ui.MyAppTheme {
+    MyAppTheme {
         PulseDynamics(
             chartState = ChartState(
                 timeList = listOf(0, 1, 2, 3, 4, 5, 6, 7),

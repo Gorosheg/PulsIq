@@ -2,4 +2,14 @@
 <resources>
     <string name="today">Сегодня</string>
     <string name="yesterday">Вчера</string>
+    <string name="hyphen">—</string>
+    <string name="pulse_summery_header">Пульс, сводка</string>
+    <string name="pulse_summery_value">уд/мин</string>
+    <string name="average">Средний</string>
+    <string name="minimum">Мин</string>
+    <string name="maximum">Макс</string>
+    <string name="pulse_dynamic_header">Динамика пульса</string>
+    <string name="pulse">Пульс</string>
+    <string name="time">Время</string>
+    <string name="empty_pulse_chart">Нет данных для построения графика</string>
 </resources>

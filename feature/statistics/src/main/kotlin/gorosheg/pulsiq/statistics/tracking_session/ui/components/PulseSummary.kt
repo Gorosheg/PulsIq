@@ -11,9 +11,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import gorosheg.pulsiq.statistics.R
 import gorosheg.pulsiq.statistics.tracking_session.ui.model.PulseSummaryState
 import gorosheg.pulsiq.ui.BlueGray
 import gorosheg.pulsiq.ui.MyAppTheme
@@ -34,7 +36,7 @@ internal fun PulseSummary(state: PulseSummaryState) {
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Text(
-                text = "Пульс, сводка",
+                text = stringResource(R.string.pulse_summery_header),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Medium,
                 color = White
@@ -44,18 +46,18 @@ internal fun PulseSummary(state: PulseSummaryState) {
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 PulseStatisticCard(
-                    label = "Макс",
-                    value = "${state.highestPulse} уд/мин",
+                    label = stringResource(R.string.maximum),
+                    value = state.highestPulse,
                     modifier = Modifier.weight(1f)
                 )
                 PulseStatisticCard(
-                    label = "Мин",
-                    value = "${state.lowestPulse} уд/мин",
+                    label = stringResource(R.string.minimum),
+                    value = state.lowestPulse,
                     modifier = Modifier.weight(1f)
                 )
                 PulseStatisticCard(
-                    label = "Средний",
-                    value = "${state.averagePulse} уд/мин",
+                    label = stringResource(R.string.average),
+                    value = state.averagePulse,
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -63,15 +65,15 @@ internal fun PulseSummary(state: PulseSummaryState) {
     }
 }
 
-@Preview(showBackground = true, name = "PulseSummary Preview")
+@Preview()
 @Composable
 private fun PulseSummaryPreview() {
     MyAppTheme {
         PulseSummary(
             state = PulseSummaryState(
-                highestPulse = 178,
-                lowestPulse = 62,
-                averagePulse = 112,
+                highestPulse = "178",
+                lowestPulse = "62",
+                averagePulse = "112",
             )
         )
     }

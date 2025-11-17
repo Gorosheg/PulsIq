@@ -57,13 +57,14 @@ private fun TrackingSessionScreenContentPreview() {
             state = TrackingSessionUiState(
                 trackingSessionHeaderState = gorosheg.pulsiq.statistics.tracking_session.ui.model.TrackingSessionHeaderState(
                     name = "Утренняя тренировка",
-                    dateStart = "26.10. 10:00",
-                    dateEnd = "26.10. 11:00",
+                    timeStart = "10:00",
+                    timeEnd = "11:30",
+                    date = "26.10"
                 ),
                 pulseSummaryState = gorosheg.pulsiq.statistics.tracking_session.ui.model.PulseSummaryState(
-                    highestPulse = pulseValues.maxOrNull() ?: 0,
-                    lowestPulse = pulseValues.minOrNull() ?: 0,
-                    averagePulse = pulseValues.average().toInt(),
+                    highestPulse = (pulseValues.maxOrNull() ?: 0).toString(),
+                    lowestPulse = (pulseValues.minOrNull() ?: 0).toString(),
+                    averagePulse = pulseValues.average().toInt().toString(),
                 ),
                 chartState = ChartState(
                     timeList = timeSeconds,

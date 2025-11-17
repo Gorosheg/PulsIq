@@ -15,12 +15,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import gorosheg.pulsiq.statistics.R
 import gorosheg.pulsiq.statistics.tracking_session.ui.model.TrackingSessionHeaderState
 import gorosheg.pulsiq.ui.BlueGray
+import gorosheg.pulsiq.ui.MyAppTheme
 import gorosheg.pulsiq.ui.White
 
 @Composable
@@ -38,10 +42,6 @@ internal fun TrackingSessionHeader(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            val date = state.dateStart.substringBeforeLast(". ").ifBlank { state.dateStart }
-            val timeStart = state.dateStart.substringAfterLast(" ")
-            val timeEnd = state.dateEnd.substringAfterLast(" ")
-
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -66,35 +66,36 @@ internal fun TrackingSessionHeader(
                 }
 
                 Text(
-                    text = date,
+                    text = state.date,
                     style = MaterialTheme.typography.bodyMedium,
                     color = White,
                 )
             }
 
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Capsule(text = timeStart)
+                Capsule(text = state.timeStart)
                 Text(
-                    text = "—",
+                    text = stringResource(R.string.hyphen),
                     style = MaterialTheme.typography.bodyMedium,
                     color = White,
                     modifier = Modifier.offset(y = 1.dp)
                 )
-                Capsule(text = timeEnd)
+                Capsule(text = state.timeEnd)
             }
         }
     }
 }
 
-@androidx.compose.ui.tooling.preview.Preview(showBackground = true, name = "TrackingSessionHeader Preview")
+@Preview()
 @Composable
 private fun TrackingSessionHeaderPreview() {
-    gorosheg.pulsiq.ui.MyAppTheme {
+    MyAppTheme {
         TrackingSessionHeader(
             state = TrackingSessionHeaderState(
                 name = "Утренняя тренировка",
-                dateStart = "26.10. 10:00",
-                dateEnd = "26.10. 11:00",
+                timeStart = "10:00",
+                timeEnd = "11:30",
+                date = "26.10"
             ),
             onEditClick = {}
         )

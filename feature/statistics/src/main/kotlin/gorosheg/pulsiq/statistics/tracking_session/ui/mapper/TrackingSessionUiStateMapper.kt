@@ -12,7 +12,8 @@ import java.time.format.DateTimeFormatter
 
 internal class TrackingSessionUiStateMapper : UiStateMapper<TrackingSessionState, TrackingSessionUiState> {
 
-    private val dateFormatter = DateTimeFormatter.ofPattern("dd.MM. HH:mm")
+    private val dateFormatter = DateTimeFormatter.ofPattern("dd.MM")
+    private val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
 
     override fun TrackingSessionState.map(): TrackingSessionUiState {
         return TrackingSessionUiState(
@@ -23,29 +24,34 @@ internal class TrackingSessionUiStateMapper : UiStateMapper<TrackingSessionState
         )
     }
 
-    private fun buildTrackingSessionHeaderState(dateStart: Long, dateEnd: Long, name: String): TrackingSessionHeaderState{
+    private fun buildTrackingSessionHeaderState(
+        dateStart: Long,
+        dateEnd: Long,
+        name: String
+    ): TrackingSessionHeaderState {
         return TrackingSessionHeaderState(
-            dateStart = formatDate(dateStart),
-            dateEnd = formatDate(dateEnd),
             name = name,
+            timeStart = dateStart.formatDate(timeFormatter),
+            timeEnd = dateEnd.formatDate(timeFormatter),
+            date = dateStart.formatDate(dateFormatter),
         )
     }
 
-    private fun formatDate(epochMillis: Long): String {
-        return Instant.ofEpochMilli(epochMillis)
+    private fun Long.formatDate(formatter: DateTimeFormatter): String {
+        return Instant.ofEpochMilli(this)
             .atZone(ZoneId.systemDefault())
-            .format(dateFormatter)
+            .format(formatter)
     }
 
     private fun buildPulseSummaryState(pulse: List<Pair<Int, Long>>): PulseSummaryState {
         val pulseValues = pulse.map { it.first }
         val average =
-            if (pulseValues.isNotEmpty()) pulseValues.average().toInt()
-            else 0
+            if (pulseValues.isNotEmpty()) pulseValues.average().toInt().toString()
+            else 0.toString()
 
         return PulseSummaryState(
-            highestPulse = pulseValues.maxOrNull() ?: 0,
-            lowestPulse = pulseValues.minOrNull() ?: 0,
+            highestPulse = (pulseValues.maxOrNull() ?: 0).toString(),
+            lowestPulse = (pulseValues.minOrNull() ?: 0).toString(),
             averagePulse = average,
         )
     }
