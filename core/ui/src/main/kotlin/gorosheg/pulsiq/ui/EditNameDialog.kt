@@ -4,14 +4,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -84,21 +79,15 @@ fun EditNameDialog(
                 )
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Button(
+                BlueButton(
+                    text = R.string.save,
                     onClick = {
                         keyboardController?.hide()
                         focusManager.clearFocus(force = true)
                         onCloseEditDialogClick.invoke()
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = Blue),
-                    shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Text(
-                        text = "Сохранить",
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                }
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
         }
     )
@@ -107,9 +96,11 @@ fun EditNameDialog(
 @Preview(showBackground = true)
 @Composable
 private fun EditNameDialogPreview() {
-    EditNameDialog(
-        name = "Тренировка",
-        onCloseEditDialogClick = {},
-        onNameChanged = {},
-    )
+    MyAppTheme {
+        EditNameDialog(
+            name = "Тренировка",
+            onCloseEditDialogClick = {},
+            onNameChanged = {},
+        )
+    }
 }

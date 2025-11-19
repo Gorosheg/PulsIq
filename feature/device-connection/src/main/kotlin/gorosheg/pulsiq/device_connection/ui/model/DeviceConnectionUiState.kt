@@ -8,8 +8,6 @@ internal class DeviceConnectionUiState(
     val error: Int? = null,
     val scanningButtonText: Int = R.string.scan,
     val stopButtonText: Int = R.string.stop,
-    val noAvailableDevicesText: Int = R.string.noAvailableDevices,
-    val noBluetoothPermissionText: Int,
 )
 
 internal data class UiBluetoothDevice(

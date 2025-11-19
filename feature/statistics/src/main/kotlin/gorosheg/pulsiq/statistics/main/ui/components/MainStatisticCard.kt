@@ -57,7 +57,7 @@ internal fun MainStatisticCard(
     }
 }
 
-@Preview(showBackground = true)
+@Preview()
 @Composable
 private fun StatisticCardPreview() {
     MyAppTheme {

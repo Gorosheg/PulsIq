@@ -5,7 +5,7 @@ import gorosheg.pulsiq.bluetooth.BluetoothRepository
 import gorosheg.pulsiq.common.viewModel.BaseViewModel
 import gorosheg.pulsiq.device_connection.presentation.model.DeviceConnectionState
 import gorosheg.pulsiq.device_connection.presentation.model.ErrorType
-import gorosheg.pulsiq.device_connection.ui.DeviceConnectionUiStateMapper
+import gorosheg.pulsiq.device_connection.ui.mapper.DeviceConnectionUiStateMapper
 import gorosheg.pulsiq.device_connection.ui.model.DeviceConnectionUiState
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach

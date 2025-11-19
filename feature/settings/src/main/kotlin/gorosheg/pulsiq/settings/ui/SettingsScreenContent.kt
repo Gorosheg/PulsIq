@@ -7,12 +7,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import gorosheg.pulsiq.settings.R
 import gorosheg.pulsiq.settings.ui.components.PulseThresholdDialog
 import gorosheg.pulsiq.settings.ui.components.SettingCard
 import gorosheg.pulsiq.settings.ui.components.SoundVibrationDialog
 import gorosheg.pulsiq.settings.ui.model.SettingsUiState
+import gorosheg.pulsiq.ui.MyAppTheme
 
 @Composable
 internal fun SettingsScreenContent(
@@ -63,10 +65,10 @@ internal fun SettingsScreenContent(
     }
 }
 
-@androidx.compose.ui.tooling.preview.Preview(showBackground = true, name = "SettingsScreenContent Preview")
+@Preview()
 @Composable
 private fun SettingsScreenContentPreview() {
-    gorosheg.pulsiq.ui.MyAppTheme {
+    MyAppTheme {
         SettingsScreenContent(
             state = SettingsUiState(
                 settingItems = listOf(

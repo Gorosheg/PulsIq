@@ -8,6 +8,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import gorosheg.pulsiq.statistics.tracking_session.ui.components.PulseDynamics
 import gorosheg.pulsiq.statistics.tracking_session.ui.components.PulseSummary
@@ -15,6 +16,7 @@ import gorosheg.pulsiq.statistics.tracking_session.ui.components.TrackingSession
 import gorosheg.pulsiq.statistics.tracking_session.ui.model.ChartState
 import gorosheg.pulsiq.statistics.tracking_session.ui.model.TrackingSessionUiState
 import gorosheg.pulsiq.ui.EditNameDialog
+import gorosheg.pulsiq.ui.MyAppTheme
 
 @Composable
 internal fun TrackingSessionScreenContent(
@@ -47,10 +49,10 @@ internal fun TrackingSessionScreenContent(
     }
 }
 
-@androidx.compose.ui.tooling.preview.Preview(showBackground = true, name = "TrackingSessionScreenContent Preview")
+@Preview()
 @Composable
 private fun TrackingSessionScreenContentPreview() {
-    gorosheg.pulsiq.ui.MyAppTheme {
+    MyAppTheme {
         val pulseValues: List<Int> = listOf(72, 78, 85, 92, 110, 105, 98, 88, 95, 102, 96, 90)
         val timeSeconds: List<Int> = pulseValues.indices.map { it * 60 }
         TrackingSessionScreenContent(

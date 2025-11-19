@@ -2,7 +2,6 @@
 <resources>
     <string name="min_threshold_title">Минимальный порог</string>
     <string name="max_threshold_title">Максимальный порог</string>
-    <string name="apply_button_text">Применить</string>
     <string name="decrease_button_description">Уменьшить</string>
     <string name="increase_button_description">Увеличить</string>
     <string name="sound">Звук</string>
@@ -14,4 +13,5 @@
     <string name="normal_range">Норма</string>
     <string name="low_range">Низкий</string>
     <string name="high_range">Высокий</string>
+    <string name="apply">Применить</string>
 </resources>

@@ -1,6 +1,5 @@
-package gorosheg.pulsiq.device_connection.ui
+package gorosheg.pulsiq.device_connection.ui.mapper
 
-import android.os.Build
 import gorosheg.pulsiq.bluetooth.model.DomainBluetoothDevice
 import gorosheg.pulsiq.common.viewModel.ui_state_mapper.UiStateMapper
 import gorosheg.pulsiq.device_connection.R
@@ -20,7 +19,6 @@ internal class DeviceConnectionUiStateMapper : UiStateMapper<DeviceConnectionSta
                 connectingAddress = connectingAddress ?: ""
             ),
             error = error.buildErrorText(),
-            noBluetoothPermissionText = buildNoBluetoothPermissionText(),
         )
     }
 
@@ -55,14 +53,6 @@ internal class DeviceConnectionUiStateMapper : UiStateMapper<DeviceConnectionSta
             connectedAddress == this -> ConnectingState.CONNECTED
             connectingAddress == this -> ConnectingState.CONNECTING
             else -> ConnectingState.NOT_CONNECTED
-        }
-    }
-
-    private fun buildNoBluetoothPermissionText(): Int {
-        return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
-            R.string.noBluetoothLocationPermission
-        } else {
-            R.string.noBluetoothPermission
         }
     }
 }

@@ -21,11 +21,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import gorosheg.pulsiq.monitoring.R
 import gorosheg.pulsiq.ui.Blue
 import gorosheg.pulsiq.ui.Crimson
+import gorosheg.pulsiq.ui.MyAppTheme
 
 
 @Composable
@@ -79,4 +81,28 @@ private fun ToggleButtonContent(
         fontSize = 20.sp,
         fontWeight = FontWeight.Medium
     )
+}
+
+@Preview()
+@Composable
+private fun ToggleButtonPreview_Start() {
+    MyAppTheme {
+        ToggleButton(
+            isTracking = false,
+            startTracking = {},
+            stopTracking = {}
+        )
+    }
+}
+
+@Preview()
+@Composable
+private fun ToggleButtonPreview_Stop() {
+    MyAppTheme {
+        ToggleButton(
+            isTracking = true,
+            startTracking = {},
+            stopTracking = {}
+        )
+    }
 }

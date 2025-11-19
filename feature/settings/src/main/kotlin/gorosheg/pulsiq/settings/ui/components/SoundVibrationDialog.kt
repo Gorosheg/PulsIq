@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -27,6 +25,8 @@ import androidx.compose.ui.unit.dp
 import gorosheg.pulsiq.settings.R
 import gorosheg.pulsiq.settings.ui.model.SettingsUiState
 import gorosheg.pulsiq.ui.Blue
+import gorosheg.pulsiq.ui.BlueButton
+import gorosheg.pulsiq.ui.MyAppTheme
 import gorosheg.pulsiq.ui.White
 
 @Composable
@@ -62,10 +62,12 @@ internal fun SoundVibrationDialog(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                ApplyButton(
+                BlueButton(
+                    text = R.string.apply,
                     onClick = {
                         onApply(currentSoundEnabled, currentVibrationEnabled)
-                    }
+                    },
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
         },
@@ -103,37 +105,21 @@ private fun SwitchRow(
     }
 }
 
-@Composable
-private fun ApplyButton(onClick: () -> Unit) {
-    Button(
-        onClick = onClick,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Blue,
-            contentColor = White
-        ),
-        shape = RoundedCornerShape(8.dp),
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Text(
-            text = "Применить",
-            style = MaterialTheme.typography.bodyMedium
-        )
-    }
-}
-
-@Preview(showBackground = true)
+@Preview()
 @Composable
 private fun SoundVibrationDialogPreview() {
-    val mockSetting = SettingsUiState.SettingItem.SoundVibration(
-        soundEnabled = true,
-        vibrationEnabled = false,
-        soundSwitchText = R.string.sound,
-        vibrationSwitchText = R.string.vibration
-    )
+    MyAppTheme {
+        val mockSetting = SettingsUiState.SettingItem.SoundVibration(
+            soundEnabled = true,
+            vibrationEnabled = false,
+            soundSwitchText = R.string.sound,
+            vibrationSwitchText = R.string.vibration
+        )
 
-    SoundVibrationDialog(
-        setting = mockSetting,
-        onDismiss = {},
-        onApply = { _, _ -> }
-    )
+        SoundVibrationDialog(
+            setting = mockSetting,
+            onDismiss = {},
+            onApply = { _, _ -> }
+        )
+    }
 }

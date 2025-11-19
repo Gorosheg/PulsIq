@@ -16,16 +16,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import gorosheg.pulsiq.monitoring.ui.components.Heart
+import gorosheg.pulsiq.monitoring.ui.components.HeartImage
 import gorosheg.pulsiq.monitoring.ui.components.HeartRateAnimation
 import gorosheg.pulsiq.monitoring.ui.components.ToggleButton
 import gorosheg.pulsiq.monitoring.ui.model.MonitoringUiState
 import gorosheg.pulsiq.ui.Blue
 import gorosheg.pulsiq.ui.Crimson
 import gorosheg.pulsiq.ui.EditNameDialog
+import gorosheg.pulsiq.ui.MyAppTheme
 
-@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 internal fun MonitoringScreenContent(
     state: MonitoringUiState,
@@ -88,7 +87,7 @@ private fun MainContent(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            Heart(
+            HeartImage(
                 pulse = state.pulse,
                 heartColor = animatedColor,
                 scaleAnimation = scaleAnimation,
@@ -98,38 +97,40 @@ private fun MainContent(
     }
 }
 
-@OptIn(ExperimentalPermissionsApi::class)
-@Preview(showBackground = true)
+@Preview()
 @Composable
 private fun MonitoringScreenContentPreview() {
-    MonitoringScreenContent(
-        state = MonitoringUiState(
-            isTracking = false,
-            pulse = 0,
-            heartColor = Blue,
-            heartRateSpeed = 100,
-        ),
-        startTracking = {},
-        stopTracking = {},
-        onSessionNameChanged = {},
-        onNameDialogDismiss = {},
-    )
+    MyAppTheme {
+        MonitoringScreenContent(
+            state = MonitoringUiState(
+                isTracking = false,
+                pulse = 0,
+                heartColor = Blue,
+                heartRateSpeed = 100,
+            ),
+            startTracking = {},
+            stopTracking = {},
+            onSessionNameChanged = {},
+            onNameDialogDismiss = {},
+        )
+    }
 }
 
-@OptIn(ExperimentalPermissionsApi::class)
-@Preview(showBackground = true, name = "Tracking State")
+@Preview()
 @Composable
 private fun MonitoringScreenContentTrackingPreview() {
-    MonitoringScreenContent(
-        state = MonitoringUiState(
-            isTracking = true,
-            pulse = 120,
-            heartColor = Crimson,
-            heartRateSpeed = 100,
-        ),
-        startTracking = {},
-        stopTracking = {},
-        onSessionNameChanged = {},
-        onNameDialogDismiss = {},
-    )
+    MyAppTheme {
+        MonitoringScreenContent(
+            state = MonitoringUiState(
+                isTracking = true,
+                pulse = 120,
+                heartColor = Crimson,
+                heartRateSpeed = 100,
+            ),
+            startTracking = {},
+            stopTracking = {},
+            onSessionNameChanged = {},
+            onNameDialogDismiss = {},
+        )
+    }
 }
