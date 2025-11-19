@@ -18,9 +18,10 @@ internal class StatisticsViewModel(
     private val navigator: NavigatorHolder,
     private val trackingSessionScreenProvider: TrackingSessionScreenProvider,
     private val context: Context,
+    uiStateMapper: StatisticsUiStateMapper,
 ) : BaseViewModel<StatisticsState, StatisticsUiState>(
     initState = StatisticsState(),
-    uiStateMapper = StatisticsUiStateMapper()
+    uiStateMapper = uiStateMapper
 ) {
 
     init {

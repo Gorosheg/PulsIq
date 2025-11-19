@@ -13,9 +13,10 @@ import kotlinx.coroutines.launch
 
 internal class DeviceConnectionViewModel(
     private val bluetoothRepository: BluetoothRepository,
+    uiStateMapper: DeviceConnectionUiStateMapper,
 ) : BaseViewModel<DeviceConnectionState, DeviceConnectionUiState>(
     initState = DeviceConnectionState(),
-    uiStateMapper = DeviceConnectionUiStateMapper()
+    uiStateMapper = uiStateMapper
 ) {
 
     init {

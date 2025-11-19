@@ -11,9 +11,10 @@ import kotlinx.coroutines.launch
 
 internal class TrackingSessionViewModel(
     private val statisticsRepository: StatisticsRepository,
+    uiStateMapper: TrackingSessionUiStateMapper,
 ) : BaseViewModel<TrackingSessionState, TrackingSessionUiState>(
     initState = TrackingSessionState(),
-    uiStateMapper = TrackingSessionUiStateMapper()
+    uiStateMapper = uiStateMapper
 ) {
 
     fun getTrackingSession(id: Int) {

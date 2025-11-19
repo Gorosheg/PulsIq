@@ -17,9 +17,10 @@ internal class MonitoringViewModel(
     private val bluetoothRepository: BluetoothRepository,
     private val pulseNotificationInitializer: PulseNotificationInitializer,
     private val statisticsRepository: StatisticsRepository,
+    uiStateMapper: MonitoringUiStateMapper,
 ) : BaseViewModel<MonitoringState, MonitoringUiState>(
     initState = MonitoringState(),
-    uiStateMapper = MonitoringUiStateMapper()
+    uiStateMapper = uiStateMapper
 ) {
     private var heartBeatSubscriptionJob: Job? = null
 

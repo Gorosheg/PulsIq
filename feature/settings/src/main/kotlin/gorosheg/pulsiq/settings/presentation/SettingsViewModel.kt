@@ -14,9 +14,10 @@ internal class SettingsViewModel(
     private val settingsRepository: SettingsRepository,
     private val navigator: NavigatorHolder,
     private val deviceConnectionScreenProvider: DeviceConnectionScreenProvider,
+    uiStateMapper: SettingsUiStateMapper,
 ) : BaseViewModel<SettingsState, SettingsUiState>(
     initState = SettingsState(),
-    uiStateMapper = SettingsUiStateMapper()
+    uiStateMapper = uiStateMapper
 ) {
     init {
         viewModelScope.launch {
