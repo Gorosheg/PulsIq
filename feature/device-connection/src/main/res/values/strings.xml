@@ -9,4 +9,5 @@
     <string name="noAvailableDevices">Нет доступных устройств</string>
     <string name="noBluetoothPermission">Нужно выдать разрешения на Bluetooth</string>
     <string name="noBluetoothLocationPermission">Нужно выдать разрешения на Bluetooth и геолокацию</string>
+    <string name="unnamed_device">Безымянное устройство</string>
 </resources>

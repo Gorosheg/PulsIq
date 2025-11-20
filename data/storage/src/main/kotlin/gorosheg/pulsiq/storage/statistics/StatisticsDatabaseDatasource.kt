@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface StatisticsDatabaseDatasource {
 
-    suspend fun createStatisticsSession()
+    suspend fun createStatisticsSession(name: String)
 
     suspend fun stopStatisticsSession()
 

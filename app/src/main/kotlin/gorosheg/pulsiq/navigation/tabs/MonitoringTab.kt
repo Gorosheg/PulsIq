@@ -13,6 +13,7 @@ import gorosheg.pulsiq.monitoring.navigation.MonitoringScreenProvider
 import org.koin.compose.koinInject
 
 object MonitoringTab : Tab {
+    @Suppress("unused")
     private fun readResolve(): Any = MonitoringTab
 
     override val options: TabOptions

@@ -3,10 +3,10 @@ package gorosheg.pulsiq.statistics.tracking_session.presentation
 import androidx.lifecycle.viewModelScope
 import gorosheg.pulsiq.common.model.PulseStatistic
 import gorosheg.pulsiq.common.viewModel.BaseViewModel
+import gorosheg.pulsiq.statistics.StatisticsRepository
 import gorosheg.pulsiq.statistics.tracking_session.presentation.model.TrackingSessionState
 import gorosheg.pulsiq.statistics.tracking_session.ui.mapper.TrackingSessionUiStateMapper
 import gorosheg.pulsiq.statistics.tracking_session.ui.model.TrackingSessionUiState
-import gorosheg.pulsiq.statistics_repository.StatisticsRepository
 import kotlinx.coroutines.launch
 
 internal class TrackingSessionViewModel(
@@ -25,9 +25,9 @@ internal class TrackingSessionViewModel(
                 copy(
                     id = trackingSession.id,
                     dateStart = trackingSession.dateStart,
-                    dateEnd = trackingSession.dateEnd ?: 0,
+                    dateEnd = (trackingSession.dateEnd ?: trackingSession.dateStart),
                     name = trackingSession.name,
-                    pulse = trackingSession.pulse,
+                    pulse = trackingSession.pulse.map { it.first to it.second },
                 )
             }
         }

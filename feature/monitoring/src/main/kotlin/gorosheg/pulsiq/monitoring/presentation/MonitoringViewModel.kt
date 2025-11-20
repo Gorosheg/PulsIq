@@ -7,7 +7,7 @@ import gorosheg.pulsiq.common.viewModel.BaseViewModel
 import gorosheg.pulsiq.monitoring.presentation.model.MonitoringState
 import gorosheg.pulsiq.monitoring.ui.mapper.MonitoringUiStateMapper
 import gorosheg.pulsiq.monitoring.ui.model.MonitoringUiState
-import gorosheg.pulsiq.statistics_repository.StatisticsRepository
+import gorosheg.pulsiq.statistics.StatisticsRepository
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -24,9 +24,9 @@ internal class MonitoringViewModel(
 ) {
     private var heartBeatSubscriptionJob: Job? = null
 
-    fun startMonitoring() {
+    fun startMonitoring(name: String) {
         viewModelScope.launch {
-            statisticsRepository.createStatisticsSession()
+            statisticsRepository.createStatisticsSession(name)
         }
         pulseNotificationInitializer.startPulseNotification()
         subscribeToPulse()

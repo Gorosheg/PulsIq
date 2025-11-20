@@ -1,9 +1,9 @@
 package gorosheg.pulsiq.bluetooth.di
 
 import android.bluetooth.BluetoothManager
-import android.bluetooth.le.BluetoothLeScanner
 import android.bluetooth.le.ScanFilter
 import android.bluetooth.le.ScanSettings
+import android.content.Context
 import android.os.ParcelUuid
 import gorosheg.pulsiq.bluetooth.BluetoothConnector
 import gorosheg.pulsiq.bluetooth.BluetoothRepository
@@ -18,17 +18,17 @@ import org.koin.dsl.module
 val bluetoothModule = module {
     single<BluetoothRepository> {
         BluetoothRepositoryImpl(
-            context = androidContext(),
             scope = CoroutineScope(Dispatchers.IO),
             bluetoothScanner = get(),
             bluetoothConnector = get(),
             filter = get(),
-            settings = get()
+            settings = get(),
+            manager = androidContext().getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager,
         )
     }
 
     single<BluetoothConnector> {
-        BluetoothConnector()
+        BluetoothConnector(androidContext())
     }
 
     single<BluetoothScanner> {

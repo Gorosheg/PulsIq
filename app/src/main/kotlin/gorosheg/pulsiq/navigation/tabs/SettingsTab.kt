@@ -13,6 +13,7 @@ import gorosheg.pulsiq.settings.navigation.SettingsScreenProvider
 import org.koin.compose.koinInject
 
 object SettingsTab : Tab {
+    @Suppress("unused")
     private fun readResolve(): Any = SettingsTab
 
     override val options: TabOptions

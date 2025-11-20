@@ -47,11 +47,11 @@ class BluetoothScanner(private val scanner: BluetoothLeScanner?) {
                 trySend(BluetoothScannerState.OnListDeviceReceived(updates))
             }
 
-            override fun onScanFailed(errorCode: Int) {
-                // можно пробросить в UI
-            }
+            override fun onScanFailed(errorCode: Int) {}
         }
-        awaitClose { Unit }
+        awaitClose {
+            scanCallback = null
+        }
     }.distinctUntilChanged()
 
     @RequiresPermission(Manifest.permission.BLUETOOTH_SCAN)

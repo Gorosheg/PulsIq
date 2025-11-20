@@ -1,14 +1,13 @@
 package gorosheg.pulsiq.statistics.main.presentation
 
-import android.content.Context
 import androidx.lifecycle.viewModelScope
 import gorosheg.pulsiq.common.navigation.NavigatorHolder
 import gorosheg.pulsiq.common.navigation.provider.TrackingSessionScreenProvider
 import gorosheg.pulsiq.common.viewModel.BaseViewModel
+import gorosheg.pulsiq.statistics.StatisticsRepository
 import gorosheg.pulsiq.statistics.main.presentation.model.StatisticsState
 import gorosheg.pulsiq.statistics.main.ui.mapper.StatisticsUiStateMapper
 import gorosheg.pulsiq.statistics.main.ui.model.StatisticsUiState
-import gorosheg.pulsiq.statistics_repository.StatisticsRepository
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -17,7 +16,6 @@ internal class StatisticsViewModel(
     private val statisticsRepository: StatisticsRepository,
     private val navigator: NavigatorHolder,
     private val trackingSessionScreenProvider: TrackingSessionScreenProvider,
-    private val context: Context,
     uiStateMapper: StatisticsUiStateMapper,
 ) : BaseViewModel<StatisticsState, StatisticsUiState>(
     initState = StatisticsState(),
@@ -25,7 +23,7 @@ internal class StatisticsViewModel(
 ) {
 
     init {
-        getStatistics()
+        subscribeToStatistics()
     }
 
     fun removeTrackingSession(id: Int) {
@@ -38,11 +36,10 @@ internal class StatisticsViewModel(
         navigator.navigator?.push(trackingSessionScreenProvider(trackingSessionId = id))
     }
 
-    private fun getStatistics() {
+    private fun subscribeToStatistics() {
         statisticsRepository.getPulse()
             .onEach { list ->
-                val groups = buildGroups(list, context)
-                updateState { copy(pulseStatisticList = groups) }
+                updateState { copy(pulseStatisticList = list) }
             }
             .launchIn(viewModelScope)
     }

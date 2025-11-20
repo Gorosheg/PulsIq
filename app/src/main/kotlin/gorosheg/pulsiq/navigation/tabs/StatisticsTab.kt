@@ -13,6 +13,7 @@ import gorosheg.pulsiq.statistics.main.navigation.StatisticsScreenProvider
 import org.koin.compose.koinInject
 
 object StatisticsTab : Tab {
+    @Suppress("unused")
     private fun readResolve(): Any = StatisticsTab
 
     override val options: TabOptions

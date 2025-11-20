@@ -8,9 +8,8 @@ import gorosheg.pulsiq.monitoring.di.monitoringModule
 import gorosheg.pulsiq.pulse_alert.di.pulseAlertModule
 import gorosheg.pulsiq.pulse_notification.di.pulseNotificationModule
 import gorosheg.pulsiq.settings.di.settingsModule
+import gorosheg.pulsiq.statistics.di.statisticsRepositoryModule
 import gorosheg.pulsiq.statistics.main.di.statisticsModule
-import gorosheg.pulsiq.statistics.tracking_session.di.trackingSessionModule
-import gorosheg.pulsiq.statistics_repository.di.statisticsRepositoryModule
 import gorosheg.pulsiq.storage.storageModule
 import gorosheg.pulsiq.ui.di.commonUiModule
 import org.koin.core.module.Module
@@ -25,7 +24,6 @@ val appModules: List<Module>
             storageModule,
             monitoringModule,
             statisticsModule,
-            trackingSessionModule,
             settingsModule,
             pulseNotificationModule,
             pulseAlertModule,

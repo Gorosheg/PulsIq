@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import gorosheg.pulsiq.statistics.main.ui.components.MainStatisticCard
+import gorosheg.pulsiq.statistics.main.ui.component.MainStatisticCard
 import gorosheg.pulsiq.statistics.main.ui.model.StatisticsUiState
 import gorosheg.pulsiq.statistics.main.ui.model.UiPulseStatistic
 import gorosheg.pulsiq.statistics.main.ui.model.UiPulseStatisticGroup
@@ -86,7 +86,7 @@ private fun StatisticSwipeItem(
     )
 }
 
-@Preview()
+@Preview
 @Composable
 private fun StatisticsScreenContentPreview() {
     MyAppTheme {

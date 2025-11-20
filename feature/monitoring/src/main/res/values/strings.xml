@@ -3,4 +3,5 @@
     <string name="start_button_text">Старт</string>
     <string name="stop_button_text">Остановить</string>
     <string name="permissions_denied_message">Разрешения Bluetooth и геолокации не предоставлены</string>
+    <string name="default_session_name">Тренировка</string>
 </resources>

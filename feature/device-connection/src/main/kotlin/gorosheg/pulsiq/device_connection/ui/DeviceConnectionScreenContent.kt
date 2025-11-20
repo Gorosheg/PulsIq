@@ -17,12 +17,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import gorosheg.pulsiq.device_connection.ui.components.DeviceList
-import gorosheg.pulsiq.device_connection.ui.components.EmptyDeviceListScreen
-import gorosheg.pulsiq.device_connection.ui.components.ScanningButtons
-import gorosheg.pulsiq.device_connection.ui.model.ConnectingState
+import gorosheg.pulsiq.device_connection.ui.component.EmptyDeviceListScreen
+import gorosheg.pulsiq.device_connection.ui.component.ScanningButtons
+import gorosheg.pulsiq.device_connection.ui.component.device_list.DeviceList
+import gorosheg.pulsiq.device_connection.ui.component.device_list.UiBluetoothDevice
 import gorosheg.pulsiq.device_connection.ui.model.DeviceConnectionUiState
-import gorosheg.pulsiq.device_connection.ui.model.UiBluetoothDevice
+import gorosheg.pulsiq.device_connection.ui.model.ScanningButtonsState
 import gorosheg.pulsiq.ui.MyAppTheme
 
 @Composable
@@ -40,7 +40,11 @@ internal fun DeviceConnectionScreenContent(
                 .padding(padding)
                 .padding(16.dp)
         ) {
-            ScanningButtons(state, onStartScan, onStopScan)
+            ScanningButtons(
+                scanningButtonsState = state.scanningButtonsState,
+                onStartScan = onStartScan,
+                onStopScan = onStopScan
+            )
             Spacer(Modifier.height(16.dp))
 
             if (state.devices.isEmpty()) {
@@ -53,7 +57,7 @@ internal fun DeviceConnectionScreenContent(
                 )
             }
 
-            if (state.isScanning) {
+            if (state.scanningButtonsState.isScanning) {
                 Scanning()
             }
 
@@ -90,13 +94,13 @@ private fun Error(errorText: Int) {
     }
 }
 
-@Preview()
+@Preview
 @Composable
 private fun DeviceConnectionScreenContentPreview() {
     MyAppTheme {
         DeviceConnectionScreenContent(
             state = DeviceConnectionUiState(
-                isScanning = false,
+                scanningButtonsState = ScanningButtonsState(isScanning = false),
                 devices = emptyList(),
                 error = null,
             ),
@@ -108,23 +112,23 @@ private fun DeviceConnectionScreenContentPreview() {
     }
 }
 
-@Preview()
+@Preview
 @Composable
 private fun DeviceConnectionScreenContentScanningPreview() {
     MyAppTheme {
         DeviceConnectionScreenContent(
             state = DeviceConnectionUiState(
-                isScanning = true,
+                scanningButtonsState = ScanningButtonsState(isScanning = true),
                 devices = listOf(
                     UiBluetoothDevice(
                         name = "Heart Rate Monitor",
                         address = "00:11:22:33:44:55",
-                        connectingState = ConnectingState.NOT_CONNECTED
+                        connectingState = UiBluetoothDevice.ConnectingState.NOT_CONNECTED
                     ),
                     UiBluetoothDevice(
                         name = "Fitness Tracker",
                         address = "AA:BB:CC:DD:EE:FF",
-                        connectingState = ConnectingState.CONNECTING
+                        connectingState = UiBluetoothDevice.ConnectingState.CONNECTING
                     )
                 ),
                 error = null,
@@ -137,28 +141,28 @@ private fun DeviceConnectionScreenContentScanningPreview() {
     }
 }
 
-@Preview()
+@Preview
 @Composable
 private fun DeviceConnectionScreenContentConnectedPreview() {
     MyAppTheme {
         DeviceConnectionScreenContent(
             state = DeviceConnectionUiState(
-                isScanning = false,
+                scanningButtonsState = ScanningButtonsState(isScanning = false),
                 devices = listOf(
                     UiBluetoothDevice(
                         name = "Heart Rate Monitor",
                         address = "00:11:22:33:44:55",
-                        connectingState = ConnectingState.CONNECTED
+                        connectingState = UiBluetoothDevice.ConnectingState.CONNECTED
                     ),
                     UiBluetoothDevice(
                         name = "Fitness Tracker",
                         address = "AA:BB:CC:DD:EE:FF",
-                        connectingState = ConnectingState.NOT_CONNECTED
+                        connectingState = UiBluetoothDevice.ConnectingState.NOT_CONNECTED
                     ),
                     UiBluetoothDevice(
                         name = "Smart Watch",
                         address = "11:22:33:44:55:66",
-                        connectingState = ConnectingState.CONNECTING
+                        connectingState = UiBluetoothDevice.ConnectingState.CONNECTING
                     )
                 ),
                 error = null,

@@ -16,9 +16,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
-import gorosheg.pulsiq.monitoring.ui.components.HeartImage
-import gorosheg.pulsiq.monitoring.ui.components.HeartRateAnimation
-import gorosheg.pulsiq.monitoring.ui.components.ToggleButton
+import gorosheg.pulsiq.monitoring.ui.component.HeartImage
+import gorosheg.pulsiq.monitoring.ui.component.HeartRateAnimation
+import gorosheg.pulsiq.monitoring.ui.component.ToggleButton
 import gorosheg.pulsiq.monitoring.ui.model.MonitoringUiState
 import gorosheg.pulsiq.ui.Blue
 import gorosheg.pulsiq.ui.Crimson
@@ -28,7 +28,7 @@ import gorosheg.pulsiq.ui.MyAppTheme
 @Composable
 internal fun MonitoringScreenContent(
     state: MonitoringUiState,
-    startTracking: () -> Unit,
+    startTracking: (String) -> Unit,
     stopTracking: () -> Unit,
     onSessionNameChanged: (String) -> Unit,
     onNameDialogDismiss: () -> Unit,
@@ -49,7 +49,7 @@ internal fun MonitoringScreenContent(
     Surface(modifier = Modifier.fillMaxSize()) {
         MainContent(
             state = state,
-            startTracking = startTracking,
+            startTracking = { startTracking(state.sessionName) },
             stopTracking = stopTracking,
             animatedColor = animatedColor,
             scaleAnimation = scaleAnimation
@@ -97,7 +97,7 @@ private fun MainContent(
     }
 }
 
-@Preview()
+@Preview
 @Composable
 private fun MonitoringScreenContentPreview() {
     MyAppTheme {
@@ -116,7 +116,7 @@ private fun MonitoringScreenContentPreview() {
     }
 }
 
-@Preview()
+@Preview
 @Composable
 private fun MonitoringScreenContentTrackingPreview() {
     MyAppTheme {

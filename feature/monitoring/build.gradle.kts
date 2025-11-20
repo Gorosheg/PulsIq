@@ -1,7 +1,7 @@
 plugins {
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.jetbrains.kotlin.android)
-    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.jetbrainsKotlinAndroid)
+    alias(libs.plugins.composeCompiler)
 }
 
 android {
@@ -40,6 +40,6 @@ dependencies {
     implementation(project(":core:common"))
     implementation(project(":core:bluetooth"))
     implementation(project(":core:ui"))
-    implementation(project(":statistics-repository"))
+    implementation(project(":repository:statistics"))
     implementation(project(":feature:device-connection"))
 }

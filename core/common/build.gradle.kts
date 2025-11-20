@@ -1,7 +1,7 @@
 plugins {
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.jetbrains.kotlin.android)
-    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.jetbrainsKotlinAndroid)
+    alias(libs.plugins.composeCompiler)
 }
 
 android {
@@ -38,29 +38,27 @@ android {
 
 dependencies {
 
-    api(libs.androidx.core.ktx)
-    api(libs.androidx.appcompat)
-    api(libs.material)
-    api(libs.androidx.lifecycle.runtime.ktx)
-    api(libs.androidx.activity.compose)
-    api(platform(libs.androidx.compose.bom))
-    api(libs.androidx.ui)
-    api(libs.androidx.ui.graphics)
-    api(libs.androidx.ui.tooling.preview)
-    api(libs.androidx.material3)
-    api(libs.androidx.material)
-
-    api(libs.androidx.lifecycle.viewmodel.compose)
-    api(libs.koin.android)
-    api(libs.koin.androidx.compose)
-    api(libs.koin.core)
+    api(libs.androidxCoreKtx)
+    api(libs.androidxAppcompat)
+    api(libs.androidxLifecycleRuntimeKtx)
+    api(libs.androidxActivityCompose)
+    api(platform(libs.androidxComposeBom))
+    api(libs.androidxUi)
+    api(libs.androidxUiGraphics)
+    api(libs.androidxUiToolingPreview)
+    api(libs.androidxMaterial3)
+    api(libs.androidxMaterialIconsCore)
+    api(libs.androidxLifecycleViewmodelCompose)
+    api(libs.koinAndroid)
+    api(libs.koinAndroidxCompose)
+    api(libs.koinCore)
 
     api(libs.voyagerKoin)
     api(libs.voyagerNavigator)
     api(libs.voyagerTabNavigator)
     api(libs.voyagerTransitions)
-    api(libs.accompanist.permissions)
+    api(libs.accompanistPermissions)
 
-    debugApi(libs.androidx.ui.tooling)
-    debugApi(libs.androidx.ui.test.manifest)
+    debugApi(libs.androidxUiTooling)
+    debugApi(libs.androidxUiTestManifest)
 }

@@ -1,7 +1,7 @@
 plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.jetbrains.kotlin.android)
-    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.androidApplication)
+    alias(libs.plugins.jetbrainsKotlinAndroid)
+    alias(libs.plugins.composeCompiler)
 }
 
 android {
@@ -49,7 +49,7 @@ android {
 
 dependencies {
     implementation(project(":core:ui"))
-    implementation(project(":pulse-alert"))
+    implementation(project(":repository:pulse-alert"))
     implementation(project(":core:bluetooth"))
     implementation(project(":core:common"))
     implementation(project(":data:storage"))
@@ -58,7 +58,6 @@ dependencies {
     implementation(project(":feature:statistics"))
     implementation(project(":feature:pulse-notification"))
     implementation(project(":feature:device-connection"))
-    implementation(project(":statistics-repository"))
-    implementation(project(":device-connection-repository"))
-    implementation(libs.androidx.lifecycle.process)
+    implementation(project(":repository:statistics"))
+    implementation(libs.androidxLifecycleProcess)
 }

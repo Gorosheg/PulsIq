@@ -2,9 +2,8 @@ package gorosheg.pulsiq
 
 import gorosheg.pulsiq.bluetooth.BluetoothRepository
 import gorosheg.pulsiq.common.activity_running_checker.HeartBeatTrackerLauncher
-import gorosheg.pulsiq.statistics_repository.StatisticsRepository
+import gorosheg.pulsiq.statistics.StatisticsRepository
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -14,7 +13,7 @@ import kotlinx.coroutines.flow.onEach
 internal class HeartBeatTrackerLauncherImpl(
     private val heartBeatDataSource: BluetoothRepository,
     private val statisticsRepository: StatisticsRepository,
-    scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+    scope: CoroutineScope = CoroutineScope(SupervisorJob())
 ) : HeartBeatTrackerLauncher {
 
     private val isActivityRunning = MutableStateFlow(true)
@@ -27,6 +26,7 @@ internal class HeartBeatTrackerLauncherImpl(
         ) { activityRunning, serviceRunning ->
             !activityRunning && !serviceRunning
         }.onEach { shouldDisconnect ->
+            println("awljgiej")
             if (shouldDisconnect) {
                 heartBeatDataSource.disconnect()
                 statisticsRepository.stopStatisticsSession()

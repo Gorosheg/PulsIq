@@ -25,7 +25,7 @@ internal sealed class HeartRateConnectionState {
     object Disconnected : HeartRateConnectionState()
 }
 
-class BluetoothConnector() {
+class BluetoothConnector(private val context: Context) {
 
     private var gatt: BluetoothGatt? = null
 
@@ -39,10 +39,7 @@ class BluetoothConnector() {
         gatt = null
     }
 
-    internal fun connect(
-        device: BluetoothDevice,
-        context: Context,
-    ): Flow<HeartRateConnectionState> = callbackFlow {
+    internal fun connect(device: BluetoothDevice): Flow<HeartRateConnectionState> = callbackFlow {
         gatt = device.connectGatt(
             context,
             false,

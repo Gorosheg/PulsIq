@@ -10,9 +10,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import gorosheg.pulsiq.statistics.tracking_session.ui.components.PulseDynamics
-import gorosheg.pulsiq.statistics.tracking_session.ui.components.PulseSummary
-import gorosheg.pulsiq.statistics.tracking_session.ui.components.TrackingSessionHeader
+import gorosheg.pulsiq.statistics.tracking_session.ui.component.PulseDynamics
+import gorosheg.pulsiq.statistics.tracking_session.ui.component.PulseSummary
+import gorosheg.pulsiq.statistics.tracking_session.ui.component.TrackingSessionHeader
 import gorosheg.pulsiq.statistics.tracking_session.ui.model.ChartState
 import gorosheg.pulsiq.statistics.tracking_session.ui.model.TrackingSessionUiState
 import gorosheg.pulsiq.ui.EditNameDialog
@@ -49,7 +49,7 @@ internal fun TrackingSessionScreenContent(
     }
 }
 
-@Preview()
+@Preview
 @Composable
 private fun TrackingSessionScreenContentPreview() {
     MyAppTheme {

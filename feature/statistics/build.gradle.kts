@@ -1,7 +1,7 @@
 plugins {
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.jetbrains.kotlin.android)
-    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.jetbrainsKotlinAndroid)
+    alias(libs.plugins.composeCompiler)
 }
 
 android {
@@ -39,13 +39,13 @@ android {
 dependencies {
     implementation(project(":core:common"))
     implementation(project(":core:ui"))
-    implementation(project(":statistics-repository"))
+    implementation(project(":repository:statistics"))
 
-    implementation(libs.vico.core)
-    implementation(libs.vico.compose)
-    implementation(libs.vico.compose.m3)
-    implementation(libs.androidx.compose.ui.viewbinding)
+    implementation(libs.vicoCore)
+    implementation(libs.vicoCompose)
+    implementation(libs.vicoComposeM3)
+    implementation(libs.androidxComposeUiViewbinding)
 
-    implementation(libs.androidx.ui.tooling.preview)
-    debugImplementation(libs.androidx.ui.tooling)
+    implementation(libs.androidxUiToolingPreview)
+    debugImplementation(libs.androidxUiTooling)
 }

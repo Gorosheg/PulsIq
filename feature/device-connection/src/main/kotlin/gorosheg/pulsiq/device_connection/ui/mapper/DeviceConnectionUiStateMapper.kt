@@ -5,20 +5,20 @@ import gorosheg.pulsiq.common.viewModel.ui_state_mapper.UiStateMapper
 import gorosheg.pulsiq.device_connection.R
 import gorosheg.pulsiq.device_connection.presentation.model.DeviceConnectionState
 import gorosheg.pulsiq.device_connection.presentation.model.ErrorType
-import gorosheg.pulsiq.device_connection.ui.model.ConnectingState
+import gorosheg.pulsiq.device_connection.ui.component.device_list.UiBluetoothDevice
 import gorosheg.pulsiq.device_connection.ui.model.DeviceConnectionUiState
-import gorosheg.pulsiq.device_connection.ui.model.UiBluetoothDevice
+import gorosheg.pulsiq.device_connection.ui.model.ScanningButtonsState
 
 internal class DeviceConnectionUiStateMapper : UiStateMapper<DeviceConnectionState, DeviceConnectionUiState> {
 
     override fun DeviceConnectionState.map(): DeviceConnectionUiState {
         return DeviceConnectionUiState(
-            isScanning = isScanning,
             devices = devices.toUiBluetoothDevices(
                 connectedAddress = connectedAddress ?: "",
                 connectingAddress = connectingAddress ?: ""
             ),
             error = error.buildErrorText(),
+            scanningButtonsState = ScanningButtonsState(isScanning = isScanning)
         )
     }
 
@@ -35,7 +35,7 @@ internal class DeviceConnectionUiStateMapper : UiStateMapper<DeviceConnectionSta
     ): List<UiBluetoothDevice> {
         return map {
             UiBluetoothDevice(
-                name = it.name.ifBlank { "Безымянное устройство" },
+                name = it.name,
                 address = it.device.address,
                 connectingState = it.device.address.buildConnectingState(
                     connectedAddress = connectedAddress,
@@ -48,11 +48,11 @@ internal class DeviceConnectionUiStateMapper : UiStateMapper<DeviceConnectionSta
     private fun String.buildConnectingState(
         connectedAddress: String,
         connectingAddress: String
-    ): ConnectingState {
+    ): UiBluetoothDevice.ConnectingState {
         return when {
-            connectedAddress == this -> ConnectingState.CONNECTED
-            connectingAddress == this -> ConnectingState.CONNECTING
-            else -> ConnectingState.NOT_CONNECTED
+            connectedAddress == this -> UiBluetoothDevice.ConnectingState.CONNECTED
+            connectingAddress == this -> UiBluetoothDevice.ConnectingState.CONNECTING
+            else -> UiBluetoothDevice.ConnectingState.NOT_CONNECTED
         }
     }
 }

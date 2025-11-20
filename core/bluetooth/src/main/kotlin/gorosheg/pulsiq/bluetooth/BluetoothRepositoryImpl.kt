@@ -7,7 +7,6 @@ import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
 import android.bluetooth.le.ScanFilter
 import android.bluetooth.le.ScanSettings
-import android.content.Context
 import gorosheg.pulsiq.bluetooth.model.DomainBluetoothDevice
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -28,13 +27,12 @@ import kotlinx.coroutines.launch
 import java.util.UUID
 
 internal class BluetoothRepositoryImpl(
-    private val context: Context,
-    private val scope: CoroutineScope = CoroutineScope(Dispatchers.IO),
-    private val manager: BluetoothManager = context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager,
+    private val scope: CoroutineScope,
     private val bluetoothConnector: BluetoothConnector,
     private val bluetoothScanner: BluetoothScanner,
-    val filter: ScanFilter,
-    val settings: ScanSettings
+    private val filter: ScanFilter,
+    private val settings: ScanSettings,
+    private val manager: BluetoothManager
 ) : BluetoothRepository {
 
     private var lastDevice: BluetoothDevice? = null
@@ -42,14 +40,14 @@ internal class BluetoothRepositoryImpl(
     private var reconnectionJob: Job? = null
     private var connectionJob: Job? = null
 
-    val _heartRateFlow: MutableStateFlow<Int?> = MutableStateFlow(null)
+    private val _heartRateFlow: MutableStateFlow<Int?> = MutableStateFlow(null)
     override val heartRateFlow: Flow<Int> = _heartRateFlow
         .filterNotNull()
         .debounce(1000L)
         .distinctUntilChanged()
 
-    private val _devices = MutableStateFlow<List<DomainBluetoothDevice>>(emptyList())
-    override val availableDevices: Flow<List<DomainBluetoothDevice>> = _devices
+    private val _availableDevices = MutableStateFlow<List<DomainBluetoothDevice>>(emptyList())
+    override val availableDevices: Flow<List<DomainBluetoothDevice>> = _availableDevices
         .map { devices -> devices.sortedByDescending { it.rssi } }
         .distinctUntilChanged()
         .stateIn(scope, SharingStarted.Eagerly, emptyList())
@@ -61,20 +59,20 @@ internal class BluetoothRepositoryImpl(
             .onEach { state ->
                 when (state) {
                     is BluetoothScannerState.OnCallbackTypeMatchLost -> {
-                        _devices.update { list ->
+                        _availableDevices.update { list ->
                             list.filterNot { it.device.address == state.device.address }
                         }
                     }
 
                     is BluetoothScannerState.OnDeviceReceived -> {
-                        _devices.update { list ->
+                        _availableDevices.update { list ->
                             val updated = list.filterNot { it.device.address == state.device.device.address }
                             updated + state.device
                         }
                     }
 
                     is BluetoothScannerState.OnListDeviceReceived -> {
-                        if (state.deviceList.isNotEmpty()) _devices.update { it + state.deviceList }
+                        if (state.deviceList.isNotEmpty()) _availableDevices.update { it + state.deviceList }
                     }
 
                 }
@@ -82,22 +80,20 @@ internal class BluetoothRepositoryImpl(
             .launchIn(scope)
     }
 
-    override suspend fun connect(
-        address: String,
-    ) {
+    override suspend fun connect(address: String) {
         try {
             reconnectionJob?.cancel()
             reconnectionJob = null
 
-            val fromCache: BluetoothDevice? =
-                _devices.value.find { it.device.address == address }?.device
-
+            val fromCache: BluetoothDevice? = _availableDevices.value.find { it.device.address == address }?.device
             val device = fromCache ?: run {
                 val adapter = manager.adapter
                 adapter?.getRemoteDevice(address)
             }
 
-            requireNotNull(device) { context.getString(R.string.device_not_found, address) }
+            requireNotNull(device) {
+                "Device: $device not found"
+            }
 
             lastDevice = device
 
@@ -146,10 +142,7 @@ internal class BluetoothRepositoryImpl(
     private fun connectGatt(connected: (Boolean) -> Unit) {
         bluetoothConnector.safeCloseGatt()
         val device = lastDevice ?: return
-        bluetoothConnector.connect(
-            device = device,
-            context = context,
-        ).onEach { state ->
+        bluetoothConnector.connect(device = device).onEach { state ->
             when (state) {
                 is HeartRateConnectionState.HeartRate -> {
                     _heartRateFlow.value = state.pulse

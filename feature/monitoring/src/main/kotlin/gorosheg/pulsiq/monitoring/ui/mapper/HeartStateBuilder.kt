@@ -3,7 +3,7 @@ package gorosheg.pulsiq.monitoring.ui.mapper
 import androidx.compose.ui.graphics.Color
 import androidx.core.graphics.ColorUtils
 
-object HeartStateBuilder {
+internal object HeartStateBuilder {
 
     fun buildHeartColor(
         pulse: Int,

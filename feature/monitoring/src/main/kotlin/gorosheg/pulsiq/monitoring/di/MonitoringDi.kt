@@ -15,7 +15,7 @@ val monitoringModule = module {
             bluetoothRepository = get(),
             pulseNotificationInitializer = get(),
             statisticsRepository = get(),
-            uiStateMapper = MonitoringUiStateMapper()
+            uiStateMapper = MonitoringUiStateMapper(get())
         )
     }
 }

@@ -51,19 +51,19 @@ fun EditNameDialog(
                         selection = TextRange(name.length)
                     )
                 }
-                val tfvState = remember { mutableStateOf(initial) }
+                val textFieldValueState = remember { mutableStateOf(initial) }
 
                 LaunchedEffect(name) {
-                    tfvState.value = TextFieldValue(
+                    textFieldValueState.value = TextFieldValue(
                         text = name,
                         selection = TextRange(name.length)
                     )
                 }
 
                 TextField(
-                    value = tfvState.value,
+                    value = textFieldValueState.value,
                     onValueChange = {
-                        tfvState.value = it
+                        textFieldValueState.value = it
                         onNameChanged.invoke(it.text)
                     },
                     modifier = Modifier.focusRequester(focusRequester),
@@ -93,7 +93,7 @@ fun EditNameDialog(
     )
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
 private fun EditNameDialogPreview() {
     MyAppTheme {

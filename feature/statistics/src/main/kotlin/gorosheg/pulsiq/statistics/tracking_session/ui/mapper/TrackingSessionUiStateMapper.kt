@@ -6,8 +6,8 @@ import gorosheg.pulsiq.statistics.tracking_session.ui.model.ChartState
 import gorosheg.pulsiq.statistics.tracking_session.ui.model.PulseSummaryState
 import gorosheg.pulsiq.statistics.tracking_session.ui.model.TrackingSessionHeaderState
 import gorosheg.pulsiq.statistics.tracking_session.ui.model.TrackingSessionUiState
-import java.time.Instant
-import java.time.ZoneId
+import java.time.Duration
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 internal class TrackingSessionUiStateMapper : UiStateMapper<TrackingSessionState, TrackingSessionUiState> {
@@ -25,25 +25,19 @@ internal class TrackingSessionUiStateMapper : UiStateMapper<TrackingSessionState
     }
 
     private fun buildTrackingSessionHeaderState(
-        dateStart: Long,
-        dateEnd: Long,
+        dateStart: LocalDateTime,
+        dateEnd: LocalDateTime,
         name: String
     ): TrackingSessionHeaderState {
         return TrackingSessionHeaderState(
             name = name,
-            timeStart = dateStart.formatDate(timeFormatter),
-            timeEnd = dateEnd.formatDate(timeFormatter),
-            date = dateStart.formatDate(dateFormatter),
+            timeStart = dateStart.format(timeFormatter),
+            timeEnd = dateEnd.format(timeFormatter),
+            date = dateStart.format(dateFormatter),
         )
     }
 
-    private fun Long.formatDate(formatter: DateTimeFormatter): String {
-        return Instant.ofEpochMilli(this)
-            .atZone(ZoneId.systemDefault())
-            .format(formatter)
-    }
-
-    private fun buildPulseSummaryState(pulse: List<Pair<Int, Long>>): PulseSummaryState {
+    private fun buildPulseSummaryState(pulse: List<Pair<Int, LocalDateTime>>): PulseSummaryState {
         val pulseValues = pulse.map { it.first }
         val average =
             if (pulseValues.isNotEmpty()) pulseValues.average().toInt().toString()
@@ -56,7 +50,7 @@ internal class TrackingSessionUiStateMapper : UiStateMapper<TrackingSessionState
         )
     }
 
-    private fun buildChartState(pulse: List<Pair<Int, Long>>): ChartState? {
+    private fun buildChartState(pulse: List<Pair<Int, LocalDateTime>>): ChartState? {
         if (pulse.isEmpty()) return null
         return ChartState(
             timeList = pulse.toTimeList(),
@@ -64,13 +58,15 @@ internal class TrackingSessionUiStateMapper : UiStateMapper<TrackingSessionState
         )
     }
 
-    private fun List<Pair<Int, Long>>.toTimeList(): List<Number> {
+    private fun List<Pair<Int, LocalDateTime>>.toTimeList(): List<Number> {
         if (this.isEmpty()) return emptyList()
-        val firstTs = this.first().second
-        return this.map { ((it.second - firstTs).coerceAtLeast(0L) / 1000.0) }
+        val start = this.first().second
+        return this.map { pair ->
+            Duration.between(start, pair.second).seconds.toInt()
+        }
     }
 
-    private fun List<Pair<Int, Long>>.toPulseList(): List<Number> {
+    private fun List<Pair<Int, LocalDateTime>>.toPulseList(): List<Number> {
         if (this.isEmpty()) return emptyList()
         return this.map { it.first.toDouble() }
     }
