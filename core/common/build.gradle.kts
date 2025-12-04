@@ -4,40 +4,13 @@ plugins {
     alias(libs.plugins.composeCompiler)
 }
 
+applyCommonAndroid()
+
 android {
     namespace = "gorosheg.pulsiq.common"
-    compileSdk = 36
-
-    defaultConfig {
-        minSdk = 26
-    }
-
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-        }
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-    kotlin {
-        compilerOptions {
-            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
-        }
-    }
-    buildFeatures {
-        compose = true
-    }
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
-    }
 }
 
 dependencies {
-
     api(libs.androidxCoreKtx)
     api(libs.androidxAppcompat)
     api(libs.androidxLifecycleRuntimeKtx)
