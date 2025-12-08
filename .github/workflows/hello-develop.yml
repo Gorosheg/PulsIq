@@ -1,0 +1,17 @@
+name: Hello on develop push
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  say-hello:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Say hello
+        run: echo "Привет"
