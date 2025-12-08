@@ -8,9 +8,7 @@ import cafe.adriel.voyager.core.screen.Screen
 import gorosheg.pulsiq.statistics.tracking_session.presentation.TrackingSessionViewModel
 import org.koin.androidx.compose.koinViewModel
 
-internal class TrackingSessionScreen(
-    private val trackingSessionId: Int
-) : Screen {
+internal class TrackingSessionScreen(private val trackingSessionId: Int) : Screen {
 
     @Composable
     override fun Content() {
