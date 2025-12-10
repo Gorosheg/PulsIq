@@ -102,7 +102,8 @@ internal class UiPulseStatisticGroupBuilder(
     }
 
     private fun monthName(currentYear: Int, month: Int): String {
-        val name = LocalDate.of(currentYear, month, 1)
+        val name = LocalDate
+            .of(currentYear, month, 1)
             .month
             .getDisplayName(TextStyle.FULL_STANDALONE, ruLocale)
         return name.replaceFirstChar {
