@@ -11,7 +11,11 @@ import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
 
-internal class UiPulseStatisticGroupBuilder(private val context: Context, private val ruLocale: Locale) {
+internal class UiPulseStatisticGroupBuilder(
+    private val context: Context,
+    private val ruLocale: Locale,
+    private val todayProvider: () -> LocalDate = { LocalDate.now() },
+) {
 
     private val dateFormatter = DateTimeFormatter.ofPattern("dd.MM")
 
@@ -42,7 +46,7 @@ internal class UiPulseStatisticGroupBuilder(private val context: Context, privat
 
 
     private fun List<PulseStatistic>.partitionForUi(): PartitionResult {
-        val todayDate = LocalDate.now()
+        val todayDate = todayProvider()
         val yesterdayDate = todayDate.minusDays(1)
         val currentYear = todayDate.year
 

@@ -11,6 +11,11 @@ android {
     buildFeatures {
         compose = true
     }
+    testOptions {
+        unitTests.all {
+            it.useJUnitPlatform()
+        }
+    }
 }
 
 dependencies {
@@ -25,4 +30,10 @@ dependencies {
 
     implementation(libs.androidxUiToolingPreview)
     debugImplementation(libs.androidxUiTooling)
+
+    testImplementation(libs.junitJupiterApi)
+    testImplementation(libs.junitJupiterParams)
+    testRuntimeOnly(libs.junitJupiterEngine)
+    testImplementation(libs.mockitoCore)
+    testImplementation(libs.mockitoKotlin)
 }
