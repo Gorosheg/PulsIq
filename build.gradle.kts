@@ -6,4 +6,5 @@ plugins {
     alias(libs.plugins.jetbrainsKotlinJvm) apply false
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.composeCompiler) apply false
+    id("pulsiq.moscow-time")
 }

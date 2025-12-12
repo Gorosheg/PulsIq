@@ -10,7 +10,9 @@ pluginManagement {
         mavenCentral()
         gradlePluginPortal()
     }
+    includeBuild("custom-plugin")
 }
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
@@ -20,6 +22,7 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "PulsIq"
+
 include(":app")
 include(":core:ui")
 include(":core:bluetooth")
