@@ -9,7 +9,7 @@ import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 import java.time.Duration
-import java.time.OffsetDateTime
+import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
@@ -18,19 +18,18 @@ abstract class PrintMoscowTimeTask : DefaultTask() {
     init {
         group = "pulsiq"
         description = "Gets current local time in Moscow from api and Displays it in logs."
-
         outputs.upToDateWhen { false }
     }
 
     @TaskAction
     fun run() {
         val client = HttpClient.newBuilder()
-            .connectTimeout(Duration.ofSeconds(5))
+            .connectTimeout(Duration.ofSeconds(60))
             .build()
 
         val request = HttpRequest.newBuilder()
             .uri(URI.create(API_URL))
-            .timeout(Duration.ofSeconds(10))
+            .timeout(Duration.ofSeconds(120))
             .GET()
             .build()
 
@@ -44,38 +43,41 @@ abstract class PrintMoscowTimeTask : DefaultTask() {
             }
 
             val body = response.body()
-            val datetime = DATETIME_RE.find(body)?.groupValues?.getOrNull(1)
-            val timezone = TIMEZONE_RE.find(body)?.groupValues?.getOrNull(1)
 
-            if (datetime == null) {
-                logger.lifecycle("[MoscowTimePlugin] Received response but could not parse datetime. Body: $body")
+            val dateTime = DATETIME_RE.find(body)?.groupValues?.getOrNull(1)
+            val timeZone = TIMEZONE_RE.find(body)?.groupValues?.getOrNull(1)
+
+            if (dateTime.isNullOrBlank()) {
+                logger.lifecycle("[MoscowTimePlugin] Received response but could not parse dateTime. Body: $body")
                 return
             }
 
             val zone = try {
-                ZoneId.of(timezone ?: FALLBACK_ZONE_ID)
+                ZoneId.of(timeZone ?: FALLBACK_ZONE_ID)
             } catch (_: Exception) {
                 ZoneId.of(FALLBACK_ZONE_ID)
             }
 
-            val zoneDateTime = OffsetDateTime
-                .parse(datetime)
-                .atZoneSameInstant(zone)
+            val zoneDateTime = parseApiDateTime(dateTime, zone)
 
-            val formatted = zoneDateTime
-                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss OOOO"))
-
-            logger.lifecycle("[MoscowTimePlugin] Local time in Moscow (${zoneDateTime.zone}): $formatted")
+            logger.lifecycle("[MoscowTimePlugin] Local time in Moscow: $zoneDateTime")
         } catch (e: Exception) {
             logger.error("[MoscowTimePlugin] Error while fetching Moscow time", e)
         }
     }
 
+    private fun parseApiDateTime(value: String, zone: ZoneId): String {
+        return LocalDateTime
+            .parse(value, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+            .atZone(zone)
+            .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+    }
+
     private companion object {
-        private const val API_URL = "https://worldtimeapi.org/api/timezone/Europe/Moscow"
+        private const val API_URL = "https://www.timeapi.io/api/Time/current/zone?timeZone=Europe/Moscow"
         private const val FALLBACK_ZONE_ID = "Europe/Moscow"
-        private val DATETIME_RE = Regex("\"datetime\"\\s*:\\s*\"([^\"]+)\"")
-        private val TIMEZONE_RE = Regex("\"timezone\"\\s*:\\s*\"([^\"]+)\"")
+        private val DATETIME_RE = Regex("\"dateTime\"\\s*:\\s*\"([^\"]+)\"")
+        private val TIMEZONE_RE = Regex("\"timeZone\"\\s*:\\s*\"([^\"]+)\"")
     }
 }
 

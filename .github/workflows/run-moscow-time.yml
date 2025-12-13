@@ -25,6 +25,4 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Run printMoscowTime task
-        run: |
-          chmod +x ./gradlew
-          ./gradlew -c settings.gradle.kts printMoscowTime --no-daemon
+        run: ./gradlew :app:printMoscowTime

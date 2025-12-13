@@ -10,7 +10,7 @@ repositories {
 
 gradlePlugin {
     plugins {
-        create("moscowTime") {
+        create("MoscowTimePlugin") {
             id = "pulsiq.moscow-time"
             implementationClass = "pulsiq.gradle.MoscowTimePlugin"
             displayName = "Moscow Time Plugin"
