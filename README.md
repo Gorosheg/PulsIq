@@ -3,6 +3,8 @@
 An Android app for real‑time heart rate tracking. PulsIq connects to a Bluetooth LE heart‑rate sensor,
 records key metrics, and alerts you with sound and vibration when your heart rate goes beyond your comfort zone.
 
+<a href="app-debug.apk?raw=1" download>You can download the APK here</a>
+
 ## Features
 
 - Real‑time heart rate monitoring via a bluetooth.
