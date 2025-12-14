@@ -5,7 +5,7 @@ records key metrics, and alerts you with sound and vibration when your heart rat
 
 ## Features
 
-- Real‑time heart rate monitoring via a BLE sensor.
+- Real‑time heart rate monitoring via a bluetooth.
 - Configurable upper and lower heart rate limits with separate notifications: sound and vibration.
 - Start/stop a session with one tap. A large heart‑rate indicator is shown during the workout.
 - Each workout is recorded: duration, min/avg/max heart rate, and an heart rate trend chart.
@@ -68,12 +68,3 @@ records key metrics, and alerts you with sound and vibration when your heart rat
 - Vico — charts and HR visualization.
 - Bluetooth LE — connection to the heart‑rate sensor.
 - Multi‑module + MVVM with a single state per screen.
-
-## Data and privacy
-
-All workout and measurement data is stored locally (Room) on your device and is never sent anywhere.
-
-## Disclaimer
-
-PulsIq is not a medical device.
-The app is for informational purposes only and is not a substitute for professional medical advice.
