@@ -1,9 +1,7 @@
 name: Hello on develop push
 
 on:
-  push:
-    branches:
-      - develop
+  workflow_dispatch:
 
 jobs:
   say-hello:
