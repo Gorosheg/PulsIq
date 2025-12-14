@@ -16,7 +16,7 @@ internal class IntListConverter {
         return data.split(',')
             .filter { it.isNotEmpty() }
             .mapNotNull { token ->
-                val parts = token.split(':')
+                val parts = token.split(':', limit = 2)
                 val first = parts.getOrNull(0)?.toIntOrNull()
                 val dateStr = parts.getOrNull(1)
                 val second = try {
