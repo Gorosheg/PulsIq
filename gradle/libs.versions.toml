@@ -56,17 +56,12 @@ vicoCore = { group = "com.patrykandpatrick.vico", name = "core", version.ref = "
 vicoCompose = { group = "com.patrykandpatrick.vico", name = "compose", version.ref = "vico" }
 vicoComposeM3 = { group = "com.patrykandpatrick.vico", name = "compose-m3", version.ref = "vico" }
 androidxComposeUiViewbinding = { group = "androidx.compose.ui", name = "ui-viewbinding", version.ref = "uiViewbinding" }
-junit = { group = "junit", name = "junit", version.ref = "junit" }
-extJunit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
-espressoCore = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 # JUnit 5
 junitJupiterApi = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junitJupiter" }
 junitJupiterParams = { group = "org.junit.jupiter", name = "junit-jupiter-params", version.ref = "junitJupiter" }
 junitJupiterEngine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junitJupiter" }
 # Mockito
 mockitoCore = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
-mockitoInline = { group = "org.mockito", name = "mockito-inline", version.ref = "mockito" }
 mockitoKotlin = { group = "org.mockito.kotlin", name = "mockito-kotlin", version.ref = "mockitoKotlin" }
 
 [plugins]
