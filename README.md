@@ -18,13 +18,13 @@ records key metrics, and alerts you with sound and vibration when your heart rat
 <table>
     <tr>
         <td>
-            <img src="https://github.com/Gorosheg/pulsiq/blob/master/screen1.png" width="256"/>
+            <img src="https://github.com/Gorosheg/pulsiq/blob/master/media/screen1.png" width="256"/>
         </td>
         <td>
-            <img src="https://github.com/Gorosheg/pulsiq/blob/master/screen2.png" width="256"/>
+            <img src="https://github.com/Gorosheg/pulsiq/blob/master/media/screen2.png" width="256"/>
         </td>
         <td>
-            <img src="https://github.com/Gorosheg/pulsiq/blob/master/screen3.png" width="256"/>
+            <img src="https://github.com/Gorosheg/pulsiq/blob/master/media/screen3.png" width="256"/>
         </td>
     </tr>
     <tr>
@@ -34,13 +34,13 @@ records key metrics, and alerts you with sound and vibration when your heart rat
     </tr>
     <tr>
         <td>
-            <img src="https://github.com/Gorosheg/pulsiq/blob/master/screen4.png" width="256"/>
+            <img src="https://github.com/Gorosheg/pulsiq/blob/master/media/screen4.png" width="256"/>
         </td>
         <td>
-            <img src="https://github.com/Gorosheg/pulsiq/blob/master/screen5.png" width="256"/>
+            <img src="https://github.com/Gorosheg/pulsiq/blob/master/media/screen5.png" width="256"/>
         </td>
         <td>
-            <img src="https://github.com/Gorosheg/pulsiq/blob/master/screen6.png" width="256"/>
+            <img src="https://github.com/Gorosheg/pulsiq/blob/master/media/screen6.png" width="256"/>
         </td>
     </tr>
     <tr>
