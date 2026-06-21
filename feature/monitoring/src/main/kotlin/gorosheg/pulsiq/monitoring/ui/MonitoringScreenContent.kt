@@ -31,7 +31,8 @@ internal fun MonitoringScreenContent(
     startTracking: (String) -> Unit,
     stopTracking: () -> Unit,
     onSessionNameChanged: (String) -> Unit,
-    onNameDialogDismiss: () -> Unit,
+    onStopTrackingConfirm: () -> Unit,
+    onStopTrackingCancel: () -> Unit,
 ) {
     val animatedColor by animateColorAsState(
         targetValue = state.heartColor,
@@ -60,7 +61,8 @@ internal fun MonitoringScreenContent(
         EditNameDialog(
             name = state.sessionName,
             onNameChanged = { onSessionNameChanged(it) },
-            onCloseEditDialogClick = { onNameDialogDismiss() }
+            onCloseEditDialogClick = { onStopTrackingConfirm() },
+            onCancelClick = { onStopTrackingCancel() },
         )
     }
 }
@@ -111,7 +113,8 @@ private fun MonitoringScreenContentPreview() {
             startTracking = {},
             stopTracking = {},
             onSessionNameChanged = {},
-            onNameDialogDismiss = {},
+            onStopTrackingConfirm = {},
+            onStopTrackingCancel = {},
         )
     }
 }
@@ -130,7 +133,8 @@ private fun MonitoringScreenContentTrackingPreview() {
             startTracking = {},
             stopTracking = {},
             onSessionNameChanged = {},
-            onNameDialogDismiss = {},
+            onStopTrackingConfirm = {},
+            onStopTrackingCancel = {},
         )
     }
 }

@@ -1,5 +1,6 @@
 package gorosheg.pulsiq.ui
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -7,6 +8,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -17,6 +20,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -29,14 +33,18 @@ fun EditNameDialog(
     name: String,
     onCloseEditDialogClick: () -> Unit,
     onNameChanged: (String) -> Unit,
+    onCancelClick: (() -> Unit)? = null,
 ) {
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
+    val closeKeyboardAndClearFocus = {
+        keyboardController?.hide()
+        focusManager.clearFocus(force = true)
+    }
     AlertDialog(
         onDismissRequest = {
-            keyboardController?.hide()
-            focusManager.clearFocus(force = true)
-            onCloseEditDialogClick.invoke()
+            closeKeyboardAndClearFocus()
+            (onCancelClick ?: onCloseEditDialogClick).invoke()
         },
         confirmButton = {},
         text = {
@@ -68,24 +76,49 @@ fun EditNameDialog(
                     ),
                     keyboardActions = KeyboardActions(
                         onDone = {
-                            keyboardController?.hide()
-                            focusManager.clearFocus(force = true)
+                            onNameChanged.invoke(textFieldValueState.value.text)
+                            closeKeyboardAndClearFocus()
                             onCloseEditDialogClick.invoke()
                         }
                     )
                 )
                 Spacer(modifier = Modifier.height(16.dp))
 
-                BlueButton(
-                    text = R.string.save,
-                    onClick = {
-                        onNameChanged.invoke(textFieldValueState.value.text)
-                        keyboardController?.hide()
-                        focusManager.clearFocus(force = true)
-                        onCloseEditDialogClick.invoke()
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                )
+                if (onCancelClick == null) {
+                    BlueButton(
+                        text = R.string.save,
+                        onClick = {
+                            onNameChanged.invoke(textFieldValueState.value.text)
+                            closeKeyboardAndClearFocus()
+                            onCloseEditDialogClick.invoke()
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                } else {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        BlueButton(
+                            text = R.string.save,
+                            onClick = {
+                                onNameChanged.invoke(textFieldValueState.value.text)
+                                closeKeyboardAndClearFocus()
+                                onCloseEditDialogClick.invoke()
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        OutlinedButton(
+                            onClick = {
+                                closeKeyboardAndClearFocus()
+                                onCancelClick.invoke()
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(text = stringResource(R.string.cancel))
+                        }
+                    }
+                }
             }
         }
     )

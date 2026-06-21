@@ -5,6 +5,9 @@ import gorosheg.pulsiq.bluetooth.BluetoothRepository
 import gorosheg.pulsiq.common.notification.PulseNotificationInitializer
 import gorosheg.pulsiq.common.viewModel.BaseViewModel
 import gorosheg.pulsiq.monitoring.presentation.model.MonitoringState
+import gorosheg.pulsiq.monitoring.presentation.model.cancelStopConfirmation
+import gorosheg.pulsiq.monitoring.presentation.model.confirmStop
+import gorosheg.pulsiq.monitoring.presentation.model.requestStopConfirmation
 import gorosheg.pulsiq.monitoring.ui.mapper.MonitoringUiStateMapper
 import gorosheg.pulsiq.monitoring.ui.model.MonitoringUiState
 import gorosheg.pulsiq.statistics.StatisticsRepository
@@ -33,21 +36,24 @@ internal class MonitoringViewModel(
         updateState { copy(isTracking = true) }
     }
 
+    fun requestStopMonitoring() {
+        updateState { requestStopConfirmation() }
+    }
+
     fun stopMonitoring() {
         pulseNotificationInitializer.stopPulseNotification()
         heartBeatSubscriptionJob?.cancel()
         heartBeatSubscriptionJob = null
+        val sessionName = getState.sessionName
         viewModelScope.launch {
+            statisticsRepository.changeStatisticsSessionName(name = sessionName)
             statisticsRepository.stopStatisticsSession()
         }
-        updateState { copy(isTracking = false, pulse = 0, isSetNameDialogShow = true) }
+        updateState { confirmStop() }
     }
 
-    fun onNameDialogDismiss() {
-        viewModelScope.launch {
-            statisticsRepository.changeStatisticsSessionName(name = getState.sessionName)
-        }
-        updateState { copy(isSetNameDialogShow = false, sessionName = "") }
+    fun cancelStopMonitoring() {
+        updateState { cancelStopConfirmation() }
     }
 
     fun changeSessionName(name: String) {

@@ -20,9 +20,10 @@ internal class MonitoringScreen : Screen {
         MonitoringScreenContent(
             state = state,
             startTracking = viewModel::startMonitoring,
-            stopTracking = viewModel::stopMonitoring,
+            stopTracking = viewModel::requestStopMonitoring,
             onSessionNameChanged = viewModel::changeSessionName,
-            onNameDialogDismiss = viewModel::onNameDialogDismiss,
+            onStopTrackingConfirm = viewModel::stopMonitoring,
+            onStopTrackingCancel = viewModel::cancelStopMonitoring,
         )
     }
 }

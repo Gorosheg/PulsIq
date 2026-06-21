@@ -11,6 +11,11 @@ android {
     buildFeatures {
         compose = true
     }
+    testOptions {
+        unitTests.all {
+            it.useJUnitPlatform()
+        }
+    }
 }
 
 dependencies {
@@ -19,4 +24,7 @@ dependencies {
     implementation(project(":core:ui"))
     implementation(project(":repository:statistics"))
     implementation(project(":feature:device-connection"))
+
+    testImplementation(libs.junitJupiterApi)
+    testRuntimeOnly(libs.junitJupiterEngine)
 }
