@@ -6,12 +6,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -29,6 +35,8 @@ internal fun StatisticsScreenContent(
     onSwipe: (Int) -> Unit,
     onClick: (Int) -> Unit,
 ) {
+    var itemIdToDelete by remember { mutableStateOf<Int?>(null) }
+    
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -42,12 +50,47 @@ internal fun StatisticsScreenContent(
             items(group.items, key = { it.id }) { item ->
                 StatisticSwipeItem(
                     item = item,
-                    onSwipe = onSwipe,
+                    onSwipe = { itemId -> itemIdToDelete = itemId },
                     onClick = onClick
                 )
             }
         }
     }
+
+    if (itemIdToDelete != null) {
+        DeleteConfirmationDialog(
+            onConfirm = {
+                itemIdToDelete?.let { onSwipe(it) }
+                itemIdToDelete = null
+            },
+            onDismiss = {
+                itemIdToDelete = null
+            }
+        )
+    }
+}
+
+@Composable
+private fun DeleteConfirmationDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(text = "Удалить активность?")
+        },
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text("Да")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Нет")
+            }
+        }
+    )
 }
 
 @Composable
@@ -71,7 +114,7 @@ private fun StatisticSwipeItem(
     val swipeState = rememberSwipeToDismissBoxState(confirmValueChange = { value ->
         if (value == SwipeToDismissBoxValue.EndToStart) {
             onSwipe(item.id)
-            true
+            false
         } else {
             false
         }

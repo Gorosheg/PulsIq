@@ -53,13 +53,6 @@ fun EditNameDialog(
                 }
                 val textFieldValueState = remember { mutableStateOf(initial) }
 
-                LaunchedEffect(name) {
-                    textFieldValueState.value = TextFieldValue(
-                        text = name,
-                        selection = TextRange(name.length)
-                    )
-                }
-
                 TextField(
                     value = textFieldValueState.value,
                     onValueChange = {
@@ -82,6 +75,7 @@ fun EditNameDialog(
                 BlueButton(
                     text = R.string.save,
                     onClick = {
+                        onNameChanged.invoke(textFieldValueState.value.text)
                         keyboardController?.hide()
                         focusManager.clearFocus(force = true)
                         onCloseEditDialogClick.invoke()
